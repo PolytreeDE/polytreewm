@@ -41,6 +41,7 @@
 #endif /* XINERAMA */
 #include <X11/Xft/Xft.h>
 
+#include "datetime.h"
 #include "drw.h"
 #include "util.h"
 
@@ -2202,8 +2203,11 @@ updatesizehints(Client *c)
 void
 updatestatus(void)
 {
-	if (!gettextprop(root, XA_WM_NAME, stext, sizeof(stext)))
-		strcpy(stext, "dwm-"VERSION);
+	if (!gettextprop(root, XA_WM_NAME, stext, sizeof(stext))) {
+		datetime_lock();
+		sprintf(stext, "dwm-"VERSION" | %s", datetime_get());
+		datetime_unlock();
+	}
 	drawbar(selmon);
 	updatesystray();
 }
@@ -2495,6 +2499,7 @@ main(int argc, char *argv[])
 	if (!(dpy = XOpenDisplay(NULL)))
 		die("dwm: cannot open display");
 	checkotherwm();
+	datetime_start();
 	setup();
 #ifdef __OpenBSD__
 	if (pledge("stdio rpath proc exec", NULL) == -1)
@@ -2502,6 +2507,7 @@ main(int argc, char *argv[])
 #endif /* __OpenBSD__ */
 	scan();
 	run();
+	datetime_stop();
 	cleanup();
 	XCloseDisplay(dpy);
 	return EXIT_SUCCESS;
