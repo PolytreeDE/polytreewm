@@ -44,6 +44,7 @@
 #include "atoms.h"
 #include "datetime.h"
 #include "drw.h"
+#include "status.h"
 #include "util.h"
 
 /* macros */
@@ -253,6 +254,7 @@ static int updategeom(void);
 static void updatenumlockmask(void);
 static void updatesizehints(Client *c);
 static void updatestatus(void);
+static void updatestatusexternal(void);
 static void updatesystray(void);
 static void updatesystrayicongeom(Client *i, int w, int h);
 static void updatesystrayiconstate(Client *i, XPropertyEvent *ev);
@@ -625,7 +627,7 @@ clientmessage(XEvent *e)
 		return;
 	}
 
-	if (cme->message_type == atoms->netatom[NetDateTime]) {
+	if (cme->message_type == atoms->netatom[NetStatusUpdate]) {
 		updatestatus(); // TODO: maybe we need some filtering
 		return;
 	}
@@ -1437,7 +1439,7 @@ propertynotify(XEvent *e)
 		updatesystray();
 	}
 	if ((ev->window == root) && (ev->atom == XA_WM_NAME))
-		updatestatus();
+		updatestatusexternal();
 	else if (ev->state == PropertyDelete)
 		return; /* ignore */
 	else if ((c = wintoclient(ev->window))) {
@@ -1822,7 +1824,7 @@ setup(void)
 	updatesystray();
 	/* init bars */
 	updatebars();
-	updatestatus();
+	updatestatusexternal();
 	/* supporting window for NetWMCheck */
 	wmcheckwin = XCreateSimpleWindow(dpy, root, 0, 0, 1, 1, 0, 0, 0);
 	XChangeProperty(dpy, wmcheckwin, atoms->netatom[NetWMCheck], XA_WINDOW, 32,
@@ -2284,17 +2286,27 @@ updatesizehints(Client *c)
 void
 updatestatus(void)
 {
-	if (!gettextprop(root, XA_WM_NAME, stext, sizeof(stext))) {
-		datetime_lock();
-		sprintf(stext, "dwm-"VERSION" | %s", datetime_get());
-		datetime_unlock();
-	}
+	status_lock();
+	sprintf(stext, "%s", status_get());
+	status_unlock();
 
 	for (Monitor *m = mons; m; m = m->next) {
 		drawbar(m);
 	}
 
 	updatesystray();
+}
+
+void
+updatestatusexternal(void)
+{
+	char buffer[256];
+
+	if (!gettextprop(root, XA_WM_NAME, buffer, sizeof(buffer))) {
+		sprintf(buffer, "dwm-"VERSION);
+	}
+
+	status_set_external(buffer);
 }
 
 void
@@ -2632,6 +2644,10 @@ main(int argc, char *argv[])
 	if (!(dpy = XOpenDisplay(NULL)))
 		die("dwm: cannot open display");
 	checkotherwm();
+	if (!status_start()) {
+		status_stop();
+		die("dwm: cannot start status service");
+	}
 	if (!datetime_start()) {
 		datetime_stop();
 		die("dwm: cannot start datetime service");
@@ -2645,6 +2661,7 @@ main(int argc, char *argv[])
 	run();
 	cleanup();
 	datetime_stop();
+	status_stop();
 	XCloseDisplay(dpy);
 	return EXIT_SUCCESS;
 }
