@@ -8,7 +8,7 @@ enum {
 	NetSupported, NetWMName, NetWMState, NetWMCheck, NetSystemTray,
 	NetSystemTrayOP, NetSystemTrayOrientation, NetSystemTrayOrientationHorz,
 	NetWMFullscreen, NetActiveWindow, NetWMWindowType, NetWMWindowTypeDialog,
-	NetClientList, NetLast,
+	NetClientList, NetDateTime, NetLast,
 };
 
 /* Xembed atoms */

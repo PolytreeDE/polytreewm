@@ -601,6 +601,12 @@ clientmessage(XEvent *e)
 		}
 		return;
 	}
+
+	if (cme->message_type == atom_values->netatom[NetDateTime]) {
+		updatestatus(); // TODO: maybe we need some filtering
+		return;
+	}
+
 	if (!c)
 		return;
 	if (cme->message_type == atom_values->netatom[NetWMState]) {
@@ -2476,7 +2482,8 @@ main(int argc, char *argv[])
 	if (!(dpy = XOpenDisplay(NULL)))
 		die("dwm: cannot open display");
 	checkotherwm();
-	datetime_start();
+	if (!datetime_start())
+		die("dwm: cannot start datetime service");
 	setup();
 #ifdef __OpenBSD__
 	if (pledge("stdio rpath proc exec", NULL) == -1)

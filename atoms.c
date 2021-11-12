@@ -26,6 +26,7 @@ AtomValues atoms_create(Display *const dpy)
 	atom_values->netatom[NetWMWindowType] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE", False);
 	atom_values->netatom[NetWMWindowTypeDialog] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE_DIALOG", False);
 	atom_values->netatom[NetClientList] = XInternAtom(dpy, "_NET_CLIENT_LIST", False);
+	atom_values->netatom[NetDateTime] = XInternAtom(dpy, "_NET_DATE_TIME", False);
 
 	atom_values->xatom[Manager] = XInternAtom(dpy, "MANAGER", False);
 	atom_values->xatom[Xembed] = XInternAtom(dpy, "_XEMBED", False);

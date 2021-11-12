@@ -1,7 +1,9 @@
 #ifndef _DATETIME_H
 #define _DATETIME_H
 
-void datetime_start();
+#include <stdbool.h>
+
+bool datetime_start();
 void datetime_stop();
 
 void datetime_lock();
