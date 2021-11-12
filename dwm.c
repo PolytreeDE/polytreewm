@@ -1829,7 +1829,6 @@ setup(void)
 {
 	int i;
 	XSetWindowAttributes wa;
-	Atom utf8string;
 
 	/* clean up any zombies immediately */
 	sigchld(0);
@@ -1846,7 +1845,6 @@ setup(void)
 	bh = drw->fonts->h + 2;
 	updategeom();
 	/* init atoms */
-	utf8string = XInternAtom(dpy, "UTF8_STRING", False);
 	atoms = atoms_create(dpy);
 	/* init cursors */
 	cursor[CurNormal] = drw_cur_create(drw, XC_left_ptr);
@@ -1865,7 +1863,7 @@ setup(void)
 	wmcheckwin = XCreateSimpleWindow(dpy, root, 0, 0, 1, 1, 0, 0, 0);
 	XChangeProperty(dpy, wmcheckwin, atoms->netatom[NetWMCheck], XA_WINDOW, 32,
 		PropModeReplace, (unsigned char *) &wmcheckwin, 1);
-	XChangeProperty(dpy, wmcheckwin, atoms->netatom[NetWMName], utf8string, 8,
+	XChangeProperty(dpy, wmcheckwin, atoms->netatom[NetWMName], atoms->utf8string, 8,
 		PropModeReplace, (unsigned char *) "dwm", 3);
 	XChangeProperty(dpy, root, atoms->netatom[NetWMCheck], XA_WINDOW, 32,
 		PropModeReplace, (unsigned char *) &wmcheckwin, 1);

@@ -32,6 +32,8 @@ Atoms atoms_create(Display *const dpy)
 	atoms->xatom[Xembed] = XInternAtom(dpy, "_XEMBED", False);
 	atoms->xatom[XembedInfo] = XInternAtom(dpy, "_XEMBED_INFO", False);
 
+	atoms->utf8string = XInternAtom(dpy, "UTF8_STRING", False);
+
 	return atoms;
 }
 

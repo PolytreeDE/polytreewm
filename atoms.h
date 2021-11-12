@@ -18,7 +18,7 @@ enum { Manager, Xembed, XembedInfo, XLast };
 enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMLast };
 
 typedef struct Atoms {
-	Atom wmatom[WMLast], netatom[NetLast], xatom[XLast];
+	Atom wmatom[WMLast], netatom[NetLast], xatom[XLast], utf8string;
 } *Atoms;
 
 Atoms atoms_create(Display *dpy);
