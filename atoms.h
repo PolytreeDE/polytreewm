@@ -17,8 +17,11 @@ enum { Manager, Xembed, XembedInfo, XLast };
 /* default atoms */
 enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMLast };
 
-extern Atom wmatom[WMLast], netatom[NetLast], xatom[XLast];
+typedef struct AtomValues {
+	Atom wmatom[WMLast], netatom[NetLast], xatom[XLast];
+} *AtomValues;
 
-void atoms_setup(Display *dpy);
+AtomValues atoms_create(Display *dpy);
+void atoms_destroy(AtomValues atom_values);
 
 #endif // _ATOMS_H
