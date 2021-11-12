@@ -1524,8 +1524,6 @@ resizeclient(Client *c, int x, int y, int w, int h)
 			&monocle == c->mon->lt[c->mon->sellt]->arrange
 		)
 		&&
-		!c->isfullscreen
-		&&
 		!c->isfloating
 		&&
 		NULL != c->mon->lt[c->mon->sellt]->arrange
