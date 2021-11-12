@@ -632,16 +632,27 @@ clientmessage(XEvent *e)
 		return;
 	}
 
-	if (!c)
-		return;
+	if (!c) return;
+
 	if (cme->message_type == atoms->netatom[NetWMState]) {
-		if (cme->data.l[1] == atoms->netatom[NetWMFullscreen]
-		|| cme->data.l[2] == atoms->netatom[NetWMFullscreen])
-			setfullscreen(c, (cme->data.l[0] == 1 /* _NET_WM_STATE_ADD    */
-				|| cme->data.l[0] == 2 /* _NET_WM_STATE_TOGGLE */));
+		if (
+			cme->data.l[1] == atoms->netatom[NetWMFullscreen]
+			||
+			cme->data.l[2] == atoms->netatom[NetWMFullscreen]
+		) {
+			setfullscreen(
+				c,
+				(
+					cme->data.l[0] == 1 /* _NET_WM_STATE_ADD    */
+					||
+					cme->data.l[0] == 2 /* _NET_WM_STATE_TOGGLE */
+				)
+			);
+		}
 	} else if (cme->message_type == atoms->netatom[NetActiveWindow]) {
-		if (c != selmon->sel && !c->isurgent)
+		if (c != selmon->sel && !c->isurgent) {
 			seturgent(c, 1);
+		}
 	}
 }
 
