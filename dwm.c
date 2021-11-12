@@ -291,7 +291,7 @@ static void (*handler[LASTEvent]) (XEvent *) = {
 	[ResizeRequest] = resizerequest,
 	[UnmapNotify] = unmapnotify
 };
-static AtomValues atom_values = NULL;
+static Atoms atoms = NULL;
 static int running = 1;
 static Cur *cursor[CurLast];
 static Clr **scheme;
@@ -523,12 +523,12 @@ cleanup(void)
 		drw_cur_free(drw, cursor[i]);
 	for (i = 0; i < LENGTH(colors); i++)
 		free(scheme[i]);
-	atoms_destroy(atom_values);
+	atoms_destroy(atoms);
 	XDestroyWindow(dpy, wmcheckwin);
 	drw_free(drw);
 	XSync(dpy, False);
 	XSetInputFocus(dpy, PointerRoot, RevertToPointerRoot, CurrentTime);
-	XDeleteProperty(dpy, root, atom_values->netatom[NetActiveWindow]);
+	XDeleteProperty(dpy, root, atoms->netatom[NetActiveWindow]);
 }
 
 void
@@ -555,7 +555,7 @@ clientmessage(XEvent *e)
 	XClientMessageEvent *cme = &e->xclient;
 	Client *c = wintoclient(cme->window);
 
-	if (showsystray && cme->window == systray->win && cme->message_type == atom_values->netatom[NetSystemTrayOP]) {
+	if (showsystray && cme->window == systray->win && cme->message_type == atoms->netatom[NetSystemTrayOP]) {
 		/* add systray icons */
 		if (cme->data.l[1] == SYSTEM_TRAY_REQUEST_DOCK) {
 			if (!(c = (Client *)calloc(1, sizeof(Client))))
@@ -589,11 +589,11 @@ clientmessage(XEvent *e)
 			/* use parents background color */
 			swa.background_pixel  = scheme[SchemeNorm][ColBg].pixel;
 			XChangeWindowAttributes(dpy, c->win, CWBackPixel, &swa);
-			sendevent(c->win, atom_values->netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_EMBEDDED_NOTIFY, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
+			sendevent(c->win, atoms->netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_EMBEDDED_NOTIFY, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
 			/* FIXME not sure if I have to send these events, too */
-			sendevent(c->win, atom_values->netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_FOCUS_IN, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
-			sendevent(c->win, atom_values->netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_WINDOW_ACTIVATE, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
-			sendevent(c->win, atom_values->netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_MODALITY_ON, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
+			sendevent(c->win, atoms->netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_FOCUS_IN, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
+			sendevent(c->win, atoms->netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_WINDOW_ACTIVATE, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
+			sendevent(c->win, atoms->netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_MODALITY_ON, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
 			XSync(dpy, False);
 			resizebarwin(selmon);
 			updatesystray();
@@ -602,19 +602,19 @@ clientmessage(XEvent *e)
 		return;
 	}
 
-	if (cme->message_type == atom_values->netatom[NetDateTime]) {
+	if (cme->message_type == atoms->netatom[NetDateTime]) {
 		updatestatus(); // TODO: maybe we need some filtering
 		return;
 	}
 
 	if (!c)
 		return;
-	if (cme->message_type == atom_values->netatom[NetWMState]) {
-		if (cme->data.l[1] == atom_values->netatom[NetWMFullscreen]
-		|| cme->data.l[2] == atom_values->netatom[NetWMFullscreen])
+	if (cme->message_type == atoms->netatom[NetWMState]) {
+		if (cme->data.l[1] == atoms->netatom[NetWMFullscreen]
+		|| cme->data.l[2] == atoms->netatom[NetWMFullscreen])
 			setfullscreen(c, (cme->data.l[0] == 1 /* _NET_WM_STATE_ADD    */
 				|| (cme->data.l[0] == 2 /* _NET_WM_STATE_TOGGLE */ && !c->isfullscreen)));
-	} else if (cme->message_type == atom_values->netatom[NetActiveWindow]) {
+	} else if (cme->message_type == atoms->netatom[NetActiveWindow]) {
 		if (c != selmon->sel && !c->isurgent)
 			seturgent(c, 1);
 	}
@@ -903,7 +903,7 @@ focus(Client *c)
 		setfocus(c);
 	} else {
 		XSetInputFocus(dpy, root, RevertToPointerRoot, CurrentTime);
-		XDeleteProperty(dpy, root, atom_values->netatom[NetActiveWindow]);
+		XDeleteProperty(dpy, root, atoms->netatom[NetActiveWindow]);
 	}
 	selmon->sel = c;
 	drawbars();
@@ -969,13 +969,13 @@ getatomprop(Client *c, Atom prop)
 	/* FIXME getatomprop should return the number of items and a pointer to
 	 * the stored data instead of this workaround */
 	Atom req = XA_ATOM;
-	if (prop == atom_values->xatom[XembedInfo])
-		req = atom_values->xatom[XembedInfo];
+	if (prop == atoms->xatom[XembedInfo])
+		req = atoms->xatom[XembedInfo];
 
 	if (XGetWindowProperty(dpy, c->win, prop, 0L, sizeof atom, False, req,
 		&da, &di, &dl, &dl, &p) == Success && p) {
 		atom = *(Atom *)p;
-		if (da == atom_values->xatom[XembedInfo] && dl == 2)
+		if (da == atoms->xatom[XembedInfo] && dl == 2)
 			atom = ((Atom *)p)[1];
 		XFree(p);
 	}
@@ -1001,7 +1001,7 @@ getstate(Window w)
 	unsigned long n, extra;
 	Atom real;
 
-	if (XGetWindowProperty(dpy, w, atom_values->wmatom[WMState], 0L, 2L, False, atom_values->wmatom[WMState],
+	if (XGetWindowProperty(dpy, w, atoms->wmatom[WMState], 0L, 2L, False, atoms->wmatom[WMState],
 		&real, &format, &n, &extra, (unsigned char **)&p) != Success)
 		return -1;
 	if (n != 0)
@@ -1124,7 +1124,7 @@ killclient(const Arg *arg)
 {
 	if (!selmon->sel)
 		return;
-	if (!sendevent(selmon->sel->win, atom_values->wmatom[WMDelete], NoEventMask, atom_values->wmatom[WMDelete], CurrentTime, 0 , 0, 0)) {
+	if (!sendevent(selmon->sel->win, atoms->wmatom[WMDelete], NoEventMask, atoms->wmatom[WMDelete], CurrentTime, 0 , 0, 0)) {
 		XGrabServer(dpy);
 		XSetErrorHandler(xerrordummy);
 		XSetCloseDownMode(dpy, DestroyAll);
@@ -1187,7 +1187,7 @@ manage(Window w, XWindowAttributes *wa)
 		XRaiseWindow(dpy, c->win);
 	attach(c);
 	attachstack(c);
-	XChangeProperty(dpy, root, atom_values->netatom[NetClientList], XA_WINDOW, 32, PropModeAppend,
+	XChangeProperty(dpy, root, atoms->netatom[NetClientList], XA_WINDOW, 32, PropModeAppend,
 		(unsigned char *) &(c->win), 1);
 	XMoveResizeWindow(dpy, c->win, c->x + 2 * sw, c->y, c->w, c->h); /* some windows require this */
 	setclientstate(c, NormalState);
@@ -1216,7 +1216,7 @@ maprequest(XEvent *e)
 	XMapRequestEvent *ev = &e->xmaprequest;
 	Client *i;
 	if ((i = wintosystrayicon(ev->window))) {
-		sendevent(i->win, atom_values->netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_WINDOW_ACTIVATE, 0, systray->win, XEMBED_EMBEDDED_VERSION);
+		sendevent(i->win, atoms->netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_WINDOW_ACTIVATE, 0, systray->win, XEMBED_EMBEDDED_VERSION);
 		resizebarwin(selmon);
 		updatesystray();
 	}
@@ -1374,12 +1374,12 @@ propertynotify(XEvent *e)
 			drawbars();
 			break;
 		}
-		if (ev->atom == XA_WM_NAME || ev->atom == atom_values->netatom[NetWMName]) {
+		if (ev->atom == XA_WM_NAME || ev->atom == atoms->netatom[NetWMName]) {
 			updatetitle(c);
 			if (c == c->mon->sel)
 				drawbar(c->mon);
 		}
-		if (ev->atom == atom_values->netatom[NetWMWindowType])
+		if (ev->atom == atoms->netatom[NetWMWindowType])
 			updatewindowtype(c);
 	}
 }
@@ -1602,7 +1602,7 @@ setclientstate(Client *c, long state)
 {
 	long data[] = { state, None };
 
-	XChangeProperty(dpy, c->win, atom_values->wmatom[WMState], atom_values->wmatom[WMState], 32,
+	XChangeProperty(dpy, c->win, atoms->wmatom[WMState], atoms->wmatom[WMState], 32,
 		PropModeReplace, (unsigned char *)data, 2);
 }
 
@@ -1614,8 +1614,8 @@ sendevent(Window w, Atom proto, int mask, long d0, long d1, long d2, long d3, lo
 	int exists = 0;
 	XEvent ev;
 
-	if (proto == atom_values->wmatom[WMTakeFocus] || proto == atom_values->wmatom[WMDelete]) {
-		mt = atom_values->wmatom[WMProtocols];
+	if (proto == atoms->wmatom[WMTakeFocus] || proto == atoms->wmatom[WMDelete]) {
+		mt = atoms->wmatom[WMProtocols];
 		if (XGetWMProtocols(dpy, w, &protocols, &n)) {
 			while (!exists && n--)
 				exists = protocols[n] == proto;
@@ -1646,19 +1646,19 @@ setfocus(Client *c)
 {
 	if (!c->neverfocus) {
 		XSetInputFocus(dpy, c->win, RevertToPointerRoot, CurrentTime);
-		XChangeProperty(dpy, root, atom_values->netatom[NetActiveWindow],
+		XChangeProperty(dpy, root, atoms->netatom[NetActiveWindow],
 			XA_WINDOW, 32, PropModeReplace,
 			(unsigned char *) &(c->win), 1);
 	}
-	sendevent(c->win, atom_values->wmatom[WMTakeFocus], NoEventMask, atom_values->wmatom[WMTakeFocus], CurrentTime, 0, 0, 0);
+	sendevent(c->win, atoms->wmatom[WMTakeFocus], NoEventMask, atoms->wmatom[WMTakeFocus], CurrentTime, 0, 0, 0);
 }
 
 void
 setfullscreen(Client *c, int fullscreen)
 {
 	if (fullscreen && !c->isfullscreen) {
-		XChangeProperty(dpy, c->win, atom_values->netatom[NetWMState], XA_ATOM, 32,
-			PropModeReplace, (unsigned char*)&atom_values->netatom[NetWMFullscreen], 1);
+		XChangeProperty(dpy, c->win, atoms->netatom[NetWMState], XA_ATOM, 32,
+			PropModeReplace, (unsigned char*)&atoms->netatom[NetWMFullscreen], 1);
 		c->isfullscreen = 1;
 		c->oldstate = c->isfloating;
 		c->oldbw = c->bw;
@@ -1667,7 +1667,7 @@ setfullscreen(Client *c, int fullscreen)
 		resizeclient(c, c->mon->mx, c->mon->my, c->mon->mw, c->mon->mh);
 		XRaiseWindow(dpy, c->win);
 	} else if (!fullscreen && c->isfullscreen){
-		XChangeProperty(dpy, c->win, atom_values->netatom[NetWMState], XA_ATOM, 32,
+		XChangeProperty(dpy, c->win, atoms->netatom[NetWMState], XA_ATOM, 32,
 			PropModeReplace, (unsigned char*)0, 0);
 		c->isfullscreen = 0;
 		c->isfloating = c->oldstate;
@@ -1733,7 +1733,7 @@ setup(void)
 	updategeom();
 	/* init atoms */
 	utf8string = XInternAtom(dpy, "UTF8_STRING", False);
-	atom_values = atoms_create(dpy);
+	atoms = atoms_create(dpy);
 	/* init cursors */
 	cursor[CurNormal] = drw_cur_create(drw, XC_left_ptr);
 	cursor[CurResize] = drw_cur_create(drw, XC_sizing);
@@ -1749,16 +1749,16 @@ setup(void)
 	updatestatus();
 	/* supporting window for NetWMCheck */
 	wmcheckwin = XCreateSimpleWindow(dpy, root, 0, 0, 1, 1, 0, 0, 0);
-	XChangeProperty(dpy, wmcheckwin, atom_values->netatom[NetWMCheck], XA_WINDOW, 32,
+	XChangeProperty(dpy, wmcheckwin, atoms->netatom[NetWMCheck], XA_WINDOW, 32,
 		PropModeReplace, (unsigned char *) &wmcheckwin, 1);
-	XChangeProperty(dpy, wmcheckwin, atom_values->netatom[NetWMName], utf8string, 8,
+	XChangeProperty(dpy, wmcheckwin, atoms->netatom[NetWMName], utf8string, 8,
 		PropModeReplace, (unsigned char *) "dwm", 3);
-	XChangeProperty(dpy, root, atom_values->netatom[NetWMCheck], XA_WINDOW, 32,
+	XChangeProperty(dpy, root, atoms->netatom[NetWMCheck], XA_WINDOW, 32,
 		PropModeReplace, (unsigned char *) &wmcheckwin, 1);
 	/* EWMH support per view */
-	XChangeProperty(dpy, root, atom_values->netatom[NetSupported], XA_ATOM, 32,
-		PropModeReplace, (unsigned char *) atom_values->netatom, NetLast);
-	XDeleteProperty(dpy, root, atom_values->netatom[NetClientList]);
+	XChangeProperty(dpy, root, atoms->netatom[NetSupported], XA_ATOM, 32,
+		PropModeReplace, (unsigned char *) atoms->netatom, NetLast);
+	XDeleteProperty(dpy, root, atoms->netatom[NetClientList]);
 	/* select events */
 	wa.cursor = cursor[CurNormal]->cursor;
 	wa.event_mask = SubstructureRedirectMask|SubstructureNotifyMask
@@ -1942,7 +1942,7 @@ unfocus(Client *c, int setfocus)
 	XSetWindowBorder(dpy, c->win, scheme[SchemeNorm][ColBorder].pixel);
 	if (setfocus) {
 		XSetInputFocus(dpy, root, RevertToPointerRoot, CurrentTime);
-		XDeleteProperty(dpy, root, atom_values->netatom[NetActiveWindow]);
+		XDeleteProperty(dpy, root, atoms->netatom[NetActiveWindow]);
 	}
 }
 
@@ -2038,10 +2038,10 @@ updateclientlist()
 	Client *c;
 	Monitor *m;
 
-	XDeleteProperty(dpy, root, atom_values->netatom[NetClientList]);
+	XDeleteProperty(dpy, root, atoms->netatom[NetClientList]);
 	for (m = mons; m; m = m->next)
 		for (c = m->clients; c; c = c->next)
-			XChangeProperty(dpy, root, atom_values->netatom[NetClientList],
+			XChangeProperty(dpy, root, atoms->netatom[NetClientList],
 				XA_WINDOW, 32, PropModeAppend,
 				(unsigned char *) &(c->win), 1);
 }
@@ -2224,8 +2224,8 @@ updatesystrayiconstate(Client *i, XPropertyEvent *ev)
 	long flags;
 	int code = 0;
 
-	if (!showsystray || !i || ev->atom != atom_values->xatom[XembedInfo] ||
-			!(flags = getatomprop(i, atom_values->xatom[XembedInfo])))
+	if (!showsystray || !i || ev->atom != atoms->xatom[XembedInfo] ||
+			!(flags = getatomprop(i, atoms->xatom[XembedInfo])))
 		return;
 
 	if (flags & XEMBED_MAPPED && !i->tags) {
@@ -2242,7 +2242,7 @@ updatesystrayiconstate(Client *i, XPropertyEvent *ev)
 	}
 	else
 		return;
-	sendevent(i->win, atom_values->xatom[Xembed], StructureNotifyMask, CurrentTime, code, 0,
+	sendevent(i->win, atoms->xatom[Xembed], StructureNotifyMask, CurrentTime, code, 0,
 			systray->win, XEMBED_EMBEDDED_VERSION);
 }
 
@@ -2270,13 +2270,13 @@ updatesystray(void)
 		wa.override_redirect = True;
 		wa.background_pixel  = scheme[SchemeNorm][ColBg].pixel;
 		XSelectInput(dpy, systray->win, SubstructureNotifyMask);
-		XChangeProperty(dpy, systray->win, atom_values->netatom[NetSystemTrayOrientation], XA_CARDINAL, 32,
-				PropModeReplace, (unsigned char *)&atom_values->netatom[NetSystemTrayOrientationHorz], 1);
+		XChangeProperty(dpy, systray->win, atoms->netatom[NetSystemTrayOrientation], XA_CARDINAL, 32,
+				PropModeReplace, (unsigned char *)&atoms->netatom[NetSystemTrayOrientationHorz], 1);
 		XChangeWindowAttributes(dpy, systray->win, CWEventMask|CWOverrideRedirect|CWBackPixel, &wa);
 		XMapRaised(dpy, systray->win);
-		XSetSelectionOwner(dpy, atom_values->netatom[NetSystemTray], systray->win, CurrentTime);
-		if (XGetSelectionOwner(dpy, atom_values->netatom[NetSystemTray]) == systray->win) {
-			sendevent(root, atom_values->xatom[Manager], StructureNotifyMask, CurrentTime, atom_values->netatom[NetSystemTray], systray->win, 0, 0);
+		XSetSelectionOwner(dpy, atoms->netatom[NetSystemTray], systray->win, CurrentTime);
+		if (XGetSelectionOwner(dpy, atoms->netatom[NetSystemTray]) == systray->win) {
+			sendevent(root, atoms->xatom[Manager], StructureNotifyMask, CurrentTime, atoms->netatom[NetSystemTray], systray->win, 0, 0);
 			XSync(dpy, False);
 		}
 		else {
@@ -2315,7 +2315,7 @@ updatesystray(void)
 void
 updatetitle(Client *c)
 {
-	if (!gettextprop(c->win, atom_values->netatom[NetWMName], c->name, sizeof c->name))
+	if (!gettextprop(c->win, atoms->netatom[NetWMName], c->name, sizeof c->name))
 		gettextprop(c->win, XA_WM_NAME, c->name, sizeof c->name);
 	if (c->name[0] == '\0') /* hack to mark broken clients */
 		strcpy(c->name, broken);
@@ -2324,12 +2324,12 @@ updatetitle(Client *c)
 void
 updatewindowtype(Client *c)
 {
-	Atom state = getatomprop(c, atom_values->netatom[NetWMState]);
-	Atom wtype = getatomprop(c, atom_values->netatom[NetWMWindowType]);
+	Atom state = getatomprop(c, atoms->netatom[NetWMState]);
+	Atom wtype = getatomprop(c, atoms->netatom[NetWMWindowType]);
 
-	if (state == atom_values->netatom[NetWMFullscreen])
+	if (state == atoms->netatom[NetWMFullscreen])
 		setfullscreen(c, 1);
-	if (wtype == atom_values->netatom[NetWMWindowTypeDialog])
+	if (wtype == atoms->netatom[NetWMWindowTypeDialog])
 		c->isfloating = 1;
 }
 

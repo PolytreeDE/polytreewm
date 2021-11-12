@@ -15,7 +15,7 @@ static void *run(void *vargp);
 static const char *const default_text = "date & time";
 
 static Display *display = None;
-static AtomValues atom_values = NULL;
+static Atoms atoms = NULL;
 static bool running = true;
 static pthread_t thread;
 static pthread_mutex_t mutex;
@@ -29,7 +29,7 @@ bool datetime_start()
 		return false;
 	}
 
-	atom_values = atoms_create(display);
+	atoms = atoms_create(display);
 
 	pthread_create(&thread, NULL, run, NULL);
 
@@ -39,7 +39,7 @@ bool datetime_start()
 void datetime_stop()
 {
 	running = false;
-	atoms_destroy(atom_values);
+	atoms_destroy(atoms);
 	XCloseDisplay(display);
 	pthread_join(thread, NULL);
 }
@@ -61,9 +61,9 @@ void *run(void *vargp)
 		event.xclient.type = ClientMessage;
 		event.xclient.serial = 0;
 		event.xclient.send_event = True;
-		event.xclient.display = display; // TODO: was undefined in xclimsg
+		event.xclient.display = display;
 		event.xclient.window = DefaultRootWindow(display);
-		event.xclient.message_type = atom_values->netatom[NetDateTime];
+		event.xclient.message_type = atoms->netatom[NetDateTime];
 		event.xclient.format = 32;
 		XSendEvent(
 			display,
