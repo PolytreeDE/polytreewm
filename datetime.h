@@ -3,6 +3,8 @@
 
 #include <stdbool.h>
 
+#define DATETIME_BUFFER_SIZE 32
+
 bool datetime_start();
 void datetime_stop();
 

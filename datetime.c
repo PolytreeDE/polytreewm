@@ -8,8 +8,6 @@
 #include <time.h>
 #include <unistd.h>
 
-#define BUFFER_SIZE 32
-
 static void datetime_lock();
 static void datetime_unlock();
 static void *run(void *vargp);
@@ -22,7 +20,7 @@ static bool running = false;
 static pthread_t thread;
 static bool thread_created = false;
 
-static char buffer[BUFFER_SIZE];
+static char buffer[DATETIME_BUFFER_SIZE];
 
 void datetime_lock()
 {

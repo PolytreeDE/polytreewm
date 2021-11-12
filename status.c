@@ -1,6 +1,7 @@
 #include "status.h"
 
 #include "atoms.h"
+#include "datetime.h"
 
 #include <pthread.h>
 #include <stdio.h>
@@ -8,7 +9,6 @@
 #include <X11/Xlib.h>
 
 #define EXTERNAL_BUFFER_SIZE 256
-#define DATETIME_BUFFER_SIZE 32
 
 #define BUFFER_SIZE (EXTERNAL_BUFFER_SIZE + 3 + DATETIME_BUFFER_SIZE)
 
