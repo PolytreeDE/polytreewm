@@ -2482,8 +2482,10 @@ main(int argc, char *argv[])
 	if (!(dpy = XOpenDisplay(NULL)))
 		die("dwm: cannot open display");
 	checkotherwm();
-	if (!datetime_start())
+	if (!datetime_start()) {
+		datetime_stop();
 		die("dwm: cannot start datetime service");
+	}
 	setup();
 #ifdef __OpenBSD__
 	if (pledge("stdio rpath proc exec", NULL) == -1)
@@ -2491,8 +2493,8 @@ main(int argc, char *argv[])
 #endif /* __OpenBSD__ */
 	scan();
 	run();
-	datetime_stop();
 	cleanup();
+	datetime_stop();
 	XCloseDisplay(dpy);
 	return EXIT_SUCCESS;
 }

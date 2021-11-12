@@ -5,9 +5,8 @@
 
 bool datetime_start();
 void datetime_stop();
-
 void datetime_lock();
-const char *datetime_get();
 void datetime_unlock();
+const char *datetime_get();
 
 #endif // _DATETIME_H

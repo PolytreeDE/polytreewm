@@ -14,34 +14,63 @@ static void *run(void *vargp);
 
 static const char *const default_text = "date & time";
 
+static pthread_mutex_t mutex;
+static bool running = false;
+
 static Display *display = None;
 static Atoms atoms = NULL;
-static bool running = true;
+
 static pthread_t thread;
-static pthread_mutex_t mutex;
+static bool thread_created = false;
+
 static char buffer[BUFFER_SIZE];
+
+void datetime_lock()
+{
+	pthread_mutex_lock(&mutex);
+}
+
+void datetime_unlock()
+{
+	pthread_mutex_unlock(&mutex);
+}
+
+const char *datetime_get()
+{
+	return buffer;
+}
 
 bool datetime_start()
 {
+	datetime_lock();
+
+	if (running) return false;
+
+	running = true;
 	strcpy(buffer, default_text);
 
-	if ((display = XOpenDisplay(NULL)) == NULL) {
-		return false;
-	}
+	if ((display = XOpenDisplay(NULL)) == NULL) return false;
+	if ((atoms = atoms_create(display)) == NULL) return false;
 
-	atoms = atoms_create(display);
+	thread_created = pthread_create(&thread, NULL, run, NULL) == 0;
 
-	pthread_create(&thread, NULL, run, NULL);
+	datetime_unlock();
 
-	return true;
+	return thread_created;
 }
 
 void datetime_stop()
 {
+	datetime_lock();
+
+	if (!running) return;
+
 	running = false;
-	atoms_destroy(atoms);
-	XCloseDisplay(display);
-	pthread_join(thread, NULL);
+	if (thread_created) pthread_join(thread, NULL);
+	if (atoms != NULL) atoms_destroy(atoms);
+	if (display != None) XCloseDisplay(display);
+
+	datetime_unlock();
 }
 
 void *run(void *vargp)
@@ -78,19 +107,4 @@ void *run(void *vargp)
 	}
 
 	return NULL;
-}
-
-void datetime_lock()
-{
-	pthread_mutex_lock(&mutex);
-}
-
-const char *datetime_get()
-{
-	return buffer;
-}
-
-void datetime_unlock()
-{
-	pthread_mutex_unlock(&mutex);
 }
