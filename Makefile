@@ -19,9 +19,6 @@ options:
 
 ${OBJ}: config.h config.mk
 
-config.h:
-	cp config.def.h $@
-
 dwm: ${OBJ}
 	${CC} -o $@ ${OBJ} ${LDFLAGS}
 
@@ -40,12 +37,25 @@ install: all
 	mkdir -p ${DESTDIR}${PREFIX}/bin
 	cp -f dwm ${DESTDIR}${PREFIX}/bin
 	chmod 755 ${DESTDIR}${PREFIX}/bin/dwm
+	
 	mkdir -p ${DESTDIR}${MANPREFIX}/man1
 	sed "s/VERSION/${VERSION}/g" < dwm.1 > ${DESTDIR}${MANPREFIX}/man1/dwm.1
 	chmod 644 ${DESTDIR}${MANPREFIX}/man1/dwm.1
 
+xinstall: install
+	mkdir -p ${DESTDIR}${ICONSPREFIX}
+	cp -f dwm.png ${DESTDIR}${ICONSPREFIX}
+	chmod 644 ${DESTDIR}${ICONSPREFIX}/dwm.png
+	
+	mkdir -p ${DESTDIR}${XSESSIONSPREFIX}
+	cp -f dwm.desktop ${DESTDIR}${XSESSIONSPREFIX}
+	chmod 644 ${DESTDIR}${XSESSIONSPREFIX}/dwm.desktop
+
 uninstall:
-	rm -f ${DESTDIR}${PREFIX}/bin/dwm\
-		${DESTDIR}${MANPREFIX}/man1/dwm.1
+	rm -f \
+		${DESTDIR}${PREFIX}/bin/dwm \
+		${DESTDIR}${MANPREFIX}/man1/dwm.1 \
+		${DESTDIR}${ICONSPREFIX}/dwm.png \
+		${DESTDIR}${XSESSIONSPREFIX}/dwm.desktop
 
 .PHONY: all options clean dist install uninstall

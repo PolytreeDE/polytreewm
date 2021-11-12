@@ -5,7 +5,12 @@ VERSION = 6.2
 
 # paths
 PREFIX = /usr/local
+SYSPREFIX = /usr
+
 MANPREFIX = ${PREFIX}/share/man
+
+ICONSPREFIX = ${SYSPREFIX}/share/icons
+XSESSIONSPREFIX = ${SYSPREFIX}/share/xsessions
 
 X11INC = /usr/X11R6/include
 X11LIB = /usr/X11R6/lib
