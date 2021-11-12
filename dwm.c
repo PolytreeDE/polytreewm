@@ -42,9 +42,9 @@
 #include <X11/Xft/Xft.h>
 
 #include "atoms.h"
-#include "datetime.h"
 #include "drw.h"
-#include "status.h"
+#include "services/datetime.h"
+#include "services/status.h"
 #include "util.h"
 
 /* macros */

@@ -3,7 +3,7 @@
 
 include config.mk
 
-SRC = atoms.c datetime.c drw.c dwm.c status.c util.c
+SRC = atoms.c drw.c dwm.c services/datetime.c services/status.c util.c
 OBJ = ${SRC:.c=.o}
 
 all: options dwm
@@ -14,8 +14,8 @@ options:
 	@echo "LDFLAGS  = ${LDFLAGS}"
 	@echo "CC       = ${CC}"
 
-.c.o:
-	${CC} -c ${CFLAGS} $<
+%.o: %.c
+	${CC} -c $< -o $@ ${CFLAGS}
 
 ${OBJ}: config.h config.mk
 
