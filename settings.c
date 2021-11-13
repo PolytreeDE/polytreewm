@@ -1,7 +1,7 @@
 #include "settings.h"
 
 static bool focus_on_wheel = true;
-static int max_clients_in_master = 3;
+static int max_clients_in_master = 0; // 0 for no maximum
 static bool respect_resize_hints_in_floating_layout = false;
 static unsigned int snap_distance = 32;
 
