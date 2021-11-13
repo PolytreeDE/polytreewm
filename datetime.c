@@ -1,6 +1,6 @@
 #include "datetime.h"
 
-#include "../atoms.h"
+#include "atoms.h"
 #include "status.h"
 
 #include <pthread.h>
