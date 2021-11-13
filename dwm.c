@@ -1334,7 +1334,10 @@ movemouse(const Arg *arg)
 				ny = selmon->wy + selmon->wh - HEIGHT(c);
 			}
 
-			if (!c->isfloating && (abs(nx - c->x) > snap_distance || abs(ny - c->y) > snap_distance)) {
+			if (!c->isfloating &&
+				(abs(nx - c->x) > snap_distance ||
+					abs(ny - c->y) > snap_distance))
+			{
 				togglefloating(NULL);
 			}
 
@@ -1580,7 +1583,10 @@ resizemouse(const Arg *arg)
 				c->mon->wy + nh >= selmon->wy &&
 				c->mon->wy + nh <= selmon->wy + selmon->wh)
 			{
-				if (!c->isfloating && (abs(nw - c->w) > snap_distance || abs(nh - c->h) > snap_distance)) {
+				if (!c->isfloating &&
+					(abs(nw - c->w) > snap_distance ||
+						abs(nh - c->h) > snap_distance))
+				{
 					togglefloating(NULL);
 				}
 			}
