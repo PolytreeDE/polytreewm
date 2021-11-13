@@ -1288,6 +1288,8 @@ movemouse(const Arg *arg)
 	XEvent ev;
 	Time lasttime = 0;
 
+	const unsigned int snap_distance = settings_get_snap_distance();
+
 	if (!(c = selmon->sel))
 		return;
 	restack(selmon);
@@ -1313,15 +1315,15 @@ movemouse(const Arg *arg)
 
 			nx = ocx + (ev.xmotion.x - x);
 			ny = ocy + (ev.xmotion.y - y);
-			if (abs(selmon->wx - nx) < snap)
+			if (abs(selmon->wx - nx) < snap_distance)
 				nx = selmon->wx;
-			else if (abs((selmon->wx + selmon->ww) - (nx + WIDTH(c))) < snap)
+			else if (abs((selmon->wx + selmon->ww) - (nx + WIDTH(c))) < snap_distance)
 				nx = selmon->wx + selmon->ww - WIDTH(c);
-			if (abs(selmon->wy - ny) < snap)
+			if (abs(selmon->wy - ny) < snap_distance)
 				ny = selmon->wy;
-			else if (abs((selmon->wy + selmon->wh) - (ny + HEIGHT(c))) < snap)
+			else if (abs((selmon->wy + selmon->wh) - (ny + HEIGHT(c))) < snap_distance)
 				ny = selmon->wy + selmon->wh - HEIGHT(c);
-			if (!c->isfloating && (abs(nx - c->x) > snap || abs(ny - c->y) > snap))
+			if (!c->isfloating && (abs(nx - c->x) > snap_distance || abs(ny - c->y) > snap_distance))
 				togglefloating(NULL);
 			if (!selmon->lt[selmon->sellt]->arrange || c->isfloating)
 				resize(c, nx, ny, c->w, c->h, c->bw, 1);
@@ -1521,6 +1523,8 @@ resizemouse(const Arg *arg)
 	XEvent ev;
 	Time lasttime = 0;
 
+	const unsigned int snap_distance = settings_get_snap_distance();
+
 	if (!(c = selmon->sel))
 		return;
 	restack(selmon);
@@ -1548,7 +1552,7 @@ resizemouse(const Arg *arg)
 			if (c->mon->wx + nw >= selmon->wx && c->mon->wx + nw <= selmon->wx + selmon->ww
 			&& c->mon->wy + nh >= selmon->wy && c->mon->wy + nh <= selmon->wy + selmon->wh)
 			{
-				if (!c->isfloating && (abs(nw - c->w) > snap || abs(nh - c->h) > snap))
+				if (!c->isfloating && (abs(nw - c->w) > snap_distance || abs(nh - c->h) > snap_distance))
 					togglefloating(NULL);
 			}
 			if (!selmon->lt[selmon->sellt]->arrange || c->isfloating)
