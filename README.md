@@ -20,4 +20,6 @@ Interesting patches (not applied)
 * cursorwarp
 * focusmaster
 * focusmonmouse
+* rotatestack
+* stacker
 * warp
