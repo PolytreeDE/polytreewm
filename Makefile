@@ -17,7 +17,7 @@ options:
 %.o: %.c
 	${CC} -c $< -o $@ ${CFLAGS}
 
-${OBJ}: config.def.h config.mk
+${OBJ}: atoms.h drw.h config.def.h config.mk services/datetime.h services/status.h settings.h util.h
 
 dwm: ${OBJ}
 	${CC} -o $@ ${OBJ} ${LDFLAGS}
