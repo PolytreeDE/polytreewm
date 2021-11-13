@@ -386,7 +386,15 @@ applysizehints(Client *c, int *x, int *y, int *w, int *h, int bw, int interact)
 		*h = bh;
 	if (*w < bh)
 		*w = bh;
-	if (c->isfloating || !c->mon->lt[c->mon->sellt]->arrange) {
+	if (
+		c->isfloating
+		||
+		(
+			settings_get_respect_resize_hints_in_floating_layout()
+			&&
+			!c->mon->lt[c->mon->sellt]->arrange
+		)
+	) {
 		/* see last two sentences in ICCCM 4.1.2.3 */
 		baseismin = c->basew == c->minw && c->baseh == c->minh;
 		if (!baseismin) { /* temporarily remove base dimensions */
