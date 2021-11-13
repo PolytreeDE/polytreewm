@@ -3,7 +3,7 @@
 
 include config.mk
 
-SRC = atoms.c drw.c dwm.c services/datetime.c services/status.c util.c
+SRC = atoms.c drw.c dwm.c services/datetime.c services/status.c settings.c util.c
 OBJ = ${SRC:.c=.o}
 
 all: options dwm
