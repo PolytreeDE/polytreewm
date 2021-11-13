@@ -17,7 +17,7 @@ options:
 %.o: %.c
 	${CC} -c $< -o $@ ${CFLAGS}
 
-${OBJ}: config.h config.mk
+${OBJ}: config.def.h config.mk
 
 dwm: ${OBJ}
 	${CC} -o $@ ${OBJ} ${LDFLAGS}
