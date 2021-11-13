@@ -1630,7 +1630,7 @@ void
 resetnmaster(const Arg *arg)
 {
 	const int max_clients_in_master = settings_get_max_clients_in_master();
-	const int new_clients_in_master = MAX(0, arg->i);
+	const int new_clients_in_master = arg->i == 0 ? 0 : nmaster;
 
 	selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag] =
 		max_clients_in_master == 0
