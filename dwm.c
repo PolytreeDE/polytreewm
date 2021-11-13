@@ -1180,10 +1180,13 @@ grabkeys(void)
 void
 incnmaster(const Arg *arg)
 {
-	selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag] = MIN(
-		MAX(selmon->nmaster + arg->i, 0),
-		MAX(settings_get_max_clients_in_master(), 1)
-	);
+	const int max_clients_in_master = settings_get_max_clients_in_master();
+	const int new_clients_in_master = MAX(0, selmon->nmaster + arg->i);
+
+	selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag] =
+		max_clients_in_master == 0
+		? new_clients_in_master
+		: MIN(new_clients_in_master, max_clients_in_master);
 
 	arrange(selmon);
 }

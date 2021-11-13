@@ -17,7 +17,7 @@ void settings_set_focus_on_wheel(const bool new_focus_on_wheel)
 
 int settings_get_max_clients_in_master()
 {
-	return max_clients_in_master;
+	return max_clients_in_master > 0 ? max_clients_in_master : 0;
 }
 
 void settings_set_max_clients_in_master(const int new_max_clients_in_master)
