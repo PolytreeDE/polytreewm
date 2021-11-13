@@ -1482,6 +1482,7 @@ movemouse(const Arg *arg)
 	}
 }
 
+// TODO: this function really needs to be refactored
 void
 nametag(const Arg *arg) {
 	char *p, name[MAX_TAGNAME_LEN];
@@ -1502,11 +1503,17 @@ nametag(const Arg *arg) {
 	if((p = strchr(name, '\n')))
 		*p = '\0';
 
-	for(i = 0; i < LENGTH(tags); i++)
-		if(selmon->tagset[selmon->seltags] & (1 << i)) {
-			sprintf(tags[i], TAG_PREPEND, i+1);
-			strcat(tags[i], name);
+	for (i = 0; i < LENGTH(tags); ++i) {
+		if (selmon->tagset[selmon->seltags] & (1 << i)) {
+			if (name[0] == '\0') {
+				sprintf(tags[i], "%d", i + 1);
+			} else {
+				sprintf(tags[i], TAG_PREPEND, i + 1);
+				strcat(tags[i], name);
+			}
 		}
+	}
+
 	drawbars();
 }
 
