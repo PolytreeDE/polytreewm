@@ -16,5 +16,6 @@ Interesting patches (not applied)
 
 * attachdirection
 * cursorwarp
+* focusmaster
 * focusmonmouse
 * warp
