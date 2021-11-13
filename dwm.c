@@ -2004,14 +2004,22 @@ togglebar(const Arg *arg)
 void
 togglefloating(const Arg *arg)
 {
-	if (!selmon->sel)
-		return;
+	if (!selmon->sel) return;
+
 	selmon->sel->isfloating = !selmon->sel->isfloating || selmon->sel->isfixed;
-	if (selmon->sel->isfloating)
-		resize(selmon->sel, selmon->sel->x, selmon->sel->y,
+
+	if (selmon->sel->isfloating) {
+		resize(
+			selmon->sel,
+			selmon->sel->x,
+			selmon->sel->y,
 			selmon->sel->w - 2 * (borderpx - selmon->sel->bw),
 			selmon->sel->h - 2 * (borderpx - selmon->sel->bw),
-			borderpx, 0);
+			borderpx,
+			0
+		);
+	}
+
 	arrange(selmon);
 }
 
