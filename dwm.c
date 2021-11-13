@@ -1584,7 +1584,8 @@ resizemouse(const Arg *arg)
 				c->mon->wy + nh <= selmon->wy + selmon->wh)
 			{
 				if (!c->isfloating &&
-					(abs(nw - c->w) > snap_distance ||
+					(selmon->lt[selmon->sellt]->arrange == NULL ||
+						abs(nw - c->w) > snap_distance ||
 						abs(nh - c->h) > snap_distance))
 				{
 					togglefloating(NULL);
