@@ -1282,56 +1282,75 @@ monocle(Monitor *m)
 void
 movemouse(const Arg *arg)
 {
-	int x, y, ocx, ocy, nx, ny;
-	Client *c;
-	Monitor *m;
-	XEvent ev;
-	Time lasttime = 0;
+	Client *const c = selmon->sel;
+	if (c == NULL) return;
+
+	restack(selmon);
+
+	if (XGrabPointer(dpy, root, False, MOUSEMASK, GrabModeAsync, GrabModeAsync,
+						None, cursor[CurMove]->cursor, CurrentTime)
+			!= GrabSuccess)
+	{
+		return;
+	}
+
+	int x, y;
+	if (!getrootptr(&x, &y)) return;
 
 	const unsigned int snap_distance = settings_get_snap_distance();
+	const int ocx = c->x;
+	const int ocy = c->y;
 
-	if (!(c = selmon->sel))
-		return;
-	restack(selmon);
-	ocx = c->x;
-	ocy = c->y;
-	if (XGrabPointer(dpy, root, False, MOUSEMASK, GrabModeAsync, GrabModeAsync,
-		None, cursor[CurMove]->cursor, CurrentTime) != GrabSuccess)
-		return;
-	if (!getrootptr(&x, &y))
-		return;
+	Time lasttime = 0;
+
+	XEvent ev;
+
 	do {
-		XMaskEvent(dpy, MOUSEMASK|ExposureMask|SubstructureRedirectMask, &ev);
-		switch(ev.type) {
+		XMaskEvent(dpy, MOUSEMASK | ExposureMask | SubstructureRedirectMask, &ev);
+
+		switch (ev.type) {
 		case ConfigureRequest:
 		case Expose:
 		case MapRequest:
 			handler[ev.type](&ev);
 			break;
 		case MotionNotify:
-			if ((ev.xmotion.time - lasttime) <= (1000 / 60))
-				continue;
+			if ((ev.xmotion.time - lasttime) <= (1000 / 60)) continue;
+
 			lasttime = ev.xmotion.time;
 
-			nx = ocx + (ev.xmotion.x - x);
-			ny = ocy + (ev.xmotion.y - y);
-			if (abs(selmon->wx - nx) < snap_distance)
+			int nx = ocx + (ev.xmotion.x - x);
+			int ny = ocy + (ev.xmotion.y - y);
+
+			if (abs(selmon->wx - nx) < snap_distance) {
 				nx = selmon->wx;
-			else if (abs((selmon->wx + selmon->ww) - (nx + WIDTH(c))) < snap_distance)
+			} else if (abs((selmon->wx + selmon->ww) - (nx + WIDTH(c))) < snap_distance) {
 				nx = selmon->wx + selmon->ww - WIDTH(c);
-			if (abs(selmon->wy - ny) < snap_distance)
+			}
+
+			if (abs(selmon->wy - ny) < snap_distance) {
 				ny = selmon->wy;
-			else if (abs((selmon->wy + selmon->wh) - (ny + HEIGHT(c))) < snap_distance)
+			} else if (abs((selmon->wy + selmon->wh) - (ny + HEIGHT(c))) < snap_distance) {
 				ny = selmon->wy + selmon->wh - HEIGHT(c);
-			if (!c->isfloating && (abs(nx - c->x) > snap_distance || abs(ny - c->y) > snap_distance))
+			}
+
+			if (!c->isfloating && (abs(nx - c->x) > snap_distance || abs(ny - c->y) > snap_distance)) {
 				togglefloating(NULL);
-			if (!selmon->lt[selmon->sellt]->arrange || c->isfloating)
+			}
+
+			if (!selmon->lt[selmon->sellt]->arrange || c->isfloating) {
 				resize(c, nx, ny, c->w, c->h, c->bw, 1);
+			}
+
 			break;
 		}
 	} while (ev.type != ButtonRelease);
+
 	XUngrabPointer(dpy, CurrentTime);
-	if ((m = recttomon(c->x, c->y, c->w, c->h)) != selmon) {
+
+	Monitor *const m = recttomon(c->x, c->y, c->w, c->h);
+
+	if (m != selmon) {
 		sendmon(c, m);
 		selmon = m;
 		focus(NULL);
@@ -1517,53 +1536,71 @@ resizeclient(Client *c, int x, int y, int w, int h, int bw)
 void
 resizemouse(const Arg *arg)
 {
-	int ocx, ocy, nw, nh;
-	Client *c;
-	Monitor *m;
-	XEvent ev;
-	Time lasttime = 0;
+	Client *const c = selmon->sel;
+	if (c == NULL) return;
+
+	restack(selmon);
+
+	if (XGrabPointer(dpy, root, False, MOUSEMASK, GrabModeAsync, GrabModeAsync,
+						None, cursor[CurResize]->cursor, CurrentTime)
+			!= GrabSuccess)
+	{
+		return;
+	}
+
+	XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, c->w + c->bw - 1, c->h + c->bw - 1);
 
 	const unsigned int snap_distance = settings_get_snap_distance();
+	const int ocx = c->x;
+	const int ocy = c->y;
 
-	if (!(c = selmon->sel))
-		return;
-	restack(selmon);
-	ocx = c->x;
-	ocy = c->y;
-	if (XGrabPointer(dpy, root, False, MOUSEMASK, GrabModeAsync, GrabModeAsync,
-		None, cursor[CurResize]->cursor, CurrentTime) != GrabSuccess)
-		return;
-	XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, c->w + c->bw - 1, c->h + c->bw - 1);
+	Time lasttime = 0;
+
+	XEvent ev;
+
 	do {
-		XMaskEvent(dpy, MOUSEMASK|ExposureMask|SubstructureRedirectMask, &ev);
-		switch(ev.type) {
+		XMaskEvent(dpy, MOUSEMASK | ExposureMask | SubstructureRedirectMask, &ev);
+
+		switch (ev.type) {
 		case ConfigureRequest:
 		case Expose:
 		case MapRequest:
 			handler[ev.type](&ev);
 			break;
 		case MotionNotify:
-			if ((ev.xmotion.time - lasttime) <= (1000 / 60))
-				continue;
+			if ((ev.xmotion.time - lasttime) <= (1000 / 60)) continue;
+
 			lasttime = ev.xmotion.time;
 
-			nw = MAX(ev.xmotion.x - ocx - 2 * c->bw + 1, 1);
-			nh = MAX(ev.xmotion.y - ocy - 2 * c->bw + 1, 1);
-			if (c->mon->wx + nw >= selmon->wx && c->mon->wx + nw <= selmon->wx + selmon->ww
-			&& c->mon->wy + nh >= selmon->wy && c->mon->wy + nh <= selmon->wy + selmon->wh)
+			const int nw = MAX(ev.xmotion.x - ocx - 2 * c->bw + 1, 1);
+			const int nh = MAX(ev.xmotion.y - ocy - 2 * c->bw + 1, 1);
+
+			if (c->mon->wx + nw >= selmon->wx &&
+				c->mon->wx + nw <= selmon->wx + selmon->ww &&
+				c->mon->wy + nh >= selmon->wy &&
+				c->mon->wy + nh <= selmon->wy + selmon->wh)
 			{
-				if (!c->isfloating && (abs(nw - c->w) > snap_distance || abs(nh - c->h) > snap_distance))
+				if (!c->isfloating && (abs(nw - c->w) > snap_distance || abs(nh - c->h) > snap_distance)) {
 					togglefloating(NULL);
+				}
 			}
-			if (!selmon->lt[selmon->sellt]->arrange || c->isfloating)
+
+			if (!selmon->lt[selmon->sellt]->arrange || c->isfloating) {
 				resize(c, c->x, c->y, nw, nh, c->bw, 1);
+			}
+
 			break;
 		}
 	} while (ev.type != ButtonRelease);
+
 	XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, c->w + c->bw - 1, c->h + c->bw - 1);
 	XUngrabPointer(dpy, CurrentTime);
+
 	while (XCheckMaskEvent(dpy, EnterWindowMask, &ev));
-	if ((m = recttomon(c->x, c->y, c->w, c->h)) != selmon) {
+
+	Monitor *const m = recttomon(c->x, c->y, c->w, c->h);
+
+	if (m != selmon) {
 		sendmon(c, m);
 		selmon = m;
 		focus(NULL);
