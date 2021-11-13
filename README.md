@@ -6,8 +6,8 @@ Applied patches
 * focusonclick
 * hide_vacant_tags
 * movestack
-* noborder
 * pertag
+* smartborders
 * statusallmons
 * systray
 
