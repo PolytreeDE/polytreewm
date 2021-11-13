@@ -230,6 +230,7 @@ static void setfocus(Client *c);
 static void setfullscreen(Client *c, int fullscreen);
 static void setlayout(const Arg *arg);
 static void setmfact(const Arg *arg);
+static void setnmaster(const Arg *arg);
 static void setup(void);
 static void seturgent(Client *c, int urg);
 static void showhide(Client *c);
@@ -1934,6 +1935,17 @@ setmfact(const Arg *arg)
 	if (f < 0.05 || f > 0.95)
 		return;
 	selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag] = f;
+	arrange(selmon);
+}
+
+void
+setnmaster(const Arg *arg)
+{
+	const int new_clients_in_master = arg->i == 0 ? 0 : 1;
+
+	selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag] =
+		new_clients_in_master;
+
 	arrange(selmon);
 }
 
