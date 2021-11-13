@@ -1,5 +1,5 @@
-Patches
--------
+Applied patches
+---------------
 
 * alwayscenter
 * fakefullscreen
@@ -10,3 +10,11 @@ Patches
 * pertag
 * statusallmons
 * systray
+
+Interesting patches (not applied)
+---------------------------------
+
+* attachdirection
+* cursorwarp
+* focusmonmouse
+* warp
