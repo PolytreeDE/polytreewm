@@ -8,6 +8,7 @@ Applied patches
 * movestack
 * nmaxmaster
 * pertag
+* resetnmaster
 * smartborders
 * statusallmons
 * systray

@@ -215,6 +215,7 @@ static void propertynotify(XEvent *e);
 static void quit(const Arg *arg);
 static Monitor *recttomon(int x, int y, int w, int h);
 static void removesystrayicon(Client *i);
+static void resetnmaster(const Arg *arg);
 static void resize(Client *c, int x, int y, int w, int h, int bw, int interact);
 static void resizebarwin(Monitor *m);
 static void resizeclient(Client *c, int x, int y, int w, int h, int bw);
@@ -230,7 +231,6 @@ static void setfocus(Client *c);
 static void setfullscreen(Client *c, int fullscreen);
 static void setlayout(const Arg *arg);
 static void setmfact(const Arg *arg);
-static void setnmaster(const Arg *arg);
 static void setup(void);
 static void seturgent(Client *c, int urg);
 static void showhide(Client *c);
@@ -1626,6 +1626,19 @@ removesystrayicon(Client *i)
 	free(i);
 }
 
+void
+resetnmaster(const Arg *arg)
+{
+	const int max_clients_in_master = settings_get_max_clients_in_master();
+	const int new_clients_in_master = MAX(0, arg->i);
+
+	selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag] =
+		max_clients_in_master == 0
+		? new_clients_in_master
+		: MIN(new_clients_in_master, max_clients_in_master);
+
+	arrange(selmon);
+}
 
 void
 resize(Client *c, int x, int y, int w, int h, int bw, int interact)
@@ -1935,17 +1948,6 @@ setmfact(const Arg *arg)
 	if (f < 0.05 || f > 0.95)
 		return;
 	selmon->mfact = selmon->pertag->mfacts[selmon->pertag->curtag] = f;
-	arrange(selmon);
-}
-
-void
-setnmaster(const Arg *arg)
-{
-	const int new_clients_in_master = arg->i == 0 ? 0 : 1;
-
-	selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag] =
-		new_clients_in_master;
-
 	arrange(selmon);
 }
 
