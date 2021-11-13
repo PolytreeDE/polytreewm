@@ -9,4 +9,3 @@ Patches
 * pertag
 * statusallmons
 * systray
-* warp
