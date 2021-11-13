@@ -826,7 +826,7 @@ createmon(void)
 	m = ecalloc(1, sizeof(Monitor));
 	m->tagset[0] = m->tagset[1] = 1;
 	m->mfact = mfact;
-	m->nmaster = nmaster;
+	m->nmaster = settings_get_default_clients_in_master();
 	m->showbar = showbar;
 	m->topbar = topbar;
 	m->lt[0] = &layouts[0];
@@ -1630,7 +1630,7 @@ void
 resetnmaster(const Arg *arg)
 {
 	const int max_clients_in_master = settings_get_max_clients_in_master();
-	const int new_clients_in_master = arg->i == 0 ? 0 : nmaster;
+	const int new_clients_in_master = arg->i == 0 ? 0 : settings_get_default_clients_in_master();
 
 	selmon->nmaster = selmon->pertag->nmasters[selmon->pertag->curtag] =
 		max_clients_in_master == 0

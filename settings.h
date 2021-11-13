@@ -3,6 +3,9 @@
 
 #include <stdbool.h>
 
+int  settings_get_default_clients_in_master();
+void settings_set_default_clients_in_master(int new_default_clients_in_master);
+
 bool settings_get_focus_on_wheel();
 void settings_set_focus_on_wheel(bool new_focus_on_wheel);
 

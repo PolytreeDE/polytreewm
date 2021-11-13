@@ -1,9 +1,20 @@
 #include "settings.h"
 
+static int default_clients_in_master = 1;
 static bool focus_on_wheel = true;
 static int max_clients_in_master = 0; // 0 for no maximum
 static bool respect_resize_hints_in_floating_layout = false;
 static unsigned int snap_distance = 32;
+
+int settings_get_default_clients_in_master()
+{
+	return default_clients_in_master >= 1 ? default_clients_in_master : 1;
+}
+
+void settings_set_default_clients_in_master(const int new_default_clients_in_master)
+{
+	default_clients_in_master = new_default_clients_in_master;
+}
 
 bool settings_get_focus_on_wheel()
 {
