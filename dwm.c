@@ -211,6 +211,7 @@ static void motionnotify(XEvent *e);
 static void movemouse(const Arg *arg);
 static void movestack(const Arg *arg);
 static Client *nexttiled(Client *c);
+static bool noborder(Client *c);
 static void pop(Client *);
 static void propertynotify(XEvent *e);
 static void quit(const Arg *arg);
@@ -1428,6 +1429,26 @@ nexttiled(Client *c)
 	return c;
 }
 
+bool
+noborder(Client *c)
+{
+	void (*const arrange_func)(Monitor*) = c->mon->lt[c->mon->sellt]->arrange;
+
+	/* Layout is floating */
+	if (arrange_func == NULL) return false;
+
+	/* Client is floating */
+	if (c->isfloating) return false;
+
+	if (arrange_func == tile) {
+		return nexttiled(c->mon->clients) == c && nexttiled(c->next) == NULL;
+	} else if (arrange_func == monocle) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
 void
 pop(Client *c)
 {
@@ -1544,21 +1565,7 @@ resizeclient(Client *c, int x, int y, int w, int h)
 	c->oldh = c->h; c->h = wc.height = h;
 	wc.border_width = c->bw;
 
-	if (
-		(
-			(
-				nexttiled(c->mon->clients) == c
-				&&
-				!nexttiled(c->next)
-			)
-			||
-			&monocle == c->mon->lt[c->mon->sellt]->arrange
-		)
-		&&
-		!c->isfloating
-		&&
-		NULL != c->mon->lt[c->mon->sellt]->arrange
-	) {
+	if (noborder(c)) {
 		c->w = wc.width += c->bw * 2;
 		c->h = wc.height += c->bw * 2;
 		wc.border_width = 0;
