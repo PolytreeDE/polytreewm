@@ -17,5 +17,4 @@ Interesting patches (not applied)
 * attachdirection
 * cursorwarp
 * focusmonmouse
-* smartborders
 * warp
