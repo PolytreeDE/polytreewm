@@ -6,6 +6,7 @@ Applied patches
 * focusonclick
 * hide_vacant_tags
 * movestack
+* nmaxmaster
 * pertag
 * smartborders
 * statusallmons
