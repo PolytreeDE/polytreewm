@@ -6,6 +6,9 @@
 bool settings_get_focus_on_wheel();
 void settings_set_focus_on_wheel(bool new_focus_on_wheel);
 
+int  settings_get_max_clients_in_master();
+void settings_set_max_clients_in_master(int new_max_clients_in_master);
+
 bool settings_get_respect_resize_hints_in_floating_layout();
 void settings_set_respect_resize_hints_in_floating_layout(bool new_respect_resize_hints_in_floating_layout);
 
