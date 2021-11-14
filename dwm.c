@@ -2109,33 +2109,29 @@ tagmon(const Arg *arg)
 void
 tile(Monitor *m)
 {
-	unsigned int i, n, h, mw, my, ty, bw;
-	Client *c;
+	unsigned int n = 0;
+	for (Client *c = nexttiled(m->clients); c; c = nexttiled(c->next), ++n);
+	if (n == 0) return;
 
-	for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
-	if (n == 0)
-		return;
+	const unsigned int bw = n == 1 ? 0 : borderpx;
+	const unsigned int mw = n > m->nmaster ? (m->nmaster ? m->ww * m->mfact : 0) : m->ww;
 
-	if (n == 1)
-		bw = 0;
-	else
-		bw = borderpx;
-	if (n > m->nmaster)
-		mw = m->nmaster ? m->ww * m->mfact : 0;
-	else
-		mw = m->ww;
-	for (i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
+	Client *c = nexttiled(m->clients);
+	for (unsigned int i = 0, my = 0, ty = 0; c; c = nexttiled(c->next), ++i) {
 		if (i < m->nmaster) {
-			h = (m->wh - my) / (MIN(n, m->nmaster) - i);
-			resize(c, m->wx, m->wy + my, mw - 2*bw, h - 2*bw, bw, 0);
-			if (my + HEIGHT(c) < m->wh)
+			const unsigned int h = (m->wh - my) / (MIN(n, m->nmaster) - i);
+			resize(c, m->wx, m->wy + my, mw - 2 * bw, h - 2 * bw, bw, 0);
+			if (my + HEIGHT(c) < m->wh) {
 				my += HEIGHT(c);
+			}
 		} else {
-			h = (m->wh - ty) / (n - i);
-			resize(c, m->wx + mw, m->wy + ty, m->ww - mw - 2*bw, h - 2*bw, bw, 0);
-			if (ty + HEIGHT(c) < m->wh)
+			const unsigned int h = (m->wh - ty) / (n - i);
+			resize(c, m->wx + mw, m->wy + ty, m->ww - mw - 2 * bw, h - 2 * bw, bw, 0);
+			if (ty + HEIGHT(c) < m->wh) {
 				ty += HEIGHT(c);
+			}
 		}
+	}
 }
 
 void
