@@ -28,6 +28,17 @@ void datastruct_delete(const Datastruct datastruct)
 	free(datastruct);
 }
 
+void datastruct_push(const Datastruct datastruct, const void *const new_value)
+{
+	// TODO: maybe we should assert?
+	if (datastruct == NULL) return;
+
+	Item new_item = malloc(sizeof(struct Item));
+	new_item->next = datastruct->top;
+	new_item->value = new_value;
+	datastruct->top = new_item;
+}
+
 void datastruct_insert_after_value(
 	const Datastruct datastruct,
 	const void *const after_value,
