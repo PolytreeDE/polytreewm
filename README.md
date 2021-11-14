@@ -18,9 +18,7 @@ Interesting patches (not applied)
 ---------------------------------
 
 * attachdirection
-* cursorwarp
 * focusmaster
 * focusmonmouse
 * rotatestack
 * stacker
-* warp
