@@ -1,7 +1,7 @@
 PolytreeWM - tiling window manager
 ==================================
 
-PolytreeWM is an extremely fast, small, and dynamic window manager for X.
+PolytreeWM is an extremely fast, small, and dynamic tiling window manager for X.
 
 Requirements
 ------------

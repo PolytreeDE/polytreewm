@@ -1,7 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=PolytreeWM
-Comment=Polytree window manager
+Comment=Polytree tiling window manager
 Exec=polytreewm
 Icon=polytreewm
 Type=XSession
