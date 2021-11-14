@@ -111,7 +111,6 @@ struct Client {
 	unsigned int tags;
 	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen;
 	Client *next;
-	Client *snext;
 	Monitor *mon;
 	Window win;
 };
@@ -144,7 +143,6 @@ struct Monitor {
 	int topbar;
 	Client *clients;
 	Client *sel;
-	Client *stack;
 	Datastruct stack_datastruct;
 	Monitor *next;
 	Window barwin;
@@ -435,9 +433,9 @@ void
 arrange(Monitor *m)
 {
 	if (m)
-		showhide(m->stack);
+		showhide(datastruct_item_value(datastruct_top(m->stack_datastruct)));
 	else for (m = mons; m; m = m->next)
-		showhide(m->stack);
+		showhide(datastruct_item_value(datastruct_top(m->stack_datastruct)));
 	if (m) {
 		arrangemon(m);
 		restack(m);
@@ -470,8 +468,7 @@ attach(Client *c)
 void
 attachstack(Client *c)
 {
-	c->snext = c->mon->stack;
-	c->mon->stack = c;
+	datastruct_push(c->mon->stack_datastruct, c);
 }
 
 void
@@ -601,8 +598,8 @@ cleanup(void)
 	view(&a);
 	selmon->lt[selmon->sellt] = &foo;
 	for (m = mons; m; m = m->next)
-		while (m->stack)
-			unmanage(m->stack, 0);
+		while (datastruct_top(m->stack_datastruct))
+			unmanage(datastruct_item_value(datastruct_top(m->stack_datastruct)), 0);
 	XUngrabKey(dpy, AnyKey, AnyModifier, root);
 	while (mons)
 		cleanupmon(mons);
@@ -880,14 +877,23 @@ detach(Client *c)
 void
 detachstack(Client *c)
 {
-	Client **tc, *t;
-
-	for (tc = &c->mon->stack; *tc && *tc != c; tc = &(*tc)->snext);
-	*tc = c->snext;
+	{
+		DatastructItem datastruct_item = datastruct_find(c->mon->stack_datastruct, c);
+		if (datastruct_item == NULL) die("dwm: fatal: stack item is lost");
+		datastruct_remove(c->mon->stack_datastruct, datastruct_item);
+	}
 
 	if (c == c->mon->sel) {
-		for (t = c->mon->stack; t && !ISVISIBLE(t); t = t->snext);
-		c->mon->sel = t;
+		Client *client = NULL;
+		for (
+			DatastructItem datastruct_item = datastruct_top(c->mon->stack_datastruct);
+			datastruct_item;
+			datastruct_item = datastruct_next(datastruct_item)
+		) {
+			client = datastruct_item_value(datastruct_item);
+			if (!(client && !ISVISIBLE(client))) break;
+		}
+		c->mon->sel = client;
 	}
 }
 
@@ -986,7 +992,14 @@ void
 focus(Client *c)
 {
 	if (!c || !ISVISIBLE(c))
-		for (c = selmon->stack; c && !ISVISIBLE(c); c = c->snext);
+		for (
+			DatastructItem datastruct_item = datastruct_top(selmon->stack_datastruct);
+			datastruct_item;
+			datastruct_item = datastruct_next(datastruct_item)
+		) {
+			c = datastruct_item_value(datastruct_item);
+			if (!(c && !ISVISIBLE(c))) break;
+		}
 	if (selmon->sel && selmon->sel != c)
 		unfocus(selmon->sel, 0);
 	if (c) {
@@ -1810,11 +1823,17 @@ restack(Monitor *m)
 	if (m->lt[m->sellt]->arrange) {
 		wc.stack_mode = Below;
 		wc.sibling = m->barwin;
-		for (c = m->stack; c; c = c->snext)
+		for (
+			DatastructItem datastruct_item = datastruct_top(m->stack_datastruct);
+			datastruct_item;
+			datastruct_item = datastruct_next(datastruct_item)
+		) {
+			c = datastruct_item_value(datastruct_item);
 			if (!c->isfloating && ISVISIBLE(c)) {
 				XConfigureWindow(dpy, c->win, CWSibling|CWStackMode, &wc);
 				wc.sibling = c->win;
 			}
+		}
 	}
 	XSync(dpy, False);
 	while (XCheckMaskEvent(dpy, EnterWindowMask, &ev));
@@ -2067,10 +2086,14 @@ showhide(Client *c)
 		XMoveWindow(dpy, c->win, c->x, c->y);
 		if (!c->mon->lt[c->mon->sellt]->arrange || c->isfloating)
 			resize(c, c->x, c->y, c->w, c->h, c->bw, 0);
-		showhide(c->snext);
+		DatastructItem datastruct_item = datastruct_find(c->mon->stack_datastruct, c);
+		if (datastruct_item == NULL) die("dwm: fatal: stack item is lost");
+		showhide(datastruct_item_value(datastruct_next(datastruct_item)));
 	} else {
 		/* hide clients bottom up */
-		showhide(c->snext);
+		DatastructItem datastruct_item = datastruct_find(c->mon->stack_datastruct, c);
+		if (datastruct_item == NULL) die("dwm: fatal: stack item is lost");
+		showhide(datastruct_item_value(datastruct_next(datastruct_item)));
 		XMoveWindow(dpy, c->win, WIDTH(c) * -2, c->y);
 	}
 }
