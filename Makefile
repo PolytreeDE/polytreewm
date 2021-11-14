@@ -3,7 +3,7 @@
 
 include config.mk
 
-SRC = atoms.c datastruct.c datetime.c drw.c dwm.c settings.c status.c tags.c util.c
+SRC = atoms.c datetime.c drw.c dwm.c settings.c status.c tags.c util.c
 OBJ = ${SRC:.c=.o}
 
 all: options dwm
@@ -17,7 +17,7 @@ options:
 %.o: %.c
 	${CC} -c $< -o $@ ${CFLAGS}
 
-${OBJ}: atoms.h datastruct.h datetime.h drw.h config.def.h config.mk settings.h status.h tags.h util.h
+${OBJ}: atoms.h datetime.h drw.h config.def.h config.mk settings.h status.h tags.h util.h
 
 dwm: ${OBJ}
 	${CC} -o $@ ${OBJ} ${LDFLAGS}
