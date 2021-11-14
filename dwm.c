@@ -879,8 +879,9 @@ detachstack(Client *c)
 {
 	{
 		DatastructItem datastruct_item = datastruct_find(c->mon->stack, c);
-		if (datastruct_item == NULL) die("dwm: fatal: stack item is lost");
-		datastruct_remove(c->mon->stack, datastruct_item);
+		if (datastruct_item != NULL) {
+			datastruct_remove(c->mon->stack, datastruct_item);
+		}
 	}
 
 	if (c == c->mon->sel) {
@@ -2087,13 +2088,19 @@ showhide(Client *c)
 		if (!c->mon->lt[c->mon->sellt]->arrange || c->isfloating)
 			resize(c, c->x, c->y, c->w, c->h, c->bw, 0);
 		DatastructItem datastruct_item = datastruct_find(c->mon->stack, c);
-		if (datastruct_item == NULL) die("dwm: fatal: stack item is lost");
-		showhide(datastruct_item_value(datastruct_next(datastruct_item)));
+		showhide(
+			datastruct_next(datastruct_item) == NULL
+				? NULL
+				: datastruct_item_value(datastruct_next(datastruct_item))
+		);
 	} else {
 		/* hide clients bottom up */
 		DatastructItem datastruct_item = datastruct_find(c->mon->stack, c);
-		if (datastruct_item == NULL) die("dwm: fatal: stack item is lost");
-		showhide(datastruct_item_value(datastruct_next(datastruct_item)));
+		showhide(
+			datastruct_next(datastruct_item) == NULL
+				? NULL
+				: datastruct_item_value(datastruct_next(datastruct_item))
+		);
 		XMoveWindow(dpy, c->win, WIDTH(c) * -2, c->y);
 	}
 }
