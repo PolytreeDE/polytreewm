@@ -111,6 +111,7 @@ struct Client {
 	unsigned int tags;
 	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen;
 	Client *next;
+	DatastructItem stack_item;
 	Monitor *mon;
 	Window win;
 };
@@ -476,7 +477,7 @@ attach(Client *c)
 void
 attachstack(Client *c)
 {
-	datastruct_push(c->mon->stack, c);
+	c->stack_item = datastruct_push(c->mon->stack, c);
 }
 
 void
@@ -885,12 +886,8 @@ detach(Client *c)
 void
 detachstack(Client *c)
 {
-	{
-		DatastructItem datastruct_item = datastruct_find_first(c->mon->stack, c);
-		if (datastruct_item != NULL) {
-			datastruct_remove(c->mon->stack, datastruct_item);
-		}
-	}
+	datastruct_remove(c->mon->stack, c->stack_item);
+	c->stack_item = NULL;
 
 	if (c == c->mon->sel) {
 		Client *client = NULL;
@@ -2095,26 +2092,21 @@ showhide(Client *c)
 		XMoveWindow(dpy, c->win, c->x, c->y);
 		if (!c->mon->lt[c->mon->sellt]->arrange || c->isfloating)
 			resize(c, c->x, c->y, c->w, c->h, c->bw, 0);
-		DatastructItem datastruct_item = datastruct_find_last(c->mon->stack, c);
 		showhide(
-			(datastruct_item == NULL ||
-				datastruct_next(c->mon->stack, datastruct_item) == NULL
-			)
+			datastruct_next(c->mon->stack, c->stack_item) == NULL
 				? NULL
 				: datastruct_value(c->mon->stack,
 									datastruct_next(c->mon->stack,
-													datastruct_item))
+													c->stack_item))
 		);
 	} else {
 		/* hide clients bottom up */
-		DatastructItem datastruct_item = datastruct_find_last(c->mon->stack, c);
 		showhide(
-			(datastruct_item == NULL ||
-			 datastruct_next(c->mon->stack, datastruct_item) == NULL)
+			datastruct_next(c->mon->stack, c->stack_item) == NULL
 				? NULL
 				: datastruct_value(c->mon->stack,
 									datastruct_next(c->mon->stack,
-													datastruct_item))
+													c->stack_item))
 		);
 		XMoveWindow(dpy, c->win, WIDTH(c) * -2, c->y);
 	}
