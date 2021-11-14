@@ -58,19 +58,11 @@ void datastruct_remove(const Datastruct datastruct, const DatastructItem old_ite
 }
 
 DatastructItem datastruct_insert_after(
-	const Datastruct datastruct,
 	const DatastructItem after_item,
 	const void *const new_value
 ) {
 	// TODO: maybe we should assert?
-	if (datastruct == NULL || after_item == NULL) return NULL;
-
-	DatastructItem check_after_item = datastruct->top;
-	while (check_after_item && check_after_item != after_item) {
-		check_after_item = check_after_item->next;
-	}
-	// TODO: maybe we should assert?
-	if (check_after_item != after_item) return NULL;
+	if (NULL || after_item == NULL) return NULL;
 
 	DatastructItem new_item = malloc(sizeof(struct DatastructItem));
 	new_item->next = after_item->next;

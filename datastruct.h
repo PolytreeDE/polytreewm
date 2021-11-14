@@ -19,7 +19,6 @@ DatastructItem datastruct_push(Datastruct datastruct, const void *new_value);
 void datastruct_remove(Datastruct datastruct, DatastructItem old_item);
 
 DatastructItem datastruct_insert_after(
-	Datastruct datastruct,
 	DatastructItem after_item,
 	const void *new_value
 );
