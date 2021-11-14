@@ -26,7 +26,6 @@ Atoms atoms_create(Display *const dpy)
 	atoms->netatom[NetWMWindowType] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE", False);
 	atoms->netatom[NetWMWindowTypeDialog] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE_DIALOG", False);
 	atoms->netatom[NetClientList] = XInternAtom(dpy, "_NET_CLIENT_LIST", False);
-	atoms->netatom[NetStatusUpdate] = XInternAtom(dpy, "_NET_STATUS_UPDATE", False);
 
 	atoms->xatom[Manager] = XInternAtom(dpy, "MANAGER", False);
 	atoms->xatom[Xembed] = XInternAtom(dpy, "_XEMBED", False);
