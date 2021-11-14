@@ -42,6 +42,7 @@
 #include <X11/Xft/Xft.h>
 
 #include "atoms.h"
+#include "datastruct.h"
 #include "datetime.h"
 #include "drw.h"
 #include "settings.h"
@@ -144,6 +145,7 @@ struct Monitor {
 	Client *clients;
 	Client *sel;
 	Client *stack;
+	Datastruct stack_datastruct;
 	Monitor *next;
 	Window barwin;
 	const Layout *lt[2];
@@ -634,6 +636,7 @@ cleanupmon(Monitor *mon)
 	}
 	XUnmapWindow(dpy, mon->barwin);
 	XDestroyWindow(dpy, mon->barwin);
+	DATASTRUCT_DELETE(mon->stack_datastruct);
 	free(mon);
 }
 
@@ -844,6 +847,8 @@ createmon(void)
 
 		m->pertag->showbars[i] = m->showbar;
 	}
+
+	m->stack_datastruct = datastruct_new();
 
 	return m;
 }
