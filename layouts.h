@@ -10,6 +10,14 @@ typedef void (*LayoutsSymbolFunc)(
 	unsigned int visible_clients
 );
 
+void layouts_symbol_func(
+	LayoutsSymbolFunc func,
+	char *buffer,
+	size_t buffer_size,
+	unsigned int clients_in_master,
+	unsigned int visible_clients
+);
+
 void layouts_symbol_unknown(
 	char *buffer,
 	size_t buffer_size,

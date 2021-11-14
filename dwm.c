@@ -450,12 +450,8 @@ arrangemon(Monitor *m)
 		if (ISVISIBLE(client)) ++visible_clients;
 	}
 
-	const LayoutsSymbolFunc symbol_func =
-		m->lt[m->sellt]->symbol_func == NULL
-		? layouts_symbol_unknown
-		: m->lt[m->sellt]->symbol_func;
-
-	symbol_func(
+	layouts_symbol_func(
+		m->lt[m->sellt]->symbol_func,
 		m->ltsymbol,
 		sizeof(m->ltsymbol),
 		m->nmaster,
@@ -829,12 +825,13 @@ createmon(void)
 	m->lt[0] = &layouts[0];
 	m->lt[1] = &layouts[1 % LENGTH(layouts)];
 
-	const LayoutsSymbolFunc symbol_func =
-		layouts[0].symbol_func == NULL
-		? layouts_symbol_unknown
-		: layouts[0].symbol_func;
-
-	symbol_func(m->ltsymbol, sizeof(m->ltsymbol), 0, 0);
+	layouts_symbol_func(
+		layouts[0].symbol_func,
+		m->ltsymbol,
+		sizeof(m->ltsymbol),
+		0,
+		0
+	);
 
 	m->pertag = ecalloc(1, sizeof(Pertag));
 	m->pertag->curtag = m->pertag->prevtag = 1;
@@ -1956,12 +1953,8 @@ setlayout(const Arg *arg)
 		if (ISVISIBLE(client)) ++visible_clients;
 	}
 
-	const LayoutsSymbolFunc symbol_func =
-		selmon->lt[selmon->sellt]->symbol_func == NULL
-		? layouts_symbol_unknown
-		: selmon->lt[selmon->sellt]->symbol_func;
-
-	symbol_func(
+	layouts_symbol_func(
+		selmon->lt[selmon->sellt]->symbol_func,
 		selmon->ltsymbol,
 		sizeof(selmon->ltsymbol),
 		selmon->nmaster,
