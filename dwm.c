@@ -2674,25 +2674,28 @@ updatewmhints(Client *c)
 void
 view(const Arg *arg)
 {
-	if ((arg->ui & TAGMASK) == selmon->tagset[selmon->seltags]) return;
+	const unsigned int old_tagset = selmon->tagset[selmon->seltags] & TAGMASK;
+	const unsigned int new_tagset = arg->ui & TAGMASK;
+
+	if (new_tagset == old_tagset) return;
 
 	selmon->seltags ^= 1; /* toggle sel tagset */
 
-	if (arg->ui & TAGMASK) {
-		selmon->tagset[selmon->seltags] = arg->ui & TAGMASK;
+	if (new_tagset == 0) {
+		unsigned int tmptag = selmon->pertag->prevtag;
+		selmon->pertag->prevtag = selmon->pertag->curtag;
+		selmon->pertag->curtag = tmptag;
+	} else {
+		selmon->tagset[selmon->seltags] = new_tagset;
 		selmon->pertag->prevtag = selmon->pertag->curtag;
 
 		if (arg->ui == ~0) {
 			selmon->pertag->curtag = 0;
 		} else {
 			int i = 0;
-			while (!(arg->ui & 1 << i)) ++i;
+			while (!(new_tagset & 1 << i)) ++i;
 			selmon->pertag->curtag = i + 1;
 		}
-	} else {
-		unsigned int tmptag = selmon->pertag->prevtag;
-		selmon->pertag->prevtag = selmon->pertag->curtag;
-		selmon->pertag->curtag = tmptag;
 	}
 
 	selmon->nmaster               = selmon->pertag->nmasters[selmon->pertag->curtag];
@@ -2720,6 +2723,8 @@ viewrel(const Arg *arg)
 	const unsigned int new_tagset = (shift > 0 ? (old_tagset << shift) : (old_tagset >> (-shift))) & TAGMASK;
 
 	if (new_tagset == old_tagset) return;
+
+	selmon->seltags ^= 1; /* toggle sel tagset */
 
 	if (new_tagset == 0) {
 		unsigned int tmptag = selmon->pertag->prevtag;
