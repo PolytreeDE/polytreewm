@@ -264,6 +264,7 @@ static void updatetitle(Client *c);
 static void updatewindowtype(Client *c);
 static void updatewmhints(Client *c);
 static void view(const Arg *arg);
+static void viewrel(const Arg *arg);
 static Client *wintoclient(Window w);
 static Monitor *wintomon(Window w);
 static Client *wintosystrayicon(Window w);
@@ -2692,6 +2693,49 @@ view(const Arg *arg)
 		unsigned int tmptag = selmon->pertag->prevtag;
 		selmon->pertag->prevtag = selmon->pertag->curtag;
 		selmon->pertag->curtag = tmptag;
+	}
+
+	selmon->nmaster               = selmon->pertag->nmasters[selmon->pertag->curtag];
+	selmon->mfact                 = selmon->pertag->mfacts[selmon->pertag->curtag];
+	selmon->sellt                 = selmon->pertag->sellts[selmon->pertag->curtag];
+	selmon->lt[selmon->sellt]     = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];
+	selmon->lt[selmon->sellt ^ 1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt ^ 1];
+
+	if (selmon->showbar != selmon->pertag->showbars[selmon->pertag->curtag]) {
+		togglebar(NULL);
+	}
+
+	focus(NULL);
+	arrange(selmon);
+}
+
+void
+viewrel(const Arg *arg)
+{
+	const int shift = arg->i;
+
+	if (shift == 0) return;
+
+	const unsigned int old_tagset = selmon->tagset[selmon->seltags] & TAGMASK;
+	const unsigned int new_tagset = (shift > 0 ? (old_tagset << shift) : (old_tagset >> (-shift))) & TAGMASK;
+
+	if (new_tagset == old_tagset) return;
+
+	if (new_tagset == 0) {
+		unsigned int tmptag = selmon->pertag->prevtag;
+		selmon->pertag->prevtag = selmon->pertag->curtag;
+		selmon->pertag->curtag = tmptag;
+	} else {
+		selmon->tagset[selmon->seltags] = new_tagset;
+		selmon->pertag->prevtag = selmon->pertag->curtag;
+
+		if (new_tagset == (~0 & TAGMASK)) {
+			selmon->pertag->curtag = 0;
+		} else {
+			int i = 0;
+			while (!(new_tagset & 1 << i)) ++i;
+			selmon->pertag->curtag = i + 1;
+		}
 	}
 
 	selmon->nmaster               = selmon->pertag->nmasters[selmon->pertag->curtag];
