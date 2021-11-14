@@ -14,13 +14,13 @@ typedef struct DatastructItem *DatastructItem;
 Datastruct datastruct_new();
 void datastruct_delete(Datastruct datastruct);
 
-void datastruct_push(Datastruct datastruct, const void *new_value);
+DatastructItem datastruct_push(Datastruct datastruct, const void *new_value);
 
-void datastruct_remove_by_value(Datastruct datastruct, const void *old_value);
+void datastruct_remove(Datastruct datastruct, DatastructItem old_item);
 
-void datastruct_insert_after_value(
+DatastructItem datastruct_insert_after(
 	Datastruct datastruct,
-	const void *after_value,
+	DatastructItem after_item,
 	const void *new_value
 );
 
