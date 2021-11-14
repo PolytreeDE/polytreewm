@@ -39,6 +39,30 @@ void datastruct_push(const Datastruct datastruct, const void *const new_value)
 	datastruct->top = new_item;
 }
 
+void datastruct_remove_by_value(
+	const Datastruct datastruct,
+	const void *const old_value
+) {
+	// TODO: maybe we should assert?
+	if (datastruct == NULL) return;
+
+	Item prev_item = datastruct->top;
+	while (prev_item && prev_item->next && prev_item->next->value != old_value) {
+		prev_item = prev_item->next;
+	}
+	// TODO: maybe we should assert?
+	if (prev_item == NULL ||
+		prev_item->next == NULL ||
+		prev_item->next->value != old_value
+	) {
+		return;
+	}
+
+	Item old_item = prev_item->next;
+	prev_item->next = old_item->next;
+	free(old_item);
+}
+
 void datastruct_insert_after_value(
 	const Datastruct datastruct,
 	const void *const after_value,

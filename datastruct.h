@@ -15,6 +15,8 @@ void datastruct_delete(Datastruct datastruct);
 
 void datastruct_push(Datastruct datastruct, const void *new_value);
 
+void datastruct_remove_by_value(Datastruct datastruct, const void *old_value);
+
 void datastruct_insert_after_value(
 	Datastruct datastruct,
 	const void *after_value,
