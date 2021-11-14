@@ -525,7 +525,7 @@ centeredmaster(Monitor *m)
 	for (Client *c = nexttiled(m->clients); c; c = nexttiled(c->next), ++n);
 	if (n == 0) return;
 
-	unsigned int mx = 0, my = 0;
+	unsigned int mx = 0;
 	unsigned int mw = m->ww;
 	unsigned int tw = mw;
 	if (n > m->nmaster) {
@@ -541,7 +541,7 @@ centeredmaster(Monitor *m)
 	}
 
 	const unsigned int bw = n == 1 ? 0 : borderpx;
-	unsigned int oty = 0, ety = 0;
+	unsigned int oty = 0, ety = 0, my = 0;
 	Client *c = nexttiled(m->clients);
 	for (unsigned int i = 0; c; c = nexttiled(c->next), ++i) {
 		if (i < m->nmaster) {
