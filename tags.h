@@ -4,6 +4,8 @@
 #include <stdbool.h>
 
 #define TAGS_COUNT (9)
+#define TAGS_MASK ((1 << TAGS_COUNT) - 1)
+
 #define TAGS_CUSTOM_NAME_SLEN (13)
 #define TAGS_CUSTOM_NAME_SIZE ((TAGS_CUSTOM_NAME_SLEN) + 1)
 

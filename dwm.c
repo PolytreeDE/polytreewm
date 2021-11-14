@@ -59,7 +59,6 @@
 #define MOUSEMASK               (BUTTONMASK|PointerMotionMask)
 #define WIDTH(X)                ((X)->w + 2 * (X)->bw)
 #define HEIGHT(X)               ((X)->h + 2 * (X)->bw)
-#define TAGMASK                 ((1 << TAGS_COUNT) - 1)
 #define TEXTW(X)                (drw_fontset_getwidth(drw, (X)) + lrpad)
 
 #define SYSTEM_TRAY_REQUEST_DOCK    0
@@ -353,7 +352,7 @@ applyrules(Client *c)
 		XFree(ch.res_class);
 	if (ch.res_name)
 		XFree(ch.res_name);
-	c->tags = c->tags & TAGMASK ? c->tags & TAGMASK : c->mon->tagset[c->mon->seltags];
+	c->tags = c->tags & TAGS_MASK ? c->tags & TAGS_MASK : c->mon->tagset[c->mon->seltags];
 }
 
 int
@@ -2098,8 +2097,8 @@ spawn(const Arg *arg)
 void
 tag(const Arg *arg)
 {
-	if (selmon->sel && arg->ui & TAGMASK) {
-		selmon->sel->tags = arg->ui & TAGMASK;
+	if (selmon->sel && arg->ui & TAGS_MASK) {
+		selmon->sel->tags = arg->ui & TAGS_MASK;
 		focus(NULL);
 		arrange(selmon);
 	}
@@ -2194,7 +2193,7 @@ toggletag(const Arg *arg)
 
 	if (!selmon->sel)
 		return;
-	newtags = selmon->sel->tags ^ (arg->ui & TAGMASK);
+	newtags = selmon->sel->tags ^ (arg->ui & TAGS_MASK);
 	if (newtags) {
 		selmon->sel->tags = newtags;
 		focus(NULL);
@@ -2205,7 +2204,7 @@ toggletag(const Arg *arg)
 void
 toggleview(const Arg *arg)
 {
-	unsigned int newtagset = selmon->tagset[selmon->seltags] ^ (arg->ui & TAGMASK);
+	unsigned int newtagset = selmon->tagset[selmon->seltags] ^ (arg->ui & TAGS_MASK);
 	int i;
 
 	if (newtagset) {
@@ -2674,8 +2673,8 @@ updatewmhints(Client *c)
 void
 view(const Arg *arg)
 {
-	const unsigned int old_tagset = selmon->tagset[selmon->seltags] & TAGMASK;
-	const unsigned int new_tagset = arg->ui & TAGMASK;
+	const unsigned int old_tagset = selmon->tagset[selmon->seltags] & TAGS_MASK;
+	const unsigned int new_tagset = arg->ui & TAGS_MASK;
 
 	if (new_tagset == old_tagset) return;
 
@@ -2719,8 +2718,8 @@ viewrel(const Arg *arg)
 
 	if (shift == 0) return;
 
-	const unsigned int old_tagset = selmon->tagset[selmon->seltags] & TAGMASK;
-	const unsigned int new_tagset = (shift > 0 ? (old_tagset << shift) : (old_tagset >> (-shift))) & TAGMASK;
+	const unsigned int old_tagset = selmon->tagset[selmon->seltags] & TAGS_MASK;
+	const unsigned int new_tagset = (shift > 0 ? (old_tagset << shift) : (old_tagset >> (-shift))) & TAGS_MASK;
 
 	if (new_tagset == old_tagset) return;
 
@@ -2734,7 +2733,7 @@ viewrel(const Arg *arg)
 		selmon->tagset[selmon->seltags] = new_tagset;
 		selmon->pertag->prevtag = selmon->pertag->curtag;
 
-		if (new_tagset == (~0 & TAGMASK)) {
+		if (new_tagset == (~0 & TAGS_MASK)) {
 			selmon->pertag->curtag = 0;
 		} else {
 			int i = 0;
