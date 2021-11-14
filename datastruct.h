@@ -18,6 +18,7 @@ void *datastruct_item_value(DatastructItem item);
 
 DatastructItem datastruct_top(Datastruct datastruct);
 DatastructItem datastruct_next(DatastructItem item);
+DatastructItem datastruct_find(Datastruct datastruct, const void *value);
 void datastruct_remove(Datastruct datastruct, DatastructItem item);
 DatastructItem datastruct_push(Datastruct datastruct, const void *value);
 DatastructItem datastruct_insert(DatastructItem item, const void *value);
