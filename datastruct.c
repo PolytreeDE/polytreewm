@@ -51,7 +51,7 @@ void datastruct_remove(const Datastruct datastruct, const DatastructItem old_ite
 		prev_item = prev_item->next;
 	}
 	// TODO: maybe we should assert?
-	if (prev_item == NULL /* || prev_item->next != old_item */) return;
+	if (prev_item == NULL) return;
 
 	prev_item->next = old_item->next;
 	free(old_item);
