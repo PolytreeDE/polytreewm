@@ -521,25 +521,13 @@ buttonpress(XEvent *e)
 void
 centeredmaster(Monitor *m)
 {
-	unsigned int i, n, h, mw, mx, my, oty, ety, tw, bw;
-	Client *c;
+	unsigned int n = 0;
+	for (Client *c = nexttiled(m->clients); c; c = nexttiled(c->next), ++n);
+	if (n == 0) return;
 
-	/* count number of clients in the selected monitor */
-	for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
-	if (n == 0)
-		return;
-
-	if (n == 1)
-		bw = 0;
-	else
-		bw = borderpx;
-
-	/* initialize areas */
-	mw = m->ww;
-	mx = 0;
-	my = 0;
-	tw = mw;
-
+	unsigned int mx = 0, my = 0;
+	unsigned int mw = m->ww;
+	unsigned int tw = mw;
 	if (n > m->nmaster) {
 		/* go mfact box in the center if more than nmaster clients */
 		mw = m->nmaster ? m->ww * m->mfact : 0;
@@ -552,25 +540,27 @@ centeredmaster(Monitor *m)
 		}
 	}
 
-	oty = 0;
-	ety = 0;
-	for (i = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
-	if (i < m->nmaster) {
-		/* nmaster clients are stacked vertically, in the center
-		 * of the screen */
-		h = (m->wh - my) / (MIN(n, m->nmaster) - i);
-		resize(c, m->wx + mx, m->wy + my, mw - 2*bw, h - 2*bw, bw, 0);
-		my += HEIGHT(c);
-	} else {
-		/* stack clients are stacked vertically */
-		if ((i - m->nmaster) % 2 ) {
-			h = (m->wh - ety) / ( (1 + n - i) / 2);
-			resize(c, m->wx, m->wy + ety, tw - 2*bw, h - 2*bw, bw, 0);
-			ety += HEIGHT(c);
+	const unsigned int bw = n == 1 ? 0 : borderpx;
+	unsigned int oty = 0, ety = 0;
+	Client *c = nexttiled(m->clients);
+	for (unsigned int i = 0; c; c = nexttiled(c->next), ++i) {
+		if (i < m->nmaster) {
+			// nmaster clients are stacked vertically,
+			// in the center of the screen
+			const unsigned int h = (m->wh - my) / (MIN(n, m->nmaster) - i);
+			resize(c, m->wx + mx, m->wy + my, mw - 2 * bw, h - 2 * bw, bw, 0);
+			my += HEIGHT(c);
 		} else {
-			h = (m->wh - oty) / ((1 + n - i) / 2);
-			resize(c, m->wx + mx + mw, m->wy + oty, tw - 2*bw, h - 2*bw, bw, 0);
-			oty += HEIGHT(c);
+			// stack clients are stacked vertically
+			if ((i - m->nmaster) % 2) {
+				const unsigned int h = (m->wh - ety) / ((1 + n - i) / 2);
+				resize(c, m->wx, m->wy + ety, tw - 2 * bw, h - 2 * bw, bw, 0);
+				ety += HEIGHT(c);
+			} else {
+				const unsigned int h = (m->wh - oty) / ((1 + n - i) / 2);
+				resize(c, m->wx + mx + mw, m->wy + oty, tw - 2 * bw, h - 2 * bw, bw, 0);
+				oty += HEIGHT(c);
+			}
 		}
 	}
 }
