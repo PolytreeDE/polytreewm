@@ -53,8 +53,10 @@ DatastructItem datastruct_next(const DatastructItem item)
 	return item->next;
 }
 
-DatastructItem datastruct_find(const Datastruct datastruct, const void *const value)
-{
+DatastructItem datastruct_find_first(
+	const Datastruct datastruct,
+	const void *const value
+) {
 	// TODO: maybe we should assert?
 	if (datastruct == NULL) return NULL;
 
@@ -63,6 +65,22 @@ DatastructItem datastruct_find(const Datastruct datastruct, const void *const va
 	}
 
 	return NULL;
+}
+
+DatastructItem datastruct_find_last(
+	const Datastruct datastruct,
+	const void *const value
+) {
+	// TODO: maybe we should assert?
+	if (datastruct == NULL) return NULL;
+
+	DatastructItem result = NULL;
+
+	for (DatastructItem item = datastruct->top; item; item = item->next) {
+		if (item->value == value) result = item;
+	}
+
+	return result;
 }
 
 void datastruct_remove(const Datastruct datastruct, const DatastructItem item)

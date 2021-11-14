@@ -886,7 +886,7 @@ void
 detachstack(Client *c)
 {
 	{
-		DatastructItem datastruct_item = datastruct_find(c->mon->stack, c);
+		DatastructItem datastruct_item = datastruct_find_first(c->mon->stack, c);
 		if (datastruct_item != NULL) {
 			datastruct_remove(c->mon->stack, datastruct_item);
 		}
@@ -2095,7 +2095,7 @@ showhide(Client *c)
 		XMoveWindow(dpy, c->win, c->x, c->y);
 		if (!c->mon->lt[c->mon->sellt]->arrange || c->isfloating)
 			resize(c, c->x, c->y, c->w, c->h, c->bw, 0);
-		DatastructItem datastruct_item = datastruct_find(c->mon->stack, c);
+		DatastructItem datastruct_item = datastruct_find_last(c->mon->stack, c);
 		showhide(
 			(datastruct_item == NULL || datastruct_next(datastruct_item) == NULL)
 				? NULL
@@ -2103,7 +2103,7 @@ showhide(Client *c)
 		);
 	} else {
 		/* hide clients bottom up */
-		DatastructItem datastruct_item = datastruct_find(c->mon->stack, c);
+		DatastructItem datastruct_item = datastruct_find_last(c->mon->stack, c);
 		showhide(
 			(datastruct_item == NULL || datastruct_next(datastruct_item) == NULL)
 				? NULL
