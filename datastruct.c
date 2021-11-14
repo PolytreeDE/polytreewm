@@ -62,7 +62,6 @@ DatastructItem datastruct_push(const Datastruct datastruct, const void *const ne
 	new_item->next = datastruct->top;
 	new_item->value = new_value;
 	datastruct->top = new_item;
-
 	return new_item;
 }
 
@@ -93,6 +92,5 @@ DatastructItem datastruct_insert_after(
 	new_item->next = after_item->next;
 	new_item->value = new_value;
 	after_item->next = new_item;
-
 	return new_item;
 }
