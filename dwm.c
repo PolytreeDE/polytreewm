@@ -42,6 +42,7 @@
 
 #include "atoms.h"
 #include "drw.h"
+#include "layouts.h"
 #include "settings.h"
 #include "spawn.h"
 #include "tags.h"
@@ -121,7 +122,7 @@ typedef struct {
 } Key;
 
 typedef struct {
-	const char *symbol;
+	LayoutsSymbolFunc symbol_func;
 	void (*arrange)(Monitor *);
 } Layout;
 
@@ -444,14 +445,28 @@ arrange(Monitor *m)
 void
 arrangemon(Monitor *m)
 {
-	Client *c;
+	unsigned int visible_clients = 0;
+	for (const Client *client = m->clients; client; client = client->next) {
+		if (ISVISIBLE(client)) ++visible_clients;
+	}
 
-	strncpy(m->ltsymbol, m->lt[m->sellt]->symbol, sizeof m->ltsymbol);
+	const LayoutsSymbolFunc symbol_func =
+		m->lt[m->sellt]->symbol_func == NULL
+		? layouts_symbol_unknown
+		: m->lt[m->sellt]->symbol_func;
+
+	symbol_func(
+		m->ltsymbol,
+		sizeof(m->ltsymbol),
+		m->nmaster,
+		visible_clients
+	);
+
 	if (m->lt[m->sellt]->arrange)
 		m->lt[m->sellt]->arrange(m);
 	else
 		/* <>< case; rather than providing an arrange function and upsetting other logic that tests for its presence, simply add borders here */
-		for (c = selmon->clients; c; c = c->next)
+		for (Client *c = selmon->clients; c; c = c->next)
 			if (ISVISIBLE(c) && c->bw == 0)
 				resize(c, c->x, c->y, c->w - 2*borderpx, c->h - 2*borderpx, borderpx, 0);
 }
@@ -580,7 +595,7 @@ void
 cleanup(void)
 {
 	Arg a = {.ui = ~0};
-	Layout foo = { "", NULL };
+	Layout foo = { NULL, NULL };
 	Monitor *m;
 	size_t i;
 
@@ -813,7 +828,14 @@ createmon(void)
 	m->topbar = topbar;
 	m->lt[0] = &layouts[0];
 	m->lt[1] = &layouts[1 % LENGTH(layouts)];
-	strncpy(m->ltsymbol, layouts[0].symbol, sizeof m->ltsymbol);
+
+	const LayoutsSymbolFunc symbol_func =
+		layouts[0].symbol_func == NULL
+		? layouts_symbol_unknown
+		: layouts[0].symbol_func;
+
+	symbol_func(m->ltsymbol, sizeof(m->ltsymbol), 0, 0);
+
 	m->pertag = ecalloc(1, sizeof(Pertag));
 	m->pertag->curtag = m->pertag->prevtag = 1;
 
@@ -1370,14 +1392,8 @@ maprequest(XEvent *e)
 void
 monocle(Monitor *m)
 {
-	unsigned int n = 0;
 	Client *c;
 
-	for (c = m->clients; c; c = c->next)
-		if (ISVISIBLE(c))
-			n++;
-	if (n > 0) /* override layout symbol */
-		snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d]", n);
 	for (c = nexttiled(m->clients); c; c = nexttiled(c->next))
 		resize(c, m->wx, m->wy, m->ww, m->wh, 0, 0);
 }
@@ -1935,10 +1951,21 @@ setlayout(const Arg *arg)
 		selmon->lt[selmon->sellt] = new_layout;
 	}
 
-	strncpy(
+	unsigned int visible_clients = 0;
+	for (const Client *client = selmon->clients; client; client = client->next) {
+		if (ISVISIBLE(client)) ++visible_clients;
+	}
+
+	const LayoutsSymbolFunc symbol_func =
+		selmon->lt[selmon->sellt]->symbol_func == NULL
+		? layouts_symbol_unknown
+		: selmon->lt[selmon->sellt]->symbol_func;
+
+	symbol_func(
 		selmon->ltsymbol,
-		selmon->lt[selmon->sellt]->symbol,
-		sizeof(selmon->ltsymbol)
+		sizeof(selmon->ltsymbol),
+		selmon->nmaster,
+		visible_clients
 	);
 
 	if (selmon->sel) {

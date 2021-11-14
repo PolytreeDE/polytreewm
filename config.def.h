@@ -36,11 +36,11 @@ static const Rule rules[] = {
 static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
 
 static const Layout layouts[] = {
-	/* symbol     arrange function */
-	{ "[M]",      monocle }, /* first entry is default */
-	{ "><>",      NULL },    /* no layout function means floating behavior */
-	{ "[]=",      tile },
-	{ "=[]=",     centeredmaster },
+	/* symbol function,              arrange function */
+	{ layouts_symbol_monocle,        monocle }, /* first entry is default */
+	{ layouts_symbol_floating,       NULL },    /* no layout function means floating behavior */
+	{ layouts_symbol_tile,           tile },
+	{ layouts_symbol_centeredmaster, centeredmaster },
 };
 
 /* key definitions */
