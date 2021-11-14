@@ -527,19 +527,18 @@ centeredmaster(Monitor *m)
 
 	unsigned int mx = 0;
 	unsigned int mw = m->ww;
-	unsigned int tw = mw;
 	if (n > m->nmaster) {
 		/* go mfact box in the center if more than nmaster clients */
 		mw = m->nmaster ? m->ww * m->mfact : 0;
-		tw = m->ww - mw;
+		mx = m->ww - mw;
 
 		if (n - m->nmaster > 1) {
 			/* only one client */
 			mx = (m->ww - mw) / 2;
-			tw = (m->ww - mw) / 2;
 		}
 	}
 
+	const unsigned int tw = mx;
 	const unsigned int bw = n == 1 ? 0 : borderpx;
 	unsigned int oty = 0, ety = 0, my = 0;
 	Client *c = nexttiled(m->clients);
@@ -554,11 +553,11 @@ centeredmaster(Monitor *m)
 			// stack clients are stacked vertically
 			if ((i - m->nmaster) % 2) {
 				const unsigned int h = (m->wh - ety) / ((1 + n - i) / 2);
-				resize(c, m->wx, m->wy + ety, tw - 2 * bw, h - 2 * bw, bw, 0);
+				resize(c, m->wx + mx + mw, m->wy + ety, tw - 2 * bw, h - 2 * bw, bw, 0);
 				ety += HEIGHT(c);
 			} else {
 				const unsigned int h = (m->wh - oty) / ((1 + n - i) / 2);
-				resize(c, m->wx + mx + mw, m->wy + oty, tw - 2 * bw, h - 2 * bw, bw, 0);
+				resize(c, m->wx, m->wy + oty, tw - 2 * bw, h - 2 * bw, bw, 0);
 				oty += HEIGHT(c);
 			}
 		}
