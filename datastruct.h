@@ -14,6 +14,8 @@ typedef struct DatastructItem *DatastructItem;
 Datastruct datastruct_new();
 void datastruct_delete(Datastruct datastruct);
 
+void *datastruct_item_value(DatastructItem item);
+
 DatastructItem datastruct_push(Datastruct datastruct, const void *new_value);
 
 void datastruct_remove(Datastruct datastruct, DatastructItem old_item);

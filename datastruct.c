@@ -28,6 +28,15 @@ void datastruct_delete(const Datastruct datastruct)
 	free(datastruct);
 }
 
+void *datastruct_item_value(const DatastructItem item)
+{
+	// TODO: maybe we should assert?
+	if (item == NULL) return NULL;
+
+	// We discard const modifier because user may want to modify it's data.
+	return (void*)item->value;
+}
+
 DatastructItem datastruct_push(const Datastruct datastruct, const void *const new_value)
 {
 	// TODO: maybe we should assert?
@@ -62,7 +71,7 @@ DatastructItem datastruct_insert_after(
 	const void *const new_value
 ) {
 	// TODO: maybe we should assert?
-	if (NULL || after_item == NULL) return NULL;
+	if (after_item == NULL) return NULL;
 
 	DatastructItem new_item = malloc(sizeof(struct DatastructItem));
 	new_item->next = after_item->next;
