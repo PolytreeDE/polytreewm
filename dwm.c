@@ -2089,7 +2089,7 @@ showhide(Client *c)
 			resize(c, c->x, c->y, c->w, c->h, c->bw, 0);
 		DatastructItem datastruct_item = datastruct_find(c->mon->stack, c);
 		showhide(
-			datastruct_next(datastruct_item) == NULL
+			(datastruct_item == NULL || datastruct_next(datastruct_item) == NULL)
 				? NULL
 				: datastruct_item_value(datastruct_next(datastruct_item))
 		);
@@ -2097,7 +2097,7 @@ showhide(Client *c)
 		/* hide clients bottom up */
 		DatastructItem datastruct_item = datastruct_find(c->mon->stack, c);
 		showhide(
-			datastruct_next(datastruct_item) == NULL
+			(datastruct_item == NULL || datastruct_next(datastruct_item) == NULL)
 				? NULL
 				: datastruct_item_value(datastruct_next(datastruct_item))
 		);
