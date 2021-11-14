@@ -18,11 +18,8 @@ void *datastruct_item_value(DatastructItem item);
 
 DatastructItem datastruct_top(Datastruct datastruct);
 DatastructItem datastruct_next(DatastructItem item);
-DatastructItem datastruct_push(Datastruct datastruct, const void *new_value);
-void datastruct_remove(Datastruct datastruct, DatastructItem old_item);
-DatastructItem datastruct_insert_after(
-	DatastructItem after_item,
-	const void *new_value
-);
+void datastruct_remove(Datastruct datastruct, DatastructItem item);
+DatastructItem datastruct_push(Datastruct datastruct, const void *value);
+DatastructItem datastruct_insert(DatastructItem item, const void *value);
 
 #endif // _DATASTRUCT_H

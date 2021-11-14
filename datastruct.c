@@ -53,44 +53,44 @@ DatastructItem datastruct_next(const DatastructItem item)
 	return item->next;
 }
 
-DatastructItem datastruct_push(const Datastruct datastruct, const void *const new_value)
+void datastruct_remove(const Datastruct datastruct, const DatastructItem item)
 {
 	// TODO: maybe we should assert?
-	if (datastruct == NULL) return NULL;
-
-	DatastructItem new_item = malloc(sizeof(struct DatastructItem));
-	new_item->next = datastruct->top;
-	new_item->value = new_value;
-	datastruct->top = new_item;
-	return new_item;
-}
-
-void datastruct_remove(const Datastruct datastruct, const DatastructItem old_item)
-{
-	// TODO: maybe we should assert?
-	if (datastruct == NULL || old_item == NULL) return;
+	if (datastruct == NULL || item == NULL) return;
 
 	DatastructItem prev_item = datastruct->top;
-	while (prev_item && prev_item->next != old_item) {
+	while (prev_item && prev_item->next != item) {
 		prev_item = prev_item->next;
 	}
 	// TODO: maybe we should assert?
 	if (prev_item == NULL) return;
 
-	prev_item->next = old_item->next;
-	free(old_item);
+	prev_item->next = item->next;
+	free(item);
 }
 
-DatastructItem datastruct_insert_after(
-	const DatastructItem after_item,
-	const void *const new_value
+DatastructItem datastruct_push(const Datastruct datastruct, const void *const value)
+{
+	// TODO: maybe we should assert?
+	if (datastruct == NULL) return NULL;
+
+	DatastructItem item = malloc(sizeof(struct DatastructItem));
+	item->next = datastruct->top;
+	item->value = value;
+	datastruct->top = item;
+	return item;
+}
+
+DatastructItem datastruct_insert(
+	const DatastructItem item,
+	const void *const value
 ) {
 	// TODO: maybe we should assert?
-	if (after_item == NULL) return NULL;
+	if (item == NULL) return NULL;
 
 	DatastructItem new_item = malloc(sizeof(struct DatastructItem));
-	new_item->next = after_item->next;
-	new_item->value = new_value;
-	after_item->next = new_item;
+	new_item->next = item->next;
+	new_item->value = value;
+	item->next = new_item;
 	return new_item;
 }
