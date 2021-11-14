@@ -28,7 +28,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/types.h>
 #include <sys/wait.h>
 #include <X11/cursorfont.h>
 #include <X11/keysym.h>
@@ -44,6 +43,7 @@
 #include "atoms.h"
 #include "drw.h"
 #include "settings.h"
+#include "spawn.h"
 #include "tags.h"
 #include "util.h"
 
@@ -235,6 +235,7 @@ static void seturgent(Client *c, int urg);
 static void showhide(Client *c);
 static void sigchld(int unused);
 static void spawn(const Arg *arg);
+static void spawn_callback();
 static Monitor *systraytomon(Monitor *m);
 static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
@@ -2074,16 +2075,16 @@ sigchld(int unused)
 void
 spawn(const Arg *arg)
 {
-	if (arg->v == dmenucmd)
-		dmenumon[0] = '0' + selmon->num;
-	if (fork() == 0) {
-		if (dpy)
-			close(ConnectionNumber(dpy));
-		setsid();
-		execvp(((char **)arg->v)[0], (char **)arg->v);
-		fprintf(stderr, "polytreewm: execvp %s", ((char **)arg->v)[0]);
-		perror(" failed");
-		exit(EXIT_SUCCESS);
+	const char *const command_name = arg->v;
+
+	spawn_command(command_name, spawn_callback, selmon->num);
+}
+
+void
+spawn_callback()
+{
+	if (dpy) {
+		close(ConnectionNumber(dpy));
 	}
 }
 

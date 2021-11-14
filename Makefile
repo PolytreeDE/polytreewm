@@ -3,7 +3,7 @@
 
 include config.mk
 
-SRC = atoms.c drw.c dwm.c settings.c tags.c util.c
+SRC = atoms.c drw.c dwm.c settings.c spawn.c tags.c util.c
 OBJ = ${SRC:.c=.o}
 
 all: options polytreewm
@@ -17,7 +17,7 @@ options:
 %.o: %.c
 	${CC} -c $< -o $@ ${CFLAGS}
 
-${OBJ}: atoms.h drw.h config.def.h config.mk settings.h tags.h util.h
+${OBJ}: atoms.h drw.h config.def.h config.mk settings.h spawn.h tags.h util.h
 
 polytreewm: ${OBJ}
 	${CC} -o $@ ${OBJ} ${LDFLAGS}
