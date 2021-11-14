@@ -436,13 +436,13 @@ arrange(Monitor *m)
 		showhide(
 			(datastruct_top(m->stack) == NULL)
 				? NULL
-				: datastruct_item_value(datastruct_top(m->stack))
+				: datastruct_value(m->stack, datastruct_top(m->stack))
 		);
 	else for (m = mons; m; m = m->next)
 		showhide(
 			(datastruct_top(m->stack) == NULL)
 				? NULL
-				: datastruct_item_value(datastruct_top(m->stack))
+				: datastruct_value(m->stack, datastruct_top(m->stack))
 		);
 	if (m) {
 		arrangemon(m);
@@ -607,7 +607,7 @@ cleanup(void)
 	selmon->lt[selmon->sellt] = &foo;
 	for (m = mons; m; m = m->next)
 		while (datastruct_top(m->stack))
-			unmanage(datastruct_item_value(datastruct_top(m->stack)), 0);
+			unmanage(datastruct_value(m->stack, datastruct_top(m->stack)), 0);
 	XUngrabKey(dpy, AnyKey, AnyModifier, root);
 	while (mons)
 		cleanupmon(mons);
@@ -897,9 +897,9 @@ detachstack(Client *c)
 		for (
 			DatastructItem datastruct_item = datastruct_top(c->mon->stack);
 			datastruct_item;
-			datastruct_item = datastruct_next(datastruct_item)
+			datastruct_item = datastruct_next(c->mon->stack, datastruct_item)
 		) {
-			client = datastruct_item_value(datastruct_item);
+			client = datastruct_value(c->mon->stack, datastruct_item);
 			if (!(client && !ISVISIBLE(client))) break;
 		}
 		c->mon->sel = client;
@@ -1004,9 +1004,9 @@ focus(Client *c)
 		for (
 			DatastructItem datastruct_item = datastruct_top(selmon->stack);
 			datastruct_item;
-			datastruct_item = datastruct_next(datastruct_item)
+			datastruct_item = datastruct_next(selmon->stack, datastruct_item)
 		) {
-			c = datastruct_item_value(datastruct_item);
+			c = datastruct_value(selmon->stack, datastruct_item);
 			if (!(c && !ISVISIBLE(c))) break;
 		}
 	if (selmon->sel && selmon->sel != c)
@@ -1835,9 +1835,9 @@ restack(Monitor *m)
 		for (
 			DatastructItem datastruct_item = datastruct_top(m->stack);
 			datastruct_item;
-			datastruct_item = datastruct_next(datastruct_item)
+			datastruct_item = datastruct_next(m->stack, datastruct_item)
 		) {
-			c = datastruct_item_value(datastruct_item);
+			c = datastruct_value(m->stack, datastruct_item);
 			if (!c->isfloating && ISVISIBLE(c)) {
 				XConfigureWindow(dpy, c->win, CWSibling|CWStackMode, &wc);
 				wc.sibling = c->win;
@@ -2097,17 +2097,24 @@ showhide(Client *c)
 			resize(c, c->x, c->y, c->w, c->h, c->bw, 0);
 		DatastructItem datastruct_item = datastruct_find_last(c->mon->stack, c);
 		showhide(
-			(datastruct_item == NULL || datastruct_next(datastruct_item) == NULL)
+			(datastruct_item == NULL ||
+				datastruct_next(c->mon->stack, datastruct_item) == NULL
+			)
 				? NULL
-				: datastruct_item_value(datastruct_next(datastruct_item))
+				: datastruct_value(c->mon->stack,
+									datastruct_next(c->mon->stack,
+													datastruct_item))
 		);
 	} else {
 		/* hide clients bottom up */
 		DatastructItem datastruct_item = datastruct_find_last(c->mon->stack, c);
 		showhide(
-			(datastruct_item == NULL || datastruct_next(datastruct_item) == NULL)
+			(datastruct_item == NULL ||
+			 datastruct_next(c->mon->stack, datastruct_item) == NULL)
 				? NULL
-				: datastruct_item_value(datastruct_next(datastruct_item))
+				: datastruct_value(c->mon->stack,
+									datastruct_next(c->mon->stack,
+													datastruct_item))
 		);
 		XMoveWindow(dpy, c->win, WIDTH(c) * -2, c->y);
 	}

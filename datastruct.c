@@ -7,6 +7,7 @@ struct Datastruct {
 };
 
 struct DatastructItem {
+	Datastruct datastruct;
 	DatastructItem next;
 	const void *value;
 };
@@ -28,10 +29,12 @@ void datastruct_delete(const Datastruct datastruct)
 	free(datastruct);
 }
 
-void *datastruct_item_value(const DatastructItem item)
+void *datastruct_value(const Datastruct datastruct, const DatastructItem item)
 {
 	// TODO: maybe we should assert?
-	if (item == NULL) return NULL;
+	if (datastruct == NULL || item == NULL || item->datastruct != datastruct) {
+		return NULL;
+	}
 
 	// We discard const modifier because user may want to modify it's data.
 	return (void*)item->value;
@@ -45,10 +48,14 @@ DatastructItem datastruct_top(const Datastruct datastruct)
 	return datastruct->top;
 }
 
-DatastructItem datastruct_next(const DatastructItem item)
-{
+DatastructItem datastruct_next(
+	const Datastruct datastruct,
+	const DatastructItem item
+) {
 	// TODO: maybe we should assert?
-	if (item == NULL) return NULL;
+	if (datastruct == NULL || item == NULL || item->datastruct != datastruct) {
+		return NULL;
+	}
 
 	return item->next;
 }
@@ -86,7 +93,9 @@ DatastructItem datastruct_find_last(
 void datastruct_remove(const Datastruct datastruct, const DatastructItem item)
 {
 	// TODO: maybe we should assert?
-	if (datastruct == NULL || item == NULL) return;
+	if (datastruct == NULL || item == NULL || item->datastruct != datastruct) {
+		return;
+	}
 
 	DatastructItem prev_item = datastruct->top;
 	while (prev_item && prev_item->next != item) {
@@ -105,6 +114,7 @@ DatastructItem datastruct_push(const Datastruct datastruct, const void *const va
 	if (datastruct == NULL) return NULL;
 
 	DatastructItem item = malloc(sizeof(struct DatastructItem));
+	item->datastruct = datastruct;
 	item->next = datastruct->top;
 	item->value = value;
 	datastruct->top = item;
@@ -112,13 +122,17 @@ DatastructItem datastruct_push(const Datastruct datastruct, const void *const va
 }
 
 DatastructItem datastruct_insert(
+	const Datastruct datastruct,
 	const DatastructItem item,
 	const void *const value
 ) {
 	// TODO: maybe we should assert?
-	if (item == NULL) return NULL;
+	if (datastruct == NULL || item == NULL || item->datastruct != datastruct) {
+		return NULL;
+	}
 
 	DatastructItem new_item = malloc(sizeof(struct DatastructItem));
+	new_item->datastruct = datastruct;
 	new_item->next = item->next;
 	new_item->value = value;
 	item->next = new_item;
