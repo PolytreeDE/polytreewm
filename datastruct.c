@@ -2,13 +2,13 @@
 
 #include <stdlib.h>
 
-typedef struct Item {
-	struct Item *next;
-	const void *value;
-} *Item;
-
 struct Datastruct {
-	Item top;
+	DatastructItem top;
+};
+
+struct DatastructItem {
+	DatastructItem next;
+	const void *value;
 };
 
 Datastruct datastruct_new()
@@ -24,7 +24,7 @@ void datastruct_delete(const Datastruct datastruct)
 	// TODO: maybe we should assert?
 	if (datastruct == NULL) return;
 
-	for (Item item = datastruct->top; item; item = item->next) free(item);
+	for (DatastructItem item = datastruct->top; item; item = item->next) free(item);
 	free(datastruct);
 }
 
@@ -33,7 +33,7 @@ void datastruct_push(const Datastruct datastruct, const void *const new_value)
 	// TODO: maybe we should assert?
 	if (datastruct == NULL) return;
 
-	Item new_item = malloc(sizeof(struct Item));
+	DatastructItem new_item = malloc(sizeof(struct DatastructItem));
 	new_item->next = datastruct->top;
 	new_item->value = new_value;
 	datastruct->top = new_item;
@@ -46,7 +46,7 @@ void datastruct_remove_by_value(
 	// TODO: maybe we should assert?
 	if (datastruct == NULL) return;
 
-	Item prev_item = datastruct->top;
+	DatastructItem prev_item = datastruct->top;
 	while (prev_item && prev_item->next && prev_item->next->value != old_value) {
 		prev_item = prev_item->next;
 	}
@@ -58,7 +58,7 @@ void datastruct_remove_by_value(
 		return;
 	}
 
-	Item old_item = prev_item->next;
+	DatastructItem old_item = prev_item->next;
 	prev_item->next = old_item->next;
 	free(old_item);
 }
@@ -71,14 +71,14 @@ void datastruct_insert_after_value(
 	// TODO: maybe we should assert?
 	if (datastruct == NULL) return;
 
-	Item after_item = datastruct->top;
+	DatastructItem after_item = datastruct->top;
 	while (after_item && after_item->value != after_value) {
 		after_item = after_item->next;
 	}
 	// TODO: maybe we should assert?
 	if (after_item == NULL) return;
 
-	Item new_item = malloc(sizeof(struct Item));
+	DatastructItem new_item = malloc(sizeof(struct DatastructItem));
 	new_item->next = after_item->next;
 	new_item->value = new_value;
 	after_item->next = new_item;

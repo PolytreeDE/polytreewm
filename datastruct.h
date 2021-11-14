@@ -9,6 +9,7 @@
 }
 
 typedef struct Datastruct *Datastruct;
+typedef struct DatastructItem *DatastructItem;
 
 Datastruct datastruct_new();
 void datastruct_delete(Datastruct datastruct);
