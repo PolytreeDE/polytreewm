@@ -2723,8 +2723,6 @@ viewrel(const Arg *arg)
 
 	if (new_tagset == old_tagset) return;
 
-	selmon->seltags ^= 1; /* toggle sel tagset */
-
 	if (new_tagset == 0) {
 		unsigned int tmptag = selmon->pertag->prevtag;
 		selmon->pertag->prevtag = selmon->pertag->curtag;
