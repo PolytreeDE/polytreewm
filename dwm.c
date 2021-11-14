@@ -46,6 +46,7 @@
 #include "drw.h"
 #include "settings.h"
 #include "status.h"
+#include "tags.h"
 #include "util.h"
 
 /* macros */
@@ -58,7 +59,7 @@
 #define MOUSEMASK               (BUTTONMASK|PointerMotionMask)
 #define WIDTH(X)                ((X)->w + 2 * (X)->bw)
 #define HEIGHT(X)               ((X)->h + 2 * (X)->bw)
-#define TAGMASK                 ((1 << LENGTH(tags)) - 1)
+#define TAGMASK                 ((1 << TAGS_COUNT) - 1)
 #define TEXTW(X)                (drw_fontset_getwidth(drw, (X)) + lrpad)
 
 #define SYSTEM_TRAY_REQUEST_DOCK    0
@@ -310,15 +311,12 @@ static Window root, wmcheckwin;
 
 struct Pertag {
 	unsigned int curtag, prevtag; /* current and previous tag */
-	int nmasters[LENGTH(tags) + 1]; /* number of windows in master area */
-	float mfacts[LENGTH(tags) + 1]; /* mfacts per tag */
-	unsigned int sellts[LENGTH(tags) + 1]; /* selected layouts */
-	const Layout *ltidxs[LENGTH(tags) + 1][2]; /* matrix of tags and layouts indexes  */
-	int showbars[LENGTH(tags) + 1]; /* display bar for the current tag */
+	int nmasters[TAGS_COUNT + 1]; /* number of windows in master area */
+	float mfacts[TAGS_COUNT + 1]; /* mfacts per tag */
+	unsigned int sellts[TAGS_COUNT + 1]; /* selected layouts */
+	const Layout *ltidxs[TAGS_COUNT + 1][2]; /* matrix of tags and layouts indexes  */
+	int showbars[TAGS_COUNT + 1]; /* display bar for the current tag */
 };
-
-/* compile-time check if all tags fit into an unsigned int bit array. */
-struct NumTags { char limitexceeded[LENGTH(tags) > 31 ? -1 : 1]; };
 
 /* function implementations */
 void
@@ -497,11 +495,11 @@ buttonpress(XEvent *e)
 			occ |= c->tags == 255 ? 0 : c->tags;
 		do {
 			/* do not reserve space for vacant tags */
-			if (!(occ & 1 << i || m->tagset[m->seltags] & 1 << i || tags[i][1] != '\0'))
+			if (!(occ & 1 << i || m->tagset[m->seltags] & 1 << i || tags_get(i)->has_custom_name))
 				continue;
-			x += TEXTW(tags[i]);
-		} while (ev->x >= x && ++i < LENGTH(tags));
-		if (i < LENGTH(tags)) {
+			x += TEXTW(tags_get(i)->name.cstr);
+		} while (ev->x >= x && ++i < TAGS_COUNT);
+		if (i < TAGS_COUNT) {
 			click = ClkTagBar;
 			arg.ui = 1 << i;
 		} else if (ev->x < x + blw)
@@ -836,7 +834,7 @@ createmon(void)
 	m->pertag = ecalloc(1, sizeof(Pertag));
 	m->pertag->curtag = m->pertag->prevtag = 1;
 
-	for (i = 0; i <= LENGTH(tags); i++) {
+	for (i = 0; i <= TAGS_COUNT; i++) {
 		m->pertag->nmasters[i] = m->nmaster;
 		m->pertag->mfacts[i] = m->mfact;
 
@@ -929,14 +927,14 @@ drawbar(Monitor *m)
 			urg |= c->tags;
 	}
 	x = 0;
-	for (i = 0; i < LENGTH(tags); i++) {
+	for (i = 0; i < TAGS_COUNT; i++) {
 		/* do not draw vacant tags */
-		if (!(occ & 1 << i || m->tagset[m->seltags] & 1 << i || tags[i][1] != '\0'))
+		if (!(occ & 1 << i || m->tagset[m->seltags] & 1 << i || tags_get(i)->has_custom_name))
 		continue;
 
-		w = TEXTW(tags[i]);
+		w = TEXTW(tags_get(i)->name.cstr);
 		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
-		drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
+		drw_text(drw, x, 0, w, bh, lrpad / 2, tags_get(i)->name.cstr, urg & 1 << i);
 		x += w;
 	}
 	w = blw = TEXTW(m->ltsymbol);
@@ -1485,7 +1483,7 @@ movemouse(const Arg *arg)
 // TODO: this function really needs to be refactored
 void
 nametag(const Arg *arg) {
-	char *p, name[MAX_TAGNAME_LEN];
+	char *p, name[TAGS_CUSTOM_NAME_SIZE];
 	FILE *f;
 	int i;
 
@@ -1494,7 +1492,7 @@ nametag(const Arg *arg) {
 		fprintf(stderr, "dwm: popen 'dmenu < /dev/null' failed%s%s\n", errno ? ": " : "", errno ? strerror(errno) : "");
 		return;
 	}
-	if (!(p = fgets(name, MAX_TAGNAME_LEN, f)) && (i = errno) && ferror(f))
+	if (!(p = fgets(name, TAGS_CUSTOM_NAME_SIZE, f)) && (i = errno) && ferror(f))
 		fprintf(stderr, "dwm: fgets failed: %s\n", strerror(i));
 	if (pclose(f) < 0)
 		fprintf(stderr, "dwm: pclose failed: %s\n", strerror(errno));
@@ -1503,14 +1501,9 @@ nametag(const Arg *arg) {
 	if((p = strchr(name, '\n')))
 		*p = '\0';
 
-	for (i = 0; i < LENGTH(tags); ++i) {
+	for (i = 0; i < TAGS_COUNT; ++i) {
 		if (selmon->tagset[selmon->seltags] & (1 << i)) {
-			if (name[0] == '\0') {
-				sprintf(tags[i], "%d", i + 1);
-			} else {
-				sprintf(tags[i], TAG_PREPEND, i + 1);
-				strcat(tags[i], name);
-			}
+			tags_rename(i, name);
 		}
 	}
 
