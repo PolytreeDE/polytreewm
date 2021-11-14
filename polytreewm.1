@@ -60,7 +60,7 @@ click on a tag label adds/removes that tag to/from the focused window.
 Start
 .BR st(1).
 .TP
-.B Mod1\-p
+.B Mod1\-/
 Spawn
 .BR dmenu(1)
 for launching other programs.
@@ -80,14 +80,17 @@ Send focused window to next screen, if any.
 .B Mod1\-b
 Toggles bar on and off.
 .TP
-.B Mod1\-t
-Sets tiled layout.
+.B Mod1\-m
+Sets monocle layout.
 .TP
 .B Mod1\-f
 Sets floating layout.
 .TP
-.B Mod1\-m
-Sets monocle layout.
+.B Mod1\-t
+Sets tiled layout.
+.TP
+.B Mod1\-u
+Sets tiled layout with centered master.
 .TP
 .B Mod1\-space
 Toggles between current and previous layout.
@@ -104,6 +107,12 @@ Increase number of windows in master area.
 .B Mod1\-d
 Decrease number of windows in master area.
 .TP
+.B Mod1\-Shift\-i
+Reset number of windows in master area to default.
+.TP
+.B Mod1\-Shift\-d
+Set number of windows in master area to 0.
+.TP
 .B Mod1\-l
 Increase master area size.
 .TP
@@ -113,7 +122,7 @@ Decrease master area size.
 .B Mod1\-Return
 Zooms/cycles focused window to/from master area (tiled layouts only).
 .TP
-.B Mod1\-Shift\-c
+.B Mod1\-Shift\-x
 Close focused window.
 .TP
 .B Mod1\-Shift\-space
