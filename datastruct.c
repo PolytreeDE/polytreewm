@@ -37,6 +37,22 @@ void *datastruct_item_value(const DatastructItem item)
 	return (void*)item->value;
 }
 
+DatastructItem datastruct_top(const Datastruct datastruct)
+{
+	// TODO: maybe we should assert?
+	if (datastruct == NULL) return NULL;
+
+	return datastruct->top;
+}
+
+DatastructItem datastruct_next(const DatastructItem item)
+{
+	// TODO: maybe we should assert?
+	if (item == NULL) return NULL;
+
+	return item->next;
+}
+
 DatastructItem datastruct_push(const Datastruct datastruct, const void *const new_value)
 {
 	// TODO: maybe we should assert?
