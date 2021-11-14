@@ -30,7 +30,7 @@ void layouts_symbol_monocle(
 	if (buffer == NULL) return;
 
 	char tmp[TMP_BUFFER_SIZE];
-	sprintf(tmp, "[%u]", visible_clients);
+	sprintf(tmp, "[%u/%u]", clients_in_master, visible_clients);
 	tmp[(buffer_size > TMP_BUFFER_SIZE ? TMP_BUFFER_SIZE : buffer_size) - 1] = '\0';
 	strncpy(buffer, tmp, buffer_size);
 }
@@ -45,7 +45,7 @@ void layouts_symbol_floating(
 	if (buffer == NULL) return;
 
 	char tmp[TMP_BUFFER_SIZE];
-	strcpy(tmp, "><>");
+	sprintf(tmp, "<%u/%u>", clients_in_master, visible_clients);
 	tmp[(buffer_size > TMP_BUFFER_SIZE ? TMP_BUFFER_SIZE : buffer_size) - 1] = '\0';
 	strncpy(buffer, tmp, buffer_size);
 }
@@ -60,7 +60,7 @@ void layouts_symbol_tile(
 	if (buffer == NULL) return;
 
 	char tmp[TMP_BUFFER_SIZE];
-	sprintf(tmp, "[%u]=", clients_in_master);
+	sprintf(tmp, "{%u/%u}=", clients_in_master, visible_clients);
 	tmp[(buffer_size > TMP_BUFFER_SIZE ? TMP_BUFFER_SIZE : buffer_size) - 1] = '\0';
 	strncpy(buffer, tmp, buffer_size);
 }
@@ -75,7 +75,7 @@ void layouts_symbol_centeredmaster(
 	if (buffer == NULL) return;
 
 	char tmp[TMP_BUFFER_SIZE];
-	sprintf(tmp, "=[%u]=", clients_in_master);
+	sprintf(tmp, "={%u/%u}=", clients_in_master, visible_clients);
 	tmp[(buffer_size > TMP_BUFFER_SIZE ? TMP_BUFFER_SIZE : buffer_size) - 1] = '\0';
 	strncpy(buffer, tmp, buffer_size);
 }
