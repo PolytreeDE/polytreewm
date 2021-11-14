@@ -433,9 +433,17 @@ void
 arrange(Monitor *m)
 {
 	if (m)
-		showhide(datastruct_item_value(datastruct_top(m->stack)));
+		showhide(
+			(datastruct_top(m->stack) == NULL)
+				? NULL
+				: datastruct_item_value(datastruct_top(m->stack))
+		);
 	else for (m = mons; m; m = m->next)
-		showhide(datastruct_item_value(datastruct_top(m->stack)));
+		showhide(
+			(datastruct_top(m->stack) == NULL)
+				? NULL
+				: datastruct_item_value(datastruct_top(m->stack))
+		);
 	if (m) {
 		arrangemon(m);
 		restack(m);
