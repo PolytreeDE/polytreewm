@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=PolytreeWM
+Comment=Polytree window manager
+Exec=polytreewm
+Icon=polytreewm
+Type=XSession

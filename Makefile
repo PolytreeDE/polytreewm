@@ -1,4 +1,4 @@
-# dwm - dynamic window manager
+# PolytreeWM - tiling window manager
 # See LICENSE file for copyright and license details.
 
 include config.mk
@@ -6,10 +6,10 @@ include config.mk
 SRC = atoms.c drw.c dwm.c settings.c tags.c util.c
 OBJ = ${SRC:.c=.o}
 
-all: options dwm
+all: options polytreewm
 
 options:
-	@echo dwm build options:
+	@echo PolytreeWM build options:
 	@echo "CFLAGS   = ${CFLAGS}"
 	@echo "LDFLAGS  = ${LDFLAGS}"
 	@echo "CC       = ${CC}"
@@ -19,43 +19,43 @@ options:
 
 ${OBJ}: atoms.h drw.h config.def.h config.mk settings.h tags.h util.h
 
-dwm: ${OBJ}
+polytreewm: ${OBJ}
 	${CC} -o $@ ${OBJ} ${LDFLAGS}
 
 clean:
-	rm -f dwm ${OBJ} dwm-${VERSION}.tar.gz
+	rm -f polytreewm ${OBJ} polytreewm-${VERSION}.tar.gz
 
 dist: clean
-	mkdir -p dwm-${VERSION}
-	cp -R LICENSE Makefile README config.def.h config.mk \
-		dwm.1 drw.h util.h ${SRC} dwm.png dwm-${VERSION}
-	tar -cf dwm-${VERSION}.tar dwm-${VERSION}
-	gzip dwm-${VERSION}.tar
-	rm -rf dwm-${VERSION}
+	mkdir -p polytreewm-${VERSION}
+	cp -R LICENSE Makefile README.md config.def.h config.mk \
+		polytreewm.1 drw.h util.h ${SRC} polytreewm.png polytreewm-${VERSION}
+	tar -cf polytreewm-${VERSION}.tar polytreewm-${VERSION}
+	gzip polytreewm-${VERSION}.tar
+	rm -rf polytreewm-${VERSION}
 
 install: all
 	mkdir -p ${DESTDIR}${PREFIX}/bin
-	cp -f dwm ${DESTDIR}${PREFIX}/bin
-	chmod 755 ${DESTDIR}${PREFIX}/bin/dwm
+	cp -f polytreewm ${DESTDIR}${PREFIX}/bin
+	chmod 755 ${DESTDIR}${PREFIX}/bin/polytreewm
 	
 	mkdir -p ${DESTDIR}${MANPREFIX}/man1
-	sed "s/VERSION/${VERSION}/g" < dwm.1 > ${DESTDIR}${MANPREFIX}/man1/dwm.1
-	chmod 644 ${DESTDIR}${MANPREFIX}/man1/dwm.1
+	sed "s/VERSION/${VERSION}/g" < polytreewm.1 > ${DESTDIR}${MANPREFIX}/man1/polytreewm.1
+	chmod 644 ${DESTDIR}${MANPREFIX}/man1/polytreewm.1
 
 xinstall: install
 	mkdir -p ${DESTDIR}${ICONSPREFIX}
-	cp -f dwm.png ${DESTDIR}${ICONSPREFIX}
-	chmod 644 ${DESTDIR}${ICONSPREFIX}/dwm.png
+	cp -f polytreewm.png ${DESTDIR}${ICONSPREFIX}
+	chmod 644 ${DESTDIR}${ICONSPREFIX}/polytreewm.png
 	
 	mkdir -p ${DESTDIR}${XSESSIONSPREFIX}
-	cp -f dwm.desktop ${DESTDIR}${XSESSIONSPREFIX}
-	chmod 644 ${DESTDIR}${XSESSIONSPREFIX}/dwm.desktop
+	cp -f polytreewm.desktop ${DESTDIR}${XSESSIONSPREFIX}
+	chmod 644 ${DESTDIR}${XSESSIONSPREFIX}/polytreewm.desktop
 
 uninstall:
 	rm -f \
-		${DESTDIR}${PREFIX}/bin/dwm \
-		${DESTDIR}${MANPREFIX}/man1/dwm.1 \
-		${DESTDIR}${ICONSPREFIX}/dwm.png \
-		${DESTDIR}${XSESSIONSPREFIX}/dwm.desktop
+		${DESTDIR}${PREFIX}/bin/polytreewm \
+		${DESTDIR}${MANPREFIX}/man1/polytreewm.1 \
+		${DESTDIR}${ICONSPREFIX}/polytreewm.png \
+		${DESTDIR}${XSESSIONSPREFIX}/polytreewm.desktop
 
 .PHONY: all options clean dist install uninstall

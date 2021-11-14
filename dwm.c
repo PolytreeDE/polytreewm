@@ -1,12 +1,12 @@
 /* See LICENSE file for copyright and license details.
  *
- * dynamic window manager is designed like any other X client as well. It is
- * driven through handling X events. In contrast to other X clients, a window
- * manager selects for SubstructureRedirectMask on the root window, to receive
- * events about window (dis-)appearance. Only one X connection at a time is
- * allowed to select for this event mask.
+ * Polytree tiling window manager is designed like any other X client as well.
+ * It is driven through handling X events. In contrast to other X clients, a
+ * window manager selects for SubstructureRedirectMask on the root window, to
+ * receive events about window (dis-)appearance. Only one X connection at a time
+ * is allowed to select for this event mask.
  *
- * The event handlers of dwm are organized in an array which is accessed
+ * The event handlers of PolytreeWM are organized in an array which is accessed
  * whenever a new event has been fetched. This allows event dispatching
  * in O(1) time.
  *
@@ -1481,13 +1481,13 @@ nametag(const Arg *arg) {
 
 	errno = 0; // popen(3p) says on failure it "may" set errno
 	if(!(f = popen("dmenu < /dev/null", "r"))) {
-		fprintf(stderr, "dwm: popen 'dmenu < /dev/null' failed%s%s\n", errno ? ": " : "", errno ? strerror(errno) : "");
+		fprintf(stderr, "polytreewm: popen 'dmenu < /dev/null' failed%s%s\n", errno ? ": " : "", errno ? strerror(errno) : "");
 		return;
 	}
 	if (!(p = fgets(name, TAGS_CUSTOM_NAME_SIZE, f)) && (i = errno) && ferror(f))
-		fprintf(stderr, "dwm: fgets failed: %s\n", strerror(i));
+		fprintf(stderr, "polytreewm: fgets failed: %s\n", strerror(i));
 	if (pclose(f) < 0)
-		fprintf(stderr, "dwm: pclose failed: %s\n", strerror(errno));
+		fprintf(stderr, "polytreewm: pclose failed: %s\n", strerror(errno));
 	if(!p)
 		return;
 	if((p = strchr(name, '\n')))
@@ -1994,7 +1994,7 @@ setup(void)
 	updategeom();
 	/* init atoms */
 	atoms = atoms_create(dpy);
-	if (atoms == NULL) die("dwm: fatal: cannot allocate atoms");
+	if (atoms == NULL) die("polytreewm: fatal: cannot allocate atoms");
 	/* init cursors */
 	cursor[CurNormal] = drw_cur_create(drw, XC_left_ptr);
 	cursor[CurResize] = drw_cur_create(drw, XC_sizing);
@@ -2013,7 +2013,7 @@ setup(void)
 	XChangeProperty(dpy, wmcheckwin, atoms->netatom[NetWMCheck], XA_WINDOW, 32,
 		PropModeReplace, (unsigned char *) &wmcheckwin, 1);
 	XChangeProperty(dpy, wmcheckwin, atoms->netatom[NetWMName], atoms->utf8string, 8,
-		PropModeReplace, (unsigned char *) "dwm", 3);
+		PropModeReplace, (unsigned char *) "polytreewm", 3);
 	XChangeProperty(dpy, root, atoms->netatom[NetWMCheck], XA_WINDOW, 32,
 		PropModeReplace, (unsigned char *) &wmcheckwin, 1);
 	/* EWMH support per view */
@@ -2081,7 +2081,7 @@ spawn(const Arg *arg)
 			close(ConnectionNumber(dpy));
 		setsid();
 		execvp(((char **)arg->v)[0], (char **)arg->v);
-		fprintf(stderr, "dwm: execvp %s", ((char **)arg->v)[0]);
+		fprintf(stderr, "polytreewm: execvp %s", ((char **)arg->v)[0]);
 		perror(" failed");
 		exit(EXIT_SUCCESS);
 	}
@@ -2298,7 +2298,7 @@ updatebars(void)
 		.background_pixmap = ParentRelative,
 		.event_mask = ButtonPressMask|ExposureMask
 	};
-	XClassHint ch = {"dwm", "dwm"};
+	XClassHint ch = {"polytreewm", "polytreewm"};
 	for (m = mons; m; m = m->next) {
 		if (m->barwin)
 			continue;
@@ -2484,7 +2484,7 @@ void
 updatestatus(void)
 {
 	if (!gettextprop(root, XA_WM_NAME, stext, sizeof(stext))) {
-		strcpy(stext, "dwm-"VERSION);
+		strcpy(stext, "polytreewm-"VERSION);
 	}
 
 	for (Monitor *m = mons; m; m = m->next) {
@@ -2579,7 +2579,7 @@ updatesystray(void)
 			XSync(dpy, False);
 		}
 		else {
-			fprintf(stderr, "dwm: unable to obtain system tray.\n");
+			fprintf(stderr, "polytreewm: unable to obtain system tray.\n");
 			free(systray);
 			systray = NULL;
 			return;
@@ -2791,7 +2791,7 @@ xerror(Display *dpy, XErrorEvent *ee)
 	|| (ee->request_code == X_GrabKey && ee->error_code == BadAccess)
 	|| (ee->request_code == X_CopyArea && ee->error_code == BadDrawable))
 		return 0;
-	fprintf(stderr, "dwm: fatal error: request code=%d, error code=%d\n",
+	fprintf(stderr, "polytreewm: fatal error: request code=%d, error code=%d\n",
 		ee->request_code, ee->error_code);
 	return xerrorxlib(dpy, ee); /* may call exit */
 }
@@ -2807,7 +2807,7 @@ xerrordummy(Display *dpy, XErrorEvent *ee)
 int
 xerrorstart(Display *dpy, XErrorEvent *ee)
 {
-	die("dwm: another window manager is already running");
+	die("polytreewm: another window manager is already running");
 	return -1;
 }
 
@@ -2845,11 +2845,11 @@ int
 main(int argc, char *argv[])
 {
 	if (argc == 2 && !strcmp("-v", argv[1])) {
-		die("dwm-"VERSION);
+		die("polytreewm-"VERSION);
 	}
 
 	if (argc != 1) {
-		die("usage: dwm [-v]");
+		die("usage: polytreewm [-v]");
 	}
 
 	if (!setlocale(LC_CTYPE, "") || !XSupportsLocale()) {
@@ -2857,7 +2857,7 @@ main(int argc, char *argv[])
 	}
 
 	if (!(dpy = XOpenDisplay(NULL))) {
-		die("dwm: cannot open display");
+		die("polytreewm: cannot open display");
 	}
 
 	checkotherwm();

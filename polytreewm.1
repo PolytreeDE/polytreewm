@@ -1,13 +1,13 @@
-.TH DWM 1 dwm\-VERSION
+.TH POLYTREEWM 1 polytreewm\-VERSION
 .SH NAME
-dwm \- dynamic window manager
+PolytreeWM \- Polytree tiling window manager
 .SH SYNOPSIS
-.B dwm
+.B polytreewm
 .RB [ \-v ]
 .SH DESCRIPTION
-dwm is a dynamic window manager for X. It manages windows in tiled, monocle
-and floating layouts. Either layout can be applied dynamically, optimising the
-environment for the application in use and the task performed.
+PolytreeWM is a tiling window manager for X. It manages windows in monocle,
+floating and tiled layouts. Either layout can be applied dynamically, optimising
+the environment for the application in use and the task performed.
 .P
 In tiled layouts windows are managed in a master and stacking area. The master
 area on the left contains one window by default, and the stacking area on the
@@ -29,7 +29,7 @@ color. The tags of the focused window are indicated with a filled square in the
 top left corner.  The tags which are applied to one or more windows are
 indicated with an empty square in the top left corner.
 .P
-dwm draws a small border around windows to indicate the focus state.
+PolytreeWM draws a small border around windows to indicate the focus state.
 .SH OPTIONS
 .TP
 .B \-v
@@ -141,7 +141,7 @@ View all windows with any tag.
 Add/remove all windows with nth tag to/from the view.
 .TP
 .B Mod1\-Shift\-q
-Quit dwm.
+Quit PolytreeWM.
 .SS Mouse commands
 .TP
 .B Mod1\-Button1
@@ -153,8 +153,8 @@ Toggles focused window between floating and tiled state.
 .B Mod1\-Button3
 Resize focused window while dragging. Tiled windows will be toggled to the floating state.
 .SH CUSTOMIZATION
-dwm is customized by creating a custom config.h and (re)compiling the source
-code. This keeps it fast, secure and simple.
+PolytreeWM is customized by creating a custom config.h and (re)compiling the
+source code. This keeps it fast, secure and simple.
 .SH SEE ALSO
 .BR dmenu (1),
 .BR st (1)
@@ -173,4 +173,4 @@ or
 XToolkit/XAWT backend can recognize) or when using OpenJDK setting the environment variable
 .BR _JAVA_AWT_WM_NONREPARENTING=1 .
 .SH BUGS
-Send all bug reports with a patch to hackers@suckless.org.
+Send all bug reports with a patch to kotovalexarian@gmail.com.
