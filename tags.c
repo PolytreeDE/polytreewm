@@ -44,6 +44,7 @@ static struct Tag tags[TAGS_COUNT] = {
 
 const struct Tag *tags_get(const unsigned int index)
 {
+	// TODO: assert here
 	if (index >= TAGS_COUNT) return NULL;
 
 	return &tags[index];
@@ -51,6 +52,7 @@ const struct Tag *tags_get(const unsigned int index)
 
 void tags_rename(const unsigned int index, const char *const new_custom_name)
 {
+	// TODO: assert here
 	if (index >= TAGS_COUNT) return;
 
 	if (new_custom_name == NULL || new_custom_name[0] == '\0') {
