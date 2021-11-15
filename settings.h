@@ -6,6 +6,9 @@
 int  settings_get_default_clients_in_master();
 void settings_set_default_clients_in_master(int new_default_clients_in_master);
 
+bool settings_get_enable_gap_for_single_window();
+void settings_set_enable_gap_for_single_window(bool new_enable_gap_for_single_window);
+
 bool settings_get_focus_on_wheel();
 void settings_set_focus_on_wheel(bool new_focus_on_wheel);
 

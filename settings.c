@@ -1,6 +1,7 @@
 #include "settings.h"
 
 static int default_clients_in_master = 1;
+static bool enable_gap_for_single_window = true;
 static bool focus_on_wheel = true;
 static int gap_size = 10;
 static int max_clients_in_master = 0; // 0 for no maximum
@@ -15,6 +16,17 @@ int settings_get_default_clients_in_master()
 void settings_set_default_clients_in_master(const int new_default_clients_in_master)
 {
 	default_clients_in_master = new_default_clients_in_master;
+}
+
+bool settings_get_enable_gap_for_single_window()
+{
+	return enable_gap_for_single_window;
+}
+
+void settings_set_enable_gap_for_single_window(const bool new_enable_gap_for_single_window)
+{
+	enable_gap_for_single_window = new_enable_gap_for_single_window;
+	// TODO: notify WM to rearrange clients
 }
 
 bool settings_get_focus_on_wheel()

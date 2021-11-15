@@ -551,7 +551,8 @@ centeredmaster(Monitor *m)
 		}
 	}
 
-	const int gap_size = settings_get_gap_size();
+	const bool enable_gap_for_single_window = settings_get_enable_gap_for_single_window();
+	const int gap_size = (n > 1 || enable_gap_for_single_window) ? settings_get_gap_size() : 0;
 	const int top_left_half_gap = gap_size / 2;
 	const int bottom_right_half_gap = gap_size - top_left_half_gap;
 
@@ -1439,7 +1440,8 @@ maprequest(XEvent *e)
 void
 monocle(Monitor *m)
 {
-	const int gap_size = settings_get_gap_size();
+	const bool enable_gap_for_single_window = settings_get_enable_gap_for_single_window();
+	const int gap_size = enable_gap_for_single_window ? settings_get_gap_size() : 0;
 
 	for (Client *c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
 		resize(
@@ -2182,7 +2184,8 @@ tile(Monitor *m)
 	for (Client *c = nexttiled(m->clients); c; c = nexttiled(c->next), ++n);
 	if (n == 0) return;
 
-	const int gap_size = settings_get_gap_size();
+	const bool enable_gap_for_single_window = settings_get_enable_gap_for_single_window();
+	const int gap_size = (n > 1 || enable_gap_for_single_window) ? settings_get_gap_size() : 0;
 	const int top_left_half_gap = gap_size / 2;
 	const int bottom_right_half_gap = gap_size - top_left_half_gap;
 
