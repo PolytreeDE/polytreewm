@@ -67,10 +67,17 @@ Applied patches
 Interesting patches (not applied)
 ---------------------------------
 
+* anybar
+* awesomebar
 * attachdirection
+* bar_height
+* bartabgroups
+* colorbar
 * current_desktop
 * ewmhtags
+* fancybar
 * focusmaster
 * focusmonmouse
+* holdbar
 * rotatestack
 * stacker
