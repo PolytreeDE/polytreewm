@@ -49,6 +49,7 @@ void spawn_command(
 	void (*const callback)(),
 	const int monitor
 ) {
+	// TODO: maybe we should assert here
 	if (name == NULL || monitor < 0 || monitor > 9) return;
 
 	for (
