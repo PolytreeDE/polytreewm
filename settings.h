@@ -3,6 +3,9 @@
 
 #include <stdbool.h>
 
+int  settings_get_border_width();
+void settings_set_border_width(int new_border_width);
+
 int  settings_get_default_clients_in_master();
 void settings_set_default_clients_in_master(int new_default_clients_in_master);
 

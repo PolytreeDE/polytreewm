@@ -1,5 +1,6 @@
 #include "settings.h"
 
+static int border_width = 2;
 static int default_clients_in_master = 1;
 static bool enable_gap_for_single_window = true;
 static bool focus_on_wheel = true;
@@ -7,6 +8,17 @@ static int gap_size = 10;
 static int max_clients_in_master = 0; // 0 for no maximum
 static bool respect_resize_hints_in_floating_layout = false;
 static unsigned int snap_distance = 32;
+
+int  settings_get_border_width()
+{
+	return border_width;
+}
+
+void settings_set_border_width(const int new_border_width)
+{
+	border_width = new_border_width;
+	// TODO: notify WM to rearrange clients
+}
 
 int settings_get_default_clients_in_master()
 {

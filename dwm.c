@@ -460,11 +460,22 @@ arrangemon(Monitor *m)
 
 	if (m->lt[m->sellt]->arrange)
 		m->lt[m->sellt]->arrange(m);
-	else
+	else {
+		const int border_width = settings_get_border_width();
+
 		/* <>< case; rather than providing an arrange function and upsetting other logic that tests for its presence, simply add borders here */
 		for (Client *c = selmon->clients; c; c = c->next)
 			if (ISVISIBLE(c) && c->bw == 0)
-				resize(c, c->x, c->y, c->w - 2*borderpx, c->h - 2*borderpx, borderpx, 0);
+				resize(
+					c,
+					c->x,
+					c->y,
+					c->w - 2 * border_width,
+					c->h - 2 * border_width,
+					border_width,
+					0
+				);
+	}
 }
 
 void
@@ -556,7 +567,7 @@ centeredmaster(Monitor *m)
 	const int top_left_half_gap = gap_size / 2;
 	const int bottom_right_half_gap = gap_size - top_left_half_gap;
 
-	const unsigned int bw = n == 1 ? 0 : borderpx;
+	const int border_width = n == 1 ? 0 : settings_get_border_width();
 
 	unsigned int oty = 0, ety = 0, my = 0;
 	Client *c = nexttiled(m->clients);
@@ -575,9 +586,9 @@ centeredmaster(Monitor *m)
 				c,
 				m->wx + mx + left_gap,
 				m->wy + my + top_gap,
-				mw - 2 * bw - left_gap - right_gap,
-				h - 2 * bw - top_gap - bottom_gap,
-				bw,
+				mw - 2 * border_width - left_gap - right_gap,
+				h - 2 * border_width - top_gap - bottom_gap,
+				border_width,
 				0
 			);
 
@@ -596,9 +607,9 @@ centeredmaster(Monitor *m)
 					c,
 					m->wx + left_gap,
 					m->wy + ety + top_gap,
-					tw - 2 * bw - left_gap - right_gap,
-					h - 2 * bw - top_gap - bottom_gap,
-					bw,
+					tw - 2 * border_width - left_gap - right_gap,
+					h - 2 * border_width - top_gap - bottom_gap,
+					border_width,
 					0
 				);
 
@@ -615,9 +626,9 @@ centeredmaster(Monitor *m)
 					c,
 					m->wx + mx + mw + left_gap,
 					m->wy + oty + top_gap,
-					tw - 2 * bw - left_gap - right_gap,
-					h - 2 * bw - top_gap - bottom_gap,
-					bw,
+					tw - 2 * border_width - left_gap - right_gap,
+					h - 2 * border_width - top_gap - bottom_gap,
+					border_width,
 					0
 				);
 
@@ -1338,7 +1349,7 @@ manage(Window w, XWindowAttributes *wa)
 			: c->mon->my
 	);
 
-	c->bw = borderpx;
+	c->bw = settings_get_border_width();
 
 	{
 		XWindowChanges wc;
@@ -2189,7 +2200,7 @@ tile(Monitor *m)
 	const int top_left_half_gap = gap_size / 2;
 	const int bottom_right_half_gap = gap_size - top_left_half_gap;
 
-	const unsigned int bw = n == 1 ? 0 : borderpx;
+	const int border_width = n == 1 ? 0 : settings_get_border_width();
 	const unsigned int mw = n > m->nmaster ? (m->nmaster ? m->ww * m->mfact : 0) : m->ww;
 
 	Client *c = nexttiled(m->clients);
@@ -2206,9 +2217,9 @@ tile(Monitor *m)
 				c,
 				m->wx + left_gap,
 				m->wy + my + top_gap,
-				mw - 2 * bw - left_gap - right_gap,
-				h - 2 * bw - top_gap - bottom_gap,
-				bw,
+				mw - 2 * border_width - left_gap - right_gap,
+				h - 2 * border_width - top_gap - bottom_gap,
+				border_width,
 				0
 			);
 
@@ -2227,9 +2238,9 @@ tile(Monitor *m)
 				c,
 				m->wx + mw + left_gap,
 				m->wy + ty + top_gap,
-				m->ww - mw - 2 * bw - left_gap - right_gap,
-				h - 2 * bw - top_gap - bottom_gap,
-				bw,
+				m->ww - mw - 2 * border_width - left_gap - right_gap,
+				h - 2 * border_width - top_gap - bottom_gap,
+				border_width,
 				0
 			);
 
@@ -2267,14 +2278,16 @@ togglefloating(const Arg *arg)
 
 	selmon->sel->isfloating = !selmon->sel->isfloating || selmon->sel->isfixed;
 
+	const int border_width = settings_get_border_width();
+
 	if (selmon->sel->isfloating) {
 		resize(
 			selmon->sel,
 			selmon->sel->x,
 			selmon->sel->y,
-			selmon->sel->w - 2 * (borderpx - selmon->sel->bw),
-			selmon->sel->h - 2 * (borderpx - selmon->sel->bw),
-			borderpx,
+			selmon->sel->w - 2 * (border_width - selmon->sel->bw),
+			selmon->sel->h - 2 * (border_width - selmon->sel->bw),
+			border_width,
 			0
 		);
 	}
