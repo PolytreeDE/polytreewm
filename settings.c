@@ -15,11 +15,13 @@ static int border_width = 2;
 static int default_clients_in_master = 1;
 static bool enable_border_for_single_window = true;
 static bool enable_gap_for_single_window = true;
+static bool enable_swallowing = true;
 static bool focus_on_wheel = true;
 static int gap_size = 10;
 static int max_clients_in_master = 0; // 0 for no maximum
 static bool respect_resize_hints_in_floating_layout = false;
 static unsigned int snap_distance = 32;
+static bool swallow_floating = false;
 
 int settings_get_border_width()
 {
@@ -67,6 +69,17 @@ void settings_set_enable_gap_for_single_window(const bool new_enable_gap_for_sin
 	enable_gap_for_single_window = new_enable_gap_for_single_window;
 	// TODO: notify WM to rearrange clients
 }
+
+bool settings_get_enable_swallowing()
+{
+	return enable_swallowing;
+}
+
+void settings_set_enable_swallowing(const bool new_enable_swallowing)
+{
+	enable_swallowing = new_enable_swallowing;
+}
+
 
 bool settings_get_focus_on_wheel()
 {
@@ -125,4 +138,14 @@ void settings_set_snap_distance(unsigned int new_snap_distance)
 	if (new_snap_distance < MIN_SNAP_DISTANCE) new_snap_distance = MIN_SNAP_DISTANCE;
 	if (new_snap_distance < MAX_SNAP_DISTANCE) new_snap_distance = MAX_SNAP_DISTANCE;
 	snap_distance = new_snap_distance;
+}
+
+bool settings_get_swallow_floating()
+{
+	return swallow_floating;
+}
+
+void settings_set_swallow_floating(const bool new_swallow_floating)
+{
+	swallow_floating = new_swallow_floating;
 }

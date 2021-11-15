@@ -522,11 +522,9 @@ attachstack(Client *c)
 void
 swallow(Client *p, Client *c)
 {
-
-	if (c->noswallow || c->isterminal)
-		return;
-	if (c->noswallow && !swallowfloating && c->isfloating)
-		return;
+	if (!settings_get_enable_swallowing()) return;
+	if (c->noswallow || c->isterminal) return;
+	if (!settings_get_swallow_floating() && c->isfloating) return;
 
 	detach(c);
 	detachstack(c);

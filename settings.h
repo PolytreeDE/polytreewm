@@ -15,6 +15,9 @@ void settings_set_enable_border_for_single_window(bool new_enable_border_for_sin
 bool settings_get_enable_gap_for_single_window();
 void settings_set_enable_gap_for_single_window(bool new_enable_gap_for_single_window);
 
+bool settings_get_enable_swallowing();
+void settings_set_enable_swallowing(bool new_enable_swallowing);
+
 bool settings_get_focus_on_wheel();
 void settings_set_focus_on_wheel(bool new_focus_on_wheel);
 
@@ -29,5 +32,8 @@ void settings_set_respect_resize_hints_in_floating_layout(bool new_respect_resiz
 
 unsigned int settings_get_snap_distance();
 void         settings_set_snap_distance(unsigned int new_snap_distance);
+
+bool settings_get_swallow_floating();
+void settings_set_swallow_floating(bool new_swallow_floating);
 
 #endif // _SETTINGS_H
