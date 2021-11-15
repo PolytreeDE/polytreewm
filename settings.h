@@ -9,6 +9,9 @@ void settings_set_default_clients_in_master(int new_default_clients_in_master);
 bool settings_get_focus_on_wheel();
 void settings_set_focus_on_wheel(bool new_focus_on_wheel);
 
+int  settings_get_gap_size();
+void settings_set_gap_size(int new_gap_size);
+
 int  settings_get_max_clients_in_master();
 void settings_set_max_clients_in_master(int new_max_clients_in_master);
 

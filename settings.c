@@ -2,6 +2,7 @@
 
 static int default_clients_in_master = 1;
 static bool focus_on_wheel = true;
+static int gap_size = 10;
 static int max_clients_in_master = 0; // 0 for no maximum
 static bool respect_resize_hints_in_floating_layout = false;
 static unsigned int snap_distance = 32;
@@ -26,6 +27,17 @@ void settings_set_focus_on_wheel(const bool new_focus_on_wheel)
 	focus_on_wheel = new_focus_on_wheel;
 }
 
+int settings_get_gap_size()
+{
+	return gap_size;
+}
+
+void settings_set_gap_size(const int new_gap_size)
+{
+	gap_size = new_gap_size;
+	// TODO: notify WM to rearrange clients
+}
+
 int settings_get_max_clients_in_master()
 {
 	return max_clients_in_master > 0 ? max_clients_in_master : 0;
@@ -34,6 +46,7 @@ int settings_get_max_clients_in_master()
 void settings_set_max_clients_in_master(const int new_max_clients_in_master)
 {
 	max_clients_in_master = new_max_clients_in_master;
+	// TODO: notify WM to rearrange clients
 }
 
 bool settings_get_respect_resize_hints_in_floating_layout()

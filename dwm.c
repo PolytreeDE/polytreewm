@@ -551,7 +551,9 @@ centeredmaster(Monitor *m)
 		}
 	}
 
+	const int gap_size = settings_get_gap_size();
 	const unsigned int bw = n == 1 ? 0 : borderpx;
+
 	unsigned int oty = 0, ety = 0, my = 0;
 	Client *c = nexttiled(m->clients);
 	for (unsigned int i = 0; c; c = nexttiled(c->next), ++i) {
@@ -559,17 +561,47 @@ centeredmaster(Monitor *m)
 			// nmaster clients are stacked vertically,
 			// in the center of the screen
 			const unsigned int h = (m->wh - my) / (MIN(n, m->nmaster) - i);
-			resize(c, m->wx + mx, m->wy + my, mw - 2 * bw, h - 2 * bw, bw, 0);
+
+			resize(
+				c,
+				m->wx + mx + gap_size,
+				m->wy + my + gap_size,
+				mw - 2 * bw - 2 * gap_size,
+				h - 2 * bw - 2 * gap_size,
+				bw,
+				0
+			);
+
 			my += HEIGHT(c);
 		} else {
 			// stack clients are stacked vertically
 			if ((i - m->nmaster) % 2) {
 				const unsigned int h = (m->wh - ety) / ((1 + n - i) / 2);
-				resize(c, m->wx, m->wy + ety, tw - 2 * bw, h - 2 * bw, bw, 0);
+
+				resize(
+					c,
+					m->wx + gap_size,
+					m->wy + ety + gap_size,
+					tw - 2 * bw - 2 * gap_size,
+					h - 2 * bw - 2 * gap_size,
+					bw,
+					0
+				);
+
 				ety += HEIGHT(c);
 			} else {
 				const unsigned int h = (m->wh - oty) / ((1 + n - i) / 2);
-				resize(c, m->wx + mx + mw, m->wy + oty, tw - 2 * bw, h - 2 * bw, bw, 0);
+
+				resize(
+					c,
+					m->wx + mx + mw + gap_size,
+					m->wy + oty + gap_size,
+					tw - 2 * bw - 2 * gap_size,
+					h - 2 * bw - 2 * gap_size,
+					bw,
+					0
+				);
+
 				oty += HEIGHT(c);
 			}
 		}
@@ -1389,10 +1421,19 @@ maprequest(XEvent *e)
 void
 monocle(Monitor *m)
 {
-	Client *c;
+	const int gap_size = settings_get_gap_size();
 
-	for (c = nexttiled(m->clients); c; c = nexttiled(c->next))
-		resize(c, m->wx, m->wy, m->ww, m->wh, 0, 0);
+	for (Client *c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
+		resize(
+			c,
+			m->wx + gap_size,
+			m->wy + gap_size,
+			m->ww - 2 * gap_size,
+			m->wh - 2 * gap_size,
+			0,
+			0
+		);
+	}
 }
 
 void
@@ -2123,6 +2164,7 @@ tile(Monitor *m)
 	for (Client *c = nexttiled(m->clients); c; c = nexttiled(c->next), ++n);
 	if (n == 0) return;
 
+	const int gap_size = settings_get_gap_size();
 	const unsigned int bw = n == 1 ? 0 : borderpx;
 	const unsigned int mw = n > m->nmaster ? (m->nmaster ? m->ww * m->mfact : 0) : m->ww;
 
@@ -2130,13 +2172,33 @@ tile(Monitor *m)
 	for (unsigned int i = 0, my = 0, ty = 0; c; c = nexttiled(c->next), ++i) {
 		if (i < m->nmaster) {
 			const unsigned int h = (m->wh - my) / (MIN(n, m->nmaster) - i);
-			resize(c, m->wx, m->wy + my, mw - 2 * bw, h - 2 * bw, bw, 0);
+
+			resize(
+				c,
+				m->wx + gap_size,
+				m->wy + my + gap_size,
+				mw - 2 * bw - 2 * gap_size,
+				h - 2 * bw - 2 * gap_size,
+				bw,
+				0
+			);
+
 			if (my + HEIGHT(c) < m->wh) {
 				my += HEIGHT(c);
 			}
 		} else {
 			const unsigned int h = (m->wh - ty) / (n - i);
-			resize(c, m->wx + mw, m->wy + ty, m->ww - mw - 2 * bw, h - 2 * bw, bw, 0);
+
+			resize(
+				c,
+				m->wx + mw + gap_size,
+				m->wy + ty + gap_size,
+				m->ww - mw - 2 * bw - 2 * gap_size,
+				h - 2 * bw - 2 * gap_size,
+				bw,
+				0
+			);
+
 			if (ty + HEIGHT(c) < m->wh) {
 				ty += HEIGHT(c);
 			}
