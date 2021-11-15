@@ -38,7 +38,7 @@ like this in your .xinitrc:
 
     while xsetroot -name "`date` `uptime | sed 's/.*,//'`"
     do
-    	sleep 1
+        sleep 1
     done &
     exec polytreewm
 
