@@ -35,7 +35,7 @@ static struct Command commands[] = {
 	{
 		.name = "term",
 		.monitor_arg_index = 0,
-		.args = { "st", NULL },
+		.args = { "ptterm", NULL },
 	},
 	{
 		.name = "firefox",
