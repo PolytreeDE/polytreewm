@@ -9,6 +9,9 @@ void settings_set_border_width(int new_border_width);
 int  settings_get_default_clients_in_master();
 void settings_set_default_clients_in_master(int new_default_clients_in_master);
 
+bool settings_get_enable_border_for_single_window();
+void settings_set_enable_border_for_single_window(bool new_enable_border_for_single_window);
+
 bool settings_get_enable_gap_for_single_window();
 void settings_set_enable_gap_for_single_window(bool new_enable_gap_for_single_window);
 

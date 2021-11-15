@@ -567,7 +567,8 @@ centeredmaster(Monitor *m)
 	const int top_left_half_gap = gap_size / 2;
 	const int bottom_right_half_gap = gap_size - top_left_half_gap;
 
-	const int border_width = n == 1 ? 0 : settings_get_border_width();
+	const bool enable_border_for_single_window = settings_get_enable_border_for_single_window();
+	const int border_width = (n > 1 || enable_border_for_single_window) ? settings_get_border_width() : 0;
 
 	unsigned int oty = 0, ety = 0, my = 0;
 	Client *c = nexttiled(m->clients);
@@ -1454,14 +1455,17 @@ monocle(Monitor *m)
 	const bool enable_gap_for_single_window = settings_get_enable_gap_for_single_window();
 	const int gap_size = enable_gap_for_single_window ? settings_get_gap_size() : 0;
 
+	const bool enable_border_for_single_window = settings_get_enable_border_for_single_window();
+	const int border_width = enable_border_for_single_window ? settings_get_border_width() : 0;
+
 	for (Client *c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
 		resize(
 			c,
 			m->wx + gap_size,
 			m->wy + gap_size,
-			m->ww - 2 * gap_size,
-			m->wh - 2 * gap_size,
-			0,
+			m->ww - 2 * border_width - 2 * gap_size,
+			m->wh - 2 * border_width - 2 * gap_size,
+			border_width,
 			0
 		);
 	}
@@ -2200,7 +2204,9 @@ tile(Monitor *m)
 	const int top_left_half_gap = gap_size / 2;
 	const int bottom_right_half_gap = gap_size - top_left_half_gap;
 
-	const int border_width = n == 1 ? 0 : settings_get_border_width();
+	const bool enable_border_for_single_window = settings_get_enable_border_for_single_window();
+	const int border_width = (n > 1 || enable_border_for_single_window) ? settings_get_border_width() : 0;
+
 	const unsigned int mw = n > m->nmaster ? (m->nmaster ? m->ww * m->mfact : 0) : m->ww;
 
 	Client *c = nexttiled(m->clients);
