@@ -1580,8 +1580,8 @@ nametag(const Arg *arg) {
 	int i;
 
 	errno = 0; // popen(3p) says on failure it "may" set errno
-	if(!(f = popen("dmenu < /dev/null", "r"))) {
-		fprintf(stderr, "polytreewm: popen 'dmenu < /dev/null' failed%s%s\n", errno ? ": " : "", errno ? strerror(errno) : "");
+	if(!(f = popen("rofi -dmenu", "r"))) {
+		fprintf(stderr, "polytreewm: popen 'rofi -dmenu' failed%s%s\n", errno ? ": " : "", errno ? strerror(errno) : "");
 		return;
 	}
 	if (!(p = fgets(name, TAGS_CUSTOM_NAME_SIZE, f)) && (i = errno) && ferror(f))

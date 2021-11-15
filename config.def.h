@@ -4,7 +4,6 @@
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
 static const char *fonts[]          = { "monospace:size=10" };
-static const char dmenufont[]       = "monospace:size=10";
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
@@ -54,7 +53,7 @@ static Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_n,      nametag,        {0} },
 	{ MODKEY,                       XK_slash,  spawn,          {.v = "menu" } },
-	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = "term" } },
+	{ MODKEY|ShiftMask,             XK_slash,  spawn,          {.v = "term" } },
 	{ MODKEY|ShiftMask,             XK_f,      spawn,          {.v = "firefox" } },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },

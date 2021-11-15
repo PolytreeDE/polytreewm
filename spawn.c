@@ -19,38 +19,27 @@ struct Command {
 static struct Command commands[] = {
 	{
 		.name = "menu",
-		.monitor_arg_index = 2,
+		.monitor_arg_index = 6,
 		.args = {
-			"dmenu_run",
-			// monitor
-			"-m",
-			"0",
-			// font
-			"-fn",
-			"monospace:size=10",
-			// color: gray 1
-			"-nb",
-			"#222222",
-			// color: gray 3
-			"-nf",
-			"#bbbbbb",
-			// color: cyan
-			"-sb",
-			"#005577",
-			// color: gray 4
-			"-sf",
-			"#eeeeee",
+			"rofi",
+			"-modi",
+			"drun",
+			"-show",
+			"drun",
+			"-monitor",
+			"-1",
+			"-show-icons",
 			NULL,
 		},
 	},
 	{
 		.name = "term",
-		.monitor_arg_index = -1,
+		.monitor_arg_index = 0,
 		.args = { "st", NULL },
 	},
 	{
 		.name = "firefox",
-		.monitor_arg_index = -1,
+		.monitor_arg_index = 0,
 		.args = { "firefox", NULL },
 	},
 };
@@ -73,10 +62,11 @@ void spawn_command(
 		// We discard const modifier
 		// because we will only change newly allocated version.
 		char **args = (char**)command->args;
+		char monitor_buffer[2] = { '0' + monitor, '\0' };
 
-		if (command->monitor_arg_index != -1) {
+		if (command->monitor_arg_index != 0) {
 			args = malloc(sizeof(char*) * ARGS_SIZE);
-			if (args == NULL) break;
+			if (args == NULL) return;
 
 			for (size_t arg_index = 0;; ++arg_index) {
 				// We discard const modifier
@@ -85,24 +75,10 @@ void spawn_command(
 				if (args[arg_index] == NULL) break;
 			}
 
-			args[command->monitor_arg_index] =
-				malloc(sizeof(char) * MON_ARG_SIZE);
-			if (args[command->monitor_arg_index] == NULL) {
-				free(args);
-				break;
-			}
-
-			args[command->monitor_arg_index][0] = '0' + monitor;
-			args[command->monitor_arg_index][1] = '\0';
+			args[command->monitor_arg_index] = monitor_buffer;
 		}
 
 		if (fork() == 0) {
-			// TODO: DRY (see the same code below)
-			if (command->monitor_arg_index != -1) {
-				free(args[command->monitor_arg_index]);
-				free(args);
-			}
-
 			callback();
 			setsid();
 			execvp(args[0], args);
@@ -111,11 +87,8 @@ void spawn_command(
 			exit(EXIT_SUCCESS);
 		}
 
-		if (command->monitor_arg_index != -1) {
-			free(args[command->monitor_arg_index]);
-			free(args);
-		}
+		if (command->monitor_arg_index != 0) free(args);
 
-		break;
+		return;
 	}
 }
