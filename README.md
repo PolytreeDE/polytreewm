@@ -67,6 +67,7 @@ Applied patches
 * resetnmaster
 * smartborders
 * statusallmons
+* swallow
 * systray
 
 Interesting patches (not applied)
