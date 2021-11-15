@@ -34,7 +34,7 @@ int settings_get_gap_size()
 
 void settings_set_gap_size(const int new_gap_size)
 {
-	gap_size = new_gap_size;
+	gap_size = new_gap_size >= 0 ? new_gap_size : 0;
 	// TODO: notify WM to rearrange clients
 }
 

@@ -552,6 +552,9 @@ centeredmaster(Monitor *m)
 	}
 
 	const int gap_size = settings_get_gap_size();
+	const int top_left_half_gap = gap_size / 2;
+	const int bottom_right_half_gap = gap_size - top_left_half_gap;
+
 	const unsigned int bw = n == 1 ? 0 : borderpx;
 
 	unsigned int oty = 0, ety = 0, my = 0;
@@ -562,47 +565,62 @@ centeredmaster(Monitor *m)
 			// in the center of the screen
 			const unsigned int h = (m->wh - my) / (MIN(n, m->nmaster) - i);
 
+			const int left_gap   = (n <= m->nmaster + 1) ? gap_size : top_left_half_gap;
+			const int top_gap    = i == 0 ? gap_size : top_left_half_gap;
+			const int right_gap  = n <= m->nmaster ? gap_size : bottom_right_half_gap;
+			const int bottom_gap = (i == m->nmaster - 1 || i == n - 1) ? gap_size : bottom_right_half_gap;
+
 			resize(
 				c,
-				m->wx + mx + gap_size,
-				m->wy + my + gap_size,
-				mw - 2 * bw - 2 * gap_size,
-				h - 2 * bw - 2 * gap_size,
+				m->wx + mx + left_gap,
+				m->wy + my + top_gap,
+				mw - 2 * bw - left_gap - right_gap,
+				h - 2 * bw - top_gap - bottom_gap,
 				bw,
 				0
 			);
 
-			my += HEIGHT(c);
+			my += HEIGHT(c) + top_gap + bottom_gap;
 		} else {
 			// stack clients are stacked vertically
 			if ((i - m->nmaster) % 2) {
 				const unsigned int h = (m->wh - ety) / ((1 + n - i) / 2);
 
+				const int left_gap   = gap_size;
+				const int top_gap    = (i == m->nmaster + 1) ? gap_size : top_left_half_gap;
+				const int right_gap  = bottom_right_half_gap;
+				const int bottom_gap = (i == n - 1 || i == n - 2) ? gap_size : bottom_right_half_gap;
+
 				resize(
 					c,
-					m->wx + gap_size,
-					m->wy + ety + gap_size,
-					tw - 2 * bw - 2 * gap_size,
-					h - 2 * bw - 2 * gap_size,
+					m->wx + left_gap,
+					m->wy + ety + top_gap,
+					tw - 2 * bw - left_gap - right_gap,
+					h - 2 * bw - top_gap - bottom_gap,
 					bw,
 					0
 				);
 
-				ety += HEIGHT(c);
+				ety += HEIGHT(c) + top_gap + bottom_gap;
 			} else {
 				const unsigned int h = (m->wh - oty) / ((1 + n - i) / 2);
 
+				const int left_gap   = (m->nmaster == 0 && n == 1) ? gap_size : top_left_half_gap;
+				const int top_gap    = i == m->nmaster ? gap_size : top_left_half_gap;
+				const int right_gap  = gap_size;
+				const int bottom_gap = (i == n - 1 || i == n - 2) ? gap_size : bottom_right_half_gap;
+
 				resize(
 					c,
-					m->wx + mx + mw + gap_size,
-					m->wy + oty + gap_size,
-					tw - 2 * bw - 2 * gap_size,
-					h - 2 * bw - 2 * gap_size,
+					m->wx + mx + mw + left_gap,
+					m->wy + oty + top_gap,
+					tw - 2 * bw - left_gap - right_gap,
+					h - 2 * bw - top_gap - bottom_gap,
 					bw,
 					0
 				);
 
-				oty += HEIGHT(c);
+				oty += HEIGHT(c) + top_gap + bottom_gap;
 			}
 		}
 	}
@@ -2165,6 +2183,9 @@ tile(Monitor *m)
 	if (n == 0) return;
 
 	const int gap_size = settings_get_gap_size();
+	const int top_left_half_gap = gap_size / 2;
+	const int bottom_right_half_gap = gap_size - top_left_half_gap;
+
 	const unsigned int bw = n == 1 ? 0 : borderpx;
 	const unsigned int mw = n > m->nmaster ? (m->nmaster ? m->ww * m->mfact : 0) : m->ww;
 
@@ -2173,34 +2194,44 @@ tile(Monitor *m)
 		if (i < m->nmaster) {
 			const unsigned int h = (m->wh - my) / (MIN(n, m->nmaster) - i);
 
+			const unsigned int left_gap   = gap_size;
+			const unsigned int top_gap    = i == 0 ? gap_size : top_left_half_gap;
+			const unsigned int right_gap  = n <= m->nmaster ? gap_size : bottom_right_half_gap;
+			const unsigned int bottom_gap = (i == m->nmaster - 1 || i == n - 1) ? gap_size : bottom_right_half_gap;
+
 			resize(
 				c,
-				m->wx + gap_size,
-				m->wy + my + gap_size,
-				mw - 2 * bw - 2 * gap_size,
-				h - 2 * bw - 2 * gap_size,
+				m->wx + left_gap,
+				m->wy + my + top_gap,
+				mw - 2 * bw - left_gap - right_gap,
+				h - 2 * bw - top_gap - bottom_gap,
 				bw,
 				0
 			);
 
 			if (my + HEIGHT(c) < m->wh) {
-				my += HEIGHT(c);
+				my += HEIGHT(c) + top_gap + bottom_gap;
 			}
 		} else {
 			const unsigned int h = (m->wh - ty) / (n - i);
 
+			const unsigned int left_gap   = m->nmaster == 0 ? gap_size : top_left_half_gap;
+			const unsigned int top_gap    = i == m->nmaster ? gap_size : top_left_half_gap;
+			const unsigned int right_gap  = gap_size;
+			const unsigned int bottom_gap = (i == n - 1) ? gap_size : bottom_right_half_gap;
+
 			resize(
 				c,
-				m->wx + mw + gap_size,
-				m->wy + ty + gap_size,
-				m->ww - mw - 2 * bw - 2 * gap_size,
-				h - 2 * bw - 2 * gap_size,
+				m->wx + mw + left_gap,
+				m->wy + ty + top_gap,
+				m->ww - mw - 2 * bw - left_gap - right_gap,
+				h - 2 * bw - top_gap - bottom_gap,
 				bw,
 				0
 			);
 
 			if (ty + HEIGHT(c) < m->wh) {
-				ty += HEIGHT(c);
+				ty += HEIGHT(c) + top_gap + bottom_gap;
 			}
 		}
 	}
