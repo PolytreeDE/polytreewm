@@ -2115,18 +2115,54 @@ setup(void)
 	/* init bars */
 	updatebars();
 	updatestatus();
+
 	/* supporting window for NetWMCheck */
 	wmcheckwin = XCreateSimpleWindow(dpy, root, 0, 0, 1, 1, 0, 0, 0);
-	XChangeProperty(dpy, wmcheckwin, atoms->netatom[NetWMCheck], XA_WINDOW, 32,
-		PropModeReplace, (unsigned char *) &wmcheckwin, 1);
-	XChangeProperty(dpy, wmcheckwin, atoms->netatom[NetWMName], atoms->utf8string, 8,
-		PropModeReplace, (unsigned char *) "polytreewm", 3);
-	XChangeProperty(dpy, root, atoms->netatom[NetWMCheck], XA_WINDOW, 32,
-		PropModeReplace, (unsigned char *) &wmcheckwin, 1);
+	XChangeProperty(
+		dpy,
+		wmcheckwin,
+		atoms->netatom[NetWMCheck],
+		XA_WINDOW,
+		32,
+		PropModeReplace,
+		(unsigned char*)&wmcheckwin,
+		1
+	);
+	XChangeProperty(
+		dpy,
+		wmcheckwin,
+		atoms->netatom[NetWMName],
+		atoms->utf8string,
+		8,
+		PropModeReplace,
+		(unsigned char*)
+		"polytreewm",
+		3
+	);
+	XChangeProperty(
+		dpy,
+		root,
+		atoms->netatom[NetWMCheck],
+		XA_WINDOW,
+		32,
+		PropModeReplace,
+		(unsigned char*)&wmcheckwin,
+		1
+	);
+
 	/* EWMH support per view */
-	XChangeProperty(dpy, root, atoms->netatom[NetSupported], XA_ATOM, 32,
-		PropModeReplace, (unsigned char *) atoms->netatom, NetLast);
+	XChangeProperty(
+		dpy,
+		root,
+		atoms->netatom[NetSupported],
+		XA_ATOM,
+		32,
+		PropModeReplace,
+		(unsigned char*)atoms->netatom,
+		NetLast
+	);
 	XDeleteProperty(dpy, root, atoms->netatom[NetClientList]);
+
 	/* select events */
 	wa.cursor = cursor[CurNormal]->cursor;
 	wa.event_mask = SubstructureRedirectMask|SubstructureNotifyMask
