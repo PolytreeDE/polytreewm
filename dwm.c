@@ -2136,8 +2136,8 @@ setup(void)
 		8,
 		PropModeReplace,
 		(unsigned char*)
-		"polytreewm",
-		3
+		wm_name,
+		strlen(wm_name)
 	);
 	XChangeProperty(
 		dpy,
