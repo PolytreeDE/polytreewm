@@ -48,6 +48,11 @@ Configuration
 The configuration of PolytreeWM is done by creating a custom config.h and
 (re)compiling the source code.
 
+Credits
+-------
+
+PolytreeWM is a fork of [dwm](https://dwm.suckless.org).
+
 Applied patches
 ---------------
 
