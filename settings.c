@@ -1,5 +1,16 @@
 #include "settings.h"
 
+#define MIN_BORDER_WIDTH 0
+#define MAX_BORDER_WIDTH 10000
+#define MIN_DEFAULT_CLIENTS_IN_MASTER 1
+#define MAX_DEFAULT_CLIENTS_IN_MASTER 10000
+#define MIN_GAP_SIZE 0
+#define MAX_GAP_SIZE 10000
+#define MIN_MAX_CLIENTS_IN_MASTER 1
+#define MAX_MAX_CLIENTS_IN_MASTER 10000
+#define MIN_SNAP_DISTANCE 1
+#define MAX_SNAP_DISTANCE 10000
+
 static int border_width = 2;
 static int default_clients_in_master = 1;
 static bool enable_border_for_single_window = true;
@@ -10,24 +21,28 @@ static int max_clients_in_master = 0; // 0 for no maximum
 static bool respect_resize_hints_in_floating_layout = false;
 static unsigned int snap_distance = 32;
 
-int  settings_get_border_width()
+int settings_get_border_width()
 {
 	return border_width;
 }
 
-void settings_set_border_width(const int new_border_width)
+void settings_set_border_width(int new_border_width)
 {
+	if (new_border_width < MIN_BORDER_WIDTH) new_border_width = MIN_BORDER_WIDTH;
+	if (new_border_width > MAX_BORDER_WIDTH) new_border_width = MAX_BORDER_WIDTH;
 	border_width = new_border_width;
 	// TODO: notify WM to rearrange clients
 }
 
 int settings_get_default_clients_in_master()
 {
-	return default_clients_in_master >= 1 ? default_clients_in_master : 1;
+	return default_clients_in_master;
 }
 
-void settings_set_default_clients_in_master(const int new_default_clients_in_master)
+void settings_set_default_clients_in_master(int new_default_clients_in_master)
 {
+	if (new_default_clients_in_master < MIN_DEFAULT_CLIENTS_IN_MASTER) new_default_clients_in_master = MIN_DEFAULT_CLIENTS_IN_MASTER;
+	if (new_default_clients_in_master < MAX_DEFAULT_CLIENTS_IN_MASTER) new_default_clients_in_master = MAX_DEFAULT_CLIENTS_IN_MASTER;
 	default_clients_in_master = new_default_clients_in_master;
 }
 
@@ -68,19 +83,23 @@ int settings_get_gap_size()
 	return gap_size;
 }
 
-void settings_set_gap_size(const int new_gap_size)
+void settings_set_gap_size(int new_gap_size)
 {
-	gap_size = new_gap_size >= 0 ? new_gap_size : 0;
+	if (new_gap_size < MIN_GAP_SIZE) new_gap_size = MIN_GAP_SIZE;
+	if (new_gap_size > MAX_GAP_SIZE) new_gap_size = MAX_GAP_SIZE;
+	gap_size = new_gap_size;
 	// TODO: notify WM to rearrange clients
 }
 
 int settings_get_max_clients_in_master()
 {
-	return max_clients_in_master > 0 ? max_clients_in_master : 0;
+	return max_clients_in_master;
 }
 
-void settings_set_max_clients_in_master(const int new_max_clients_in_master)
+void settings_set_max_clients_in_master(int new_max_clients_in_master)
 {
+	if (new_max_clients_in_master < MIN_MAX_CLIENTS_IN_MASTER) new_max_clients_in_master = MIN_MAX_CLIENTS_IN_MASTER;
+	if (new_max_clients_in_master < MAX_MAX_CLIENTS_IN_MASTER) new_max_clients_in_master = MAX_MAX_CLIENTS_IN_MASTER;
 	max_clients_in_master = new_max_clients_in_master;
 	// TODO: notify WM to rearrange clients
 }
@@ -101,7 +120,9 @@ unsigned int settings_get_snap_distance()
 	return snap_distance;
 }
 
-void settings_set_snap_distance(const unsigned int new_snap_distance)
+void settings_set_snap_distance(unsigned int new_snap_distance)
 {
+	if (new_snap_distance < MIN_SNAP_DISTANCE) new_snap_distance = MIN_SNAP_DISTANCE;
+	if (new_snap_distance < MAX_SNAP_DISTANCE) new_snap_distance = MAX_SNAP_DISTANCE;
 	snap_distance = new_snap_distance;
 }

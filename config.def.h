@@ -94,6 +94,10 @@ static Key keys[] = {
 	TAGKEYS(                        XK_7,                      6)
 	TAGKEYS(                        XK_8,                      7)
 	TAGKEYS(                        XK_9,                      8)
+	{ MODKEY|Mod1Mask,              XK_b,      configborder,   {.i = -1 } },
+	{ MODKEY|Mod1Mask|ShiftMask,    XK_b,      configborder,   {.i = +1 } },
+	{ MODKEY|Mod1Mask,              XK_g,      configgap,      {.i = -1 } },
+	{ MODKEY|Mod1Mask|ShiftMask,    XK_g,      configgap,      {.i = +1 } },
 };
 
 /* button definitions */

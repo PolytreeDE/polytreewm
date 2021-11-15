@@ -172,6 +172,8 @@ static void arrangemon(Monitor *m);
 static void attach(Client *c);
 static void attachstack(Client *c);
 static void buttonpress(XEvent *e);
+static void configborder(const Arg *arg);
+static void configgap(const Arg *arg);
 static void centeredmaster(Monitor *m);
 static void checkotherwm(void);
 static void cleanup(void);
@@ -538,6 +540,24 @@ buttonpress(XEvent *e)
 		if (click == buttons[i].click && buttons[i].func && buttons[i].button == ev->button
 		&& CLEANMASK(buttons[i].mask) == CLEANMASK(ev->state))
 			buttons[i].func(click == ClkTagBar && buttons[i].arg.i == 0 ? &arg : &buttons[i].arg);
+}
+
+void configborder(const Arg *const arg)
+{
+	if (arg == NULL) return;
+	const int old_border_width = settings_get_border_width();
+	const int new_border_width = old_border_width + (arg->i >= 0 ? +1 : -1);
+	settings_set_border_width(new_border_width);
+	arrange(selmon);
+}
+
+void configgap(const Arg *const arg)
+{
+	if (arg == NULL) return;
+	const int old_gap_size = settings_get_gap_size();
+	const int new_gap_size = old_gap_size + (arg->i >= 0 ? +2 : -2);
+	settings_set_gap_size(new_gap_size);
+	arrange(selmon);
 }
 
 void
