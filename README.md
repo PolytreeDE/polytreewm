@@ -68,6 +68,8 @@ Interesting patches (not applied)
 ---------------------------------
 
 * attachdirection
+* current_desktop
+* ewmhtags
 * focusmaster
 * focusmonmouse
 * rotatestack
