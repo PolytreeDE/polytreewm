@@ -37,6 +37,12 @@ void settings_set_max_clients_in_master(int new_max_clients_in_master);
 bool settings_get_respect_resize_hints_in_floating_layout();
 void settings_set_respect_resize_hints_in_floating_layout(bool new_respect_resize_hints_in_floating_layout);
 
+bool settings_get_show_bar_by_default();
+void settings_set_show_bar_by_default(bool new_show_bar_by_default);
+
+bool settings_get_show_bar_per_tag();
+void settings_set_show_bar_per_tag(bool new_show_bar_per_tag);
+
 unsigned int settings_get_snap_distance();
 void         settings_set_snap_distance(unsigned int new_snap_distance);
 

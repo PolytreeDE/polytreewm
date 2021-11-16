@@ -20,6 +20,8 @@ static bool focus_on_wheel = true;
 static int gap_size = 10;
 static int max_clients_in_master = 0; // 0 for no maximum
 static bool respect_resize_hints_in_floating_layout = false;
+static bool show_bar_by_default = true;
+static bool show_bar_per_tag = false;
 static unsigned int snap_distance = 32;
 static bool swallow_floating = false;
 
@@ -126,6 +128,26 @@ void settings_set_respect_resize_hints_in_floating_layout(const bool new_respect
 {
 	respect_resize_hints_in_floating_layout = new_respect_resize_hints_in_floating_layout;
 	// TODO: notify WM to rearrange clients
+}
+
+bool settings_get_show_bar_by_default()
+{
+	return show_bar_by_default;
+}
+
+void settings_set_show_bar_by_default(bool new_show_bar_by_default)
+{
+	show_bar_by_default = new_show_bar_by_default;
+}
+
+bool settings_get_show_bar_per_tag()
+{
+	return show_bar_per_tag;
+}
+
+void settings_set_show_bar_per_tag(bool new_show_bar_per_tag)
+{
+	show_bar_per_tag = new_show_bar_per_tag;
 }
 
 unsigned int settings_get_snap_distance()
