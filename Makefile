@@ -65,20 +65,9 @@ install: all
 	sed "s/VERSION/${VERSION}/g" < polytreewm.1 > ${DESTDIR}${MANPREFIX}/man1/polytreewm.1
 	chmod 644 ${DESTDIR}${MANPREFIX}/man1/polytreewm.1
 
-xinstall: install
-	mkdir -p ${DESTDIR}${ICONSPREFIX}
-	cp -f polytreewm.png ${DESTDIR}${ICONSPREFIX}
-	chmod 644 ${DESTDIR}${ICONSPREFIX}/polytreewm.png
-	
-	mkdir -p ${DESTDIR}${XSESSIONSPREFIX}
-	cp -f polytreewm.desktop ${DESTDIR}${XSESSIONSPREFIX}
-	chmod 644 ${DESTDIR}${XSESSIONSPREFIX}/polytreewm.desktop
-
 uninstall:
 	rm -f \
 		${DESTDIR}${PREFIX}/bin/polytreewm \
-		${DESTDIR}${MANPREFIX}/man1/polytreewm.1 \
-		${DESTDIR}${ICONSPREFIX}/polytreewm.png \
-		${DESTDIR}${XSESSIONSPREFIX}/polytreewm.desktop
+		${DESTDIR}${MANPREFIX}/man1/polytreewm.1
 
-.PHONY: all options clean install uninstall xinstall
+.PHONY: all options clean install uninstall
