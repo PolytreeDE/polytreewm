@@ -1,5 +1,5 @@
 void
-buttonpress(XEvent *e)
+on_button_press(XEvent *e)
 {
 	unsigned int i, x, click, occ = 0;
 	Arg arg = {0};
@@ -47,7 +47,7 @@ buttonpress(XEvent *e)
 }
 
 void
-clientmessage(XEvent *e)
+on_client_message(XEvent *e)
 {
 	XWindowAttributes wa;
 	XSetWindowAttributes swa;
@@ -126,7 +126,7 @@ clientmessage(XEvent *e)
 }
 
 void
-configurerequest(XEvent *e)
+on_configure_request(XEvent *e)
 {
 	Client *c;
 	Monitor *m;
@@ -178,7 +178,7 @@ configurerequest(XEvent *e)
 }
 
 void
-configurenotify(XEvent *e)
+on_configure_notify(XEvent *e)
 {
 	Monitor *m;
 	XConfigureEvent *ev = &e->xconfigure;
@@ -202,7 +202,7 @@ configurenotify(XEvent *e)
 }
 
 void
-destroynotify(XEvent *e)
+on_destroy_notify(XEvent *e)
 {
 	XDestroyWindowEvent *const ev = &e->xdestroywindow;
 
@@ -220,7 +220,7 @@ destroynotify(XEvent *e)
 }
 
 void
-expose(XEvent *e)
+on_expose(XEvent *e)
 {
 	Monitor *m;
 	XExposeEvent *ev = &e->xexpose;
@@ -234,7 +234,7 @@ expose(XEvent *e)
 
 /* there are some broken focus acquiring clients needing extra handling */
 void
-focusin(XEvent *e)
+on_focus_in(XEvent *e)
 {
 	XFocusChangeEvent *ev = &e->xfocus;
 
@@ -243,7 +243,7 @@ focusin(XEvent *e)
 }
 
 void
-keypress(XEvent *e)
+on_key_press(XEvent *e)
 {
 	unsigned int i;
 	KeySym keysym;
@@ -259,7 +259,7 @@ keypress(XEvent *e)
 }
 
 void
-mappingnotify(XEvent *e)
+on_mapping_notify(XEvent *e)
 {
 	XMappingEvent *ev = &e->xmapping;
 
@@ -269,7 +269,7 @@ mappingnotify(XEvent *e)
 }
 
 void
-maprequest(XEvent *e)
+on_map_request(XEvent *e)
 {
 	static XWindowAttributes wa;
 	XMapRequestEvent *ev = &e->xmaprequest;
@@ -289,7 +289,7 @@ maprequest(XEvent *e)
 }
 
 void
-propertynotify(XEvent *e)
+on_property_notify(XEvent *e)
 {
 	Client *c;
 	Window trans;
@@ -336,7 +336,7 @@ propertynotify(XEvent *e)
 }
 
 void
-resizerequest(XEvent *e)
+on_resize_request(XEvent *e)
 {
 	XResizeRequestEvent *ev = &e->xresizerequest;
 	Client *i;
@@ -349,7 +349,7 @@ resizerequest(XEvent *e)
 }
 
 void
-unmapnotify(XEvent *e)
+on_unmap_notify(XEvent *e)
 {
 	Client *c;
 	XUnmapEvent *ev = &e->xunmap;

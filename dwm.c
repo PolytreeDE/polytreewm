@@ -182,27 +182,20 @@ static void arrange(Monitor *m);
 static void arrangemon(Monitor *m);
 static void attach(Client *c);
 static void attachstack(Client *c);
-static void buttonpress(XEvent *e);
 static void configborder(const Arg *arg);
 static void configgap(const Arg *arg);
 static void centeredmaster(Monitor *m);
 static void checkotherwm(void);
 static void cleanup(void);
 static void cleanupmon(Monitor *mon);
-static void clientmessage(XEvent *e);
 static void configure(Client *c);
-static void configurenotify(XEvent *e);
-static void configurerequest(XEvent *e);
 static Monitor *createmon(void);
-static void destroynotify(XEvent *e);
 static void detach(Client *c);
 static void detachstack(Client *c);
 static Monitor *dirtomon(int dir);
 static void drawbar(Monitor *m);
 static void drawbars(void);
-static void expose(XEvent *e);
 static void focus(Client *c);
-static void focusin(XEvent *e);
 static void focusmon(const Arg *arg);
 static void focusstack(const Arg *arg);
 static Atom getatomprop(Client *c, Atom prop);
@@ -214,18 +207,14 @@ static void grabbuttons(Client *c, int focused);
 static void grabkeys(void);
 static void horizontile(Monitor *);
 static void incnmaster(const Arg *arg);
-static void keypress(XEvent *e);
 static void killclient(const Arg *arg);
 static void manage(Window w, XWindowAttributes *wa);
-static void mappingnotify(XEvent *e);
-static void maprequest(XEvent *e);
 static void monocle(Monitor *m);
 static void movemouse(const Arg *arg);
 static void movestack(const Arg *arg);
 static void nametag(const Arg *arg);
 static Client *nexttiled(Client *c);
 static void pop(Client *);
-static void propertynotify(XEvent *e);
 static void quit(const Arg *arg);
 static Monitor *recttomon(int x, int y, int w, int h);
 static void removesystrayicon(Client *i);
@@ -234,7 +223,6 @@ static void resize(Client *c, int x, int y, int w, int h, int bw, int interact);
 static void resizebarwin(Monitor *m);
 static void resizeclient(Client *c, int x, int y, int w, int h, int bw);
 static void resizemouse(const Arg *arg);
-static void resizerequest(XEvent *e);
 static void restack(Monitor *m);
 static void run(void);
 static void scan(void);
@@ -261,7 +249,6 @@ static void toggletag(const Arg *arg);
 static void toggleview(const Arg *arg);
 static void unfocus(Client *c, int setfocus);
 static void unmanage(Client *c, int destroyed);
-static void unmapnotify(XEvent *e);
 static void updatebarpos(Monitor *m);
 static void updatebars(void);
 static void updateclientlist(void);
@@ -291,6 +278,21 @@ static Client *swallowingclient(Window w);
 static Client *termforwin(const Client *c);
 static pid_t winpid(Window w);
 
+/* handlers */
+static void on_button_press(XEvent *e);
+static void on_client_message(XEvent *e);
+static void on_configure_notify(XEvent *e);
+static void on_configure_request(XEvent *e);
+static void on_destroy_notify(XEvent *e);
+static void on_expose(XEvent *e);
+static void on_focus_in(XEvent *e);
+static void on_key_press(XEvent *e);
+static void on_mapping_notify(XEvent *e);
+static void on_map_request(XEvent *e);
+static void on_property_notify(XEvent *e);
+static void on_resize_request(XEvent *e);
+static void on_unmap_notify(XEvent *e);
+
 /* variables */
 static Systray *systray =  NULL;
 static const char broken[] = "broken";
@@ -302,19 +304,19 @@ static int lrpad;            /* sum of left and right padding for text */
 static int (*xerrorxlib)(Display *, XErrorEvent *);
 static unsigned int numlockmask = 0;
 static void (*handler[LASTEvent]) (XEvent *) = {
-	[ButtonPress] = buttonpress,
-	[ClientMessage] = clientmessage,
-	[ConfigureRequest] = configurerequest,
-	[ConfigureNotify] = configurenotify,
-	[DestroyNotify] = destroynotify,
-	[Expose] = expose,
-	[FocusIn] = focusin,
-	[KeyPress] = keypress,
-	[MappingNotify] = mappingnotify,
-	[MapRequest] = maprequest,
-	[PropertyNotify] = propertynotify,
-	[ResizeRequest] = resizerequest,
-	[UnmapNotify] = unmapnotify
+	[ButtonPress] = on_button_press,
+	[ClientMessage] = on_client_message,
+	[ConfigureRequest] = on_configure_request,
+	[ConfigureNotify] = on_configure_notify,
+	[DestroyNotify] = on_destroy_notify,
+	[Expose] = on_expose,
+	[FocusIn] = on_focus_in,
+	[KeyPress] = on_key_press,
+	[MappingNotify] = on_mapping_notify,
+	[MapRequest] = on_map_request,
+	[PropertyNotify] = on_property_notify,
+	[ResizeRequest] = on_resize_request,
+	[UnmapNotify] = on_unmap_notify
 };
 static Atoms atoms = NULL;
 static int running = 1;
