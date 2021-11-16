@@ -1,6 +1,8 @@
 # PolytreeWM - tiling window manager
 # See LICENSE file for copyright and license details.
 
+all: polytreewm
+
 include config/1-custom.mk
 include config/2-generated.mk
 include config/3-custom.mk
@@ -49,14 +51,6 @@ DWM_SRC = \
 OBJ = ${SRC:.c=.o}
 DWM_HDR = ${DWM_SRC:.c=.h}
 
-all: options polytreewm
-
-options:
-	@echo PolytreeWM build options:
-	@echo "CFLAGS   = ${CFLAGS}"
-	@echo "LDFLAGS  = ${LDFLAGS}"
-	@echo "CC       = ${CC}"
-
 polytreewm: ${OBJ}
 	${CC} -o $@ ${OBJ} ${LDFLAGS}
 
@@ -91,4 +85,4 @@ uninstall:
 		${DESTDIR}${BINDIR}/polytreewm \
 		${DESTDIR}${MANDIR}/man1/polytreewm.1
 
-.PHONY: all options clean distclean install uninstall
+.PHONY: all clean distclean install uninstall
