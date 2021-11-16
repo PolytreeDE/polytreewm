@@ -20,32 +20,8 @@ centeredmaster(Monitor *m)
 		}
 	}
 
-	const SettingsForSingleWindow gap_for_single_window = settings_get_gap_for_single_window();
-	const SettingsForSingleWindow border_for_single_window = settings_get_border_for_single_window();
-
-	const int gap_size = (
-		n > 1
-		||
-		gap_for_single_window == SETTINGS_FOR_SINGLE_WINDOW_ALWAYS
-		||
-		(
-			gap_for_single_window == SETTINGS_FOR_SINGLE_WINDOW_NOT_IN_FULLSCREEN
-			&&
-			!m->sel->isfullscreen
-		)
-	) ? settings_get_gap_size() : 0;
-
-	const int border_width = (
-		n > 1
-		||
-		border_for_single_window == SETTINGS_FOR_SINGLE_WINDOW_ALWAYS
-		||
-		(
-			border_for_single_window == SETTINGS_FOR_SINGLE_WINDOW_NOT_IN_FULLSCREEN
-			&&
-			!m->sel->isfullscreen
-		)
-	) ? settings_get_border_width() : 0;
+	const int gap_size = helpers_gap_size(n, m->sel->isfullscreen);
+	const int border_width = helpers_border_width(n, m->sel->isfullscreen);
 
 	const int top_left_half_gap = gap_size / 2;
 	const int bottom_right_half_gap = gap_size - top_left_half_gap;
@@ -123,28 +99,8 @@ centeredmaster(Monitor *m)
 void
 monocle(Monitor *m)
 {
-	const SettingsForSingleWindow gap_for_single_window = settings_get_gap_for_single_window();
-	const SettingsForSingleWindow border_for_single_window = settings_get_border_for_single_window();
-
-	const int gap_size = (
-		gap_for_single_window == SETTINGS_FOR_SINGLE_WINDOW_ALWAYS
-		||
-		(
-			gap_for_single_window == SETTINGS_FOR_SINGLE_WINDOW_NOT_IN_FULLSCREEN
-			&&
-			!m->sel->isfullscreen
-		)
-	) ? settings_get_gap_size() : 0;
-
-	const int border_width = (
-		border_for_single_window == SETTINGS_FOR_SINGLE_WINDOW_ALWAYS
-		||
-		(
-			border_for_single_window == SETTINGS_FOR_SINGLE_WINDOW_NOT_IN_FULLSCREEN
-			&&
-			!m->sel->isfullscreen
-		)
-	) ? settings_get_border_width() : 0;
+	const int gap_size = helpers_gap_size(1, m->sel->isfullscreen);
+	const int border_width = helpers_border_width(1, m->sel->isfullscreen);
 
 	for (Client *c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
 		resize(
@@ -166,32 +122,8 @@ tile(Monitor *m)
 	for (Client *c = nexttiled(m->clients); c; c = nexttiled(c->next), ++n);
 	if (n == 0) return;
 
-	const SettingsForSingleWindow gap_for_single_window = settings_get_gap_for_single_window();
-	const SettingsForSingleWindow border_for_single_window = settings_get_border_for_single_window();
-
-	const int gap_size = (
-		n > 1
-		||
-		gap_for_single_window == SETTINGS_FOR_SINGLE_WINDOW_ALWAYS
-		||
-		(
-			gap_for_single_window == SETTINGS_FOR_SINGLE_WINDOW_NOT_IN_FULLSCREEN
-			&&
-			!m->sel->isfullscreen
-		)
-	) ? settings_get_gap_size() : 0;
-
-	const int border_width = (
-		n > 1
-		||
-		border_for_single_window == SETTINGS_FOR_SINGLE_WINDOW_ALWAYS
-		||
-		(
-			border_for_single_window == SETTINGS_FOR_SINGLE_WINDOW_NOT_IN_FULLSCREEN
-			&&
-			!m->sel->isfullscreen
-		)
-	) ? settings_get_border_width() : 0;
+	const int gap_size = helpers_gap_size(n, m->sel->isfullscreen);
+	const int border_width = helpers_border_width(n, m->sel->isfullscreen);
 
 	const int top_left_half_gap = gap_size / 2;
 	const int bottom_right_half_gap = gap_size - top_left_half_gap;

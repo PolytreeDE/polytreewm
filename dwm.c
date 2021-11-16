@@ -48,6 +48,7 @@
 
 #include "atoms.h"
 #include "drw.h"
+#include "helpers.h"
 #include "layouts.h"
 #include "settings.h"
 #include "spawn.h"
