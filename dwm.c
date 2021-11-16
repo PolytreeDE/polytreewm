@@ -20,7 +20,6 @@
  *
  * To understand everything else, start reading main().
  */
-#include <errno.h>
 #include <locale.h>
 #include <signal.h>
 #include <stdarg.h>
@@ -50,6 +49,7 @@
 #include "drw.h"
 #include "helpers.h"
 #include "layouts.h"
+#include "menu.h"
 #include "settings.h"
 #include "spawn.h"
 #include "tags.h"
@@ -1243,25 +1243,11 @@ movemouse(const Arg *arg)
 // TODO: this function really needs to be refactored
 void
 nametag(const Arg *arg) {
-	char *p, name[TAGS_CUSTOM_NAME_SIZE];
-	FILE *f;
-	int i;
+	char name[TAGS_CUSTOM_NAME_SIZE];
 
-	errno = 0; // popen(3p) says on failure it "may" set errno
-	if(!(f = popen("rofi -dmenu -p \"Tag name\"", "r"))) {
-		fprintf(stderr, "polytreewm: popen 'rofi -dmenu -p \"Tag name\"' failed%s%s\n", errno ? ": " : "", errno ? strerror(errno) : "");
-		return;
-	}
-	if (!(p = fgets(name, TAGS_CUSTOM_NAME_SIZE, f)) && (i = errno) && ferror(f))
-		fprintf(stderr, "polytreewm: fgets failed: %s\n", strerror(i));
-	if (pclose(f) < 0)
-		fprintf(stderr, "polytreewm: pclose failed: %s\n", strerror(errno));
-	if(!p)
-		return;
-	if((p = strchr(name, '\n')))
-		*p = '\0';
+	if (!menu_run(name, TAGS_CUSTOM_NAME_SIZE, "Tag name")) return;
 
-	for (i = 0; i < TAGS_COUNT; ++i) {
+	for (int i = 0; i < TAGS_COUNT; ++i) {
 		if (selmon->tagset[selmon->seltags] & (1 << i)) {
 			tags_rename(i, name);
 		}
