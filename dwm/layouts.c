@@ -20,16 +20,39 @@ centeredmaster(Monitor *m)
 		}
 	}
 
-	const bool enable_gap_for_single_window = settings_get_enable_gap_for_single_window();
-	const int gap_size = (n > 1 || enable_gap_for_single_window) ? settings_get_gap_size() : 0;
+	const SettingsForSingleWindow gap_for_single_window = settings_get_gap_for_single_window();
+	const SettingsForSingleWindow border_for_single_window = settings_get_border_for_single_window();
+
+	const int gap_size = (
+		n > 1
+		||
+		gap_for_single_window == SETTINGS_FOR_SINGLE_WINDOW_ALWAYS
+		||
+		(
+			gap_for_single_window == SETTINGS_FOR_SINGLE_WINDOW_NOT_IN_FULLSCREEN
+			&&
+			!m->sel->isfullscreen
+		)
+	) ? settings_get_gap_size() : 0;
+
+	const int border_width = (
+		n > 1
+		||
+		border_for_single_window == SETTINGS_FOR_SINGLE_WINDOW_ALWAYS
+		||
+		(
+			border_for_single_window == SETTINGS_FOR_SINGLE_WINDOW_NOT_IN_FULLSCREEN
+			&&
+			!m->sel->isfullscreen
+		)
+	) ? settings_get_border_width() : 0;
+
 	const int top_left_half_gap = gap_size / 2;
 	const int bottom_right_half_gap = gap_size - top_left_half_gap;
 
-	const bool enable_border_for_single_window = settings_get_enable_border_for_single_window();
-	const int border_width = (n > 1 || enable_border_for_single_window) ? settings_get_border_width() : 0;
-
-	unsigned int oty = 0, ety = 0, my = 0;
 	Client *c = nexttiled(m->clients);
+	unsigned int oty = 0, ety = 0, my = 0;
+
 	for (unsigned int i = 0; c; c = nexttiled(c->next), ++i) {
 		if (i < m->nmaster) {
 			// nmaster clients are stacked vertically,
@@ -100,11 +123,28 @@ centeredmaster(Monitor *m)
 void
 monocle(Monitor *m)
 {
-	const bool enable_gap_for_single_window = settings_get_enable_gap_for_single_window();
-	const int gap_size = enable_gap_for_single_window ? settings_get_gap_size() : 0;
+	const SettingsForSingleWindow gap_for_single_window = settings_get_gap_for_single_window();
+	const SettingsForSingleWindow border_for_single_window = settings_get_border_for_single_window();
 
-	const bool enable_border_for_single_window = settings_get_enable_border_for_single_window();
-	const int border_width = enable_border_for_single_window ? settings_get_border_width() : 0;
+	const int gap_size = (
+		gap_for_single_window == SETTINGS_FOR_SINGLE_WINDOW_ALWAYS
+		||
+		(
+			gap_for_single_window == SETTINGS_FOR_SINGLE_WINDOW_NOT_IN_FULLSCREEN
+			&&
+			!m->sel->isfullscreen
+		)
+	) ? settings_get_gap_size() : 0;
+
+	const int border_width = (
+		border_for_single_window == SETTINGS_FOR_SINGLE_WINDOW_ALWAYS
+		||
+		(
+			border_for_single_window == SETTINGS_FOR_SINGLE_WINDOW_NOT_IN_FULLSCREEN
+			&&
+			!m->sel->isfullscreen
+		)
+	) ? settings_get_border_width() : 0;
 
 	for (Client *c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
 		resize(
@@ -126,17 +166,40 @@ tile(Monitor *m)
 	for (Client *c = nexttiled(m->clients); c; c = nexttiled(c->next), ++n);
 	if (n == 0) return;
 
-	const bool enable_gap_for_single_window = settings_get_enable_gap_for_single_window();
-	const int gap_size = (n > 1 || enable_gap_for_single_window) ? settings_get_gap_size() : 0;
+	const SettingsForSingleWindow gap_for_single_window = settings_get_gap_for_single_window();
+	const SettingsForSingleWindow border_for_single_window = settings_get_border_for_single_window();
+
+	const int gap_size = (
+		n > 1
+		||
+		gap_for_single_window == SETTINGS_FOR_SINGLE_WINDOW_ALWAYS
+		||
+		(
+			gap_for_single_window == SETTINGS_FOR_SINGLE_WINDOW_NOT_IN_FULLSCREEN
+			&&
+			!m->sel->isfullscreen
+		)
+	) ? settings_get_gap_size() : 0;
+
+	const int border_width = (
+		n > 1
+		||
+		border_for_single_window == SETTINGS_FOR_SINGLE_WINDOW_ALWAYS
+		||
+		(
+			border_for_single_window == SETTINGS_FOR_SINGLE_WINDOW_NOT_IN_FULLSCREEN
+			&&
+			!m->sel->isfullscreen
+		)
+	) ? settings_get_border_width() : 0;
+
 	const int top_left_half_gap = gap_size / 2;
 	const int bottom_right_half_gap = gap_size - top_left_half_gap;
-
-	const bool enable_border_for_single_window = settings_get_enable_border_for_single_window();
-	const int border_width = (n > 1 || enable_border_for_single_window) ? settings_get_border_width() : 0;
 
 	const unsigned int mw = n > m->nmaster ? (m->nmaster ? m->ww * m->mfact : 0) : m->ww;
 
 	Client *c = nexttiled(m->clients);
+
 	for (unsigned int i = 0, my = 0, ty = 0; c; c = nexttiled(c->next), ++i) {
 		if (i < m->nmaster) {
 			const unsigned int h = (m->wh - my) / (MIN(n, m->nmaster) - i);

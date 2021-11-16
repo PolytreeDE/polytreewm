@@ -1914,10 +1914,12 @@ setfullscreen(Client *c, int fullscreen)
 		XChangeProperty(dpy, c->win, atoms->netatom[NetWMState], XA_ATOM, 32,
 			PropModeReplace, (unsigned char*)&atoms->netatom[NetWMFullscreen], 1);
 		c->isfullscreen = 1;
+		arrange(c->mon);
 	} else if (!fullscreen && c->isfullscreen){
 		XChangeProperty(dpy, c->win, atoms->netatom[NetWMState], XA_ATOM, 32,
 			PropModeReplace, (unsigned char*)0, 0);
 		c->isfullscreen = 0;
+		arrange(c->mon);
 	}
 }
 

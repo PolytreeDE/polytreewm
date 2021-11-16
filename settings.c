@@ -13,8 +13,8 @@
 
 static int border_width = 2;
 static int default_clients_in_master = 1;
-static bool enable_border_for_single_window = true;
-static bool enable_gap_for_single_window = true;
+static SettingsForSingleWindow border_for_single_window = SETTINGS_FOR_SINGLE_WINDOW_NOT_IN_FULLSCREEN;
+static SettingsForSingleWindow gap_for_single_window = SETTINGS_FOR_SINGLE_WINDOW_NOT_IN_FULLSCREEN;
 static bool enable_swallowing = true;
 static bool focus_on_wheel = true;
 static int gap_size = 10;
@@ -48,25 +48,25 @@ void settings_set_default_clients_in_master(int new_default_clients_in_master)
 	default_clients_in_master = new_default_clients_in_master;
 }
 
-bool settings_get_enable_border_for_single_window()
+SettingsForSingleWindow settings_get_border_for_single_window()
 {
-	return enable_border_for_single_window;
+	return border_for_single_window;
 }
 
-void settings_set_enable_border_for_single_window(const bool new_enable_border_for_single_window)
+void settings_set_border_for_single_window(const SettingsForSingleWindow new_border_for_single_window)
 {
-	enable_border_for_single_window = new_enable_border_for_single_window;
+	border_for_single_window = new_border_for_single_window;
 	// TODO: notify WM to rearrange clients
 }
 
-bool settings_get_enable_gap_for_single_window()
+SettingsForSingleWindow settings_get_gap_for_single_window()
 {
-	return enable_gap_for_single_window;
+	return gap_for_single_window;
 }
 
-void settings_set_enable_gap_for_single_window(const bool new_enable_gap_for_single_window)
+void settings_set_gap_for_single_window(const SettingsForSingleWindow new_gap_for_single_window)
 {
-	enable_gap_for_single_window = new_enable_gap_for_single_window;
+	gap_for_single_window = new_gap_for_single_window;
 	// TODO: notify WM to rearrange clients
 }
 
