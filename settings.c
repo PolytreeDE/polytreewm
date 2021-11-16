@@ -13,8 +13,8 @@
 
 static int border_width = 2;
 static int default_clients_in_master = 1;
-static SettingsForSingleWindow border_for_single_window = SETTINGS_FOR_SINGLE_WINDOW_NOT_IN_FULLSCREEN;
-static SettingsForSingleWindow gap_for_single_window = SETTINGS_FOR_SINGLE_WINDOW_NOT_IN_FULLSCREEN;
+static SettingsForSingleWindow border_for_single_window = SETTINGS_FOR_SINGLE_WINDOW_NOBODY_IS_FULLSCREEN;
+static SettingsForSingleWindow gap_for_single_window = SETTINGS_FOR_SINGLE_WINDOW_NOBODY_IS_FULLSCREEN;
 static bool enable_swallowing = true;
 static bool focus_on_wheel = true;
 static int gap_size = 10;

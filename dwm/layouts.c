@@ -22,8 +22,8 @@ centeredmaster(Monitor *m)
 
 	const bool is_fullscreen = m->sel == NULL ? false : m->sel->isfullscreen;
 
-	const int gap_size = helpers_gap_size(n, is_fullscreen);
-	const int border_width = helpers_border_width(n, is_fullscreen);
+	const int gap_size = helpers_gap_size(n, is_fullscreen, is_fullscreen);
+	const int border_width = helpers_border_width(n, is_fullscreen, is_fullscreen);
 
 	const int top_left_half_gap = gap_size / 2;
 	const int bottom_right_half_gap = gap_size - top_left_half_gap;
@@ -101,10 +101,15 @@ centeredmaster(Monitor *m)
 void
 monocle(Monitor *m)
 {
+	bool any_is_fullscreen = false;
+	for (Client *c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
+		any_is_fullscreen = any_is_fullscreen || c->isfullscreen;
+	}
+
 	const bool is_fullscreen = m->sel == NULL ? false : m->sel->isfullscreen;
 
-	const int gap_size = helpers_gap_size(1, is_fullscreen);
-	const int border_width = helpers_border_width(1, is_fullscreen);
+	const int gap_size = helpers_gap_size(1, is_fullscreen, any_is_fullscreen);
+	const int border_width = helpers_border_width(1, is_fullscreen, any_is_fullscreen);
 
 	for (Client *c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
 		resize(
@@ -128,8 +133,8 @@ tile(Monitor *m)
 
 	const bool is_fullscreen = m->sel == NULL ? false : m->sel->isfullscreen;
 
-	const int gap_size = helpers_gap_size(n, is_fullscreen);
-	const int border_width = helpers_border_width(n, is_fullscreen);
+	const int gap_size = helpers_gap_size(n, is_fullscreen, is_fullscreen);
+	const int border_width = helpers_border_width(n, is_fullscreen, is_fullscreen);
 
 	const int top_left_half_gap = gap_size / 2;
 	const int bottom_right_half_gap = gap_size - top_left_half_gap;
