@@ -124,7 +124,7 @@ ENABLE_GNOME_TERMINAL = $enable_gnome_terminal
 ENABLE_XINERAMA       = $enable_xinerama
 MAKE
 
-make_help_result="$(make --help)"
+make_help_result="$(make --help || true)"
 if [ "$(echo "$make_help_result" | grep 'gnu.org')" = '' ]; then
 	ln -sf '4-defvars-bsd.mk' 'config/4-defvars.mk'
 else
