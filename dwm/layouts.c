@@ -1,3 +1,6 @@
+#ifndef _DWM_LAYOUTS_C
+#define _DWM_LAYOUTS_C
+
 void
 centeredmaster(Monitor *m)
 {
@@ -259,3 +262,5 @@ tile(Monitor *m)
 		}
 	}
 }
+
+#endif // _DWM_LAYOUTS_C

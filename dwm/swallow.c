@@ -1,3 +1,6 @@
+#ifndef _DWM_SWALLOW_C
+#define _DWM_SWALLOW_C
+
 pid_t
 getparentprocess(pid_t p)
 {
@@ -172,3 +175,5 @@ winpid(Window w)
 #endif /* __OpenBSD__ */
 	return result;
 }
+
+#endif // _DWM_SWALLOW_C

@@ -1,3 +1,6 @@
+#ifndef _DWM_SYSTRAY_C
+#define _DWM_SYSTRAY_C
+
 unsigned int
 getsystraywidth()
 {
@@ -163,3 +166,5 @@ wintosystrayicon(Window w) {
 	for (i = systray->icons; i && i->win != w; i = i->next) ;
 	return i;
 }
+
+#endif // _DWM_SYSTRAY_C

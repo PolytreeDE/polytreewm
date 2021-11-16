@@ -1,3 +1,6 @@
+#ifndef _DWM_HANDLERS_C
+#define _DWM_HANDLERS_C
+
 void
 on_button_press(XEvent *e)
 {
@@ -367,3 +370,5 @@ on_unmap_notify(XEvent *e)
 		updatesystray();
 	}
 }
+
+#endif // _DWM_HANDLERS_C
