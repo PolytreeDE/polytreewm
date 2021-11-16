@@ -29,14 +29,6 @@ polytreewm: ${OBJ}
 clean:
 	rm -f polytreewm ${OBJ} polytreewm-${VERSION}.tar.gz
 
-dist: clean
-	mkdir -p polytreewm-${VERSION}
-	cp -R LICENSE Makefile README.md config.def.h config.mk \
-		polytreewm.1 drw.h util.h ${SRC} polytreewm.png polytreewm-${VERSION}
-	tar -cf polytreewm-${VERSION}.tar polytreewm-${VERSION}
-	gzip polytreewm-${VERSION}.tar
-	rm -rf polytreewm-${VERSION}
-
 install: all
 	mkdir -p ${DESTDIR}${PREFIX}/bin
 	cp -f polytreewm ${DESTDIR}${PREFIX}/bin
@@ -62,4 +54,4 @@ uninstall:
 		${DESTDIR}${ICONSPREFIX}/polytreewm.png \
 		${DESTDIR}${XSESSIONSPREFIX}/polytreewm.desktop
 
-.PHONY: all options clean dist install uninstall xinstall
+.PHONY: all options clean install uninstall xinstall
