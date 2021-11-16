@@ -669,7 +669,7 @@ createmon(void)
 		layouts[0].symbol_func,
 		m->ltsymbol,
 		sizeof(m->ltsymbol),
-		0,
+		m->nmaster,
 		0
 	);
 
