@@ -1,0 +1,5 @@
+#!/bin/sh
+
+set -e
+
+ln -sf default.mk config/active.mk
