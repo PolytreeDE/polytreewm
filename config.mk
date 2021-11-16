@@ -3,6 +3,7 @@
 ##########################
 
 CC = cc
+PKGCONFIG = pkg-config
 
 #########
 # Paths #
@@ -15,10 +16,8 @@ MANPREFIX = $(PREFIX)/share/man
 # Dependencies #
 ################
 
-X11INC = /usr/X11R6/include
-X11LIB = /usr/X11R6/lib
+PKGS = fontconfig freetype2 x11 x11-xcb xcb xcb-res xft xinerama
 
-XINERAMALIBS  = -lXinerama
-
-FREETYPELIBS = -lfontconfig -lXft
-FREETYPEINC = /usr/include/freetype2
+CPPFLAGS = -DXINERAMA
+CFLAGS   = `$(PKGCONFIG) --cflags $(PKGS)`
+LDFLAGS  = `$(PKGCONFIG) --libs   $(PKGS)`

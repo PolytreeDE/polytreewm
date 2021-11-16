@@ -1,16 +1,13 @@
 # PolytreeWM - tiling window manager
 # See LICENSE file for copyright and license details.
 
-include config/active.mk
+include config.mk
 
 VERSION = 6.2
 
-INCS = -I$(X11INC) -I$(FREETYPEINC)
-LIBS = -L$(X11LIB) -lX11 $(XINERAMALIBS) $(FREETYPELIBS) -lX11-xcb -lxcb -lxcb-res $(KVMLIB)
-
-CPPFLAGS = -DVERSION=\"$(VERSION)\" -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_C_SOURCE=200809L -DXINERAMA
-CFLAGS   = -std=c99 -pedantic -Wall -Wno-deprecated-declarations -Os $(INCS) $(CPPFLAGS)
-LDFLAGS  = $(LIBS)
+CPPFLAGS += -DVERSION=\"$(VERSION)\" -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_C_SOURCE=200809L
+CFLAGS   += $(CPPFLAGS) -std=c99 -Os -pedantic -Wall -Wno-deprecated-declarations
+LDFLAGS  +=
 
 SRC = \
 	src/atoms.c \
@@ -65,9 +62,6 @@ ${OBJ}: ${HDR}
 clean:
 	rm -f polytreewm ${OBJ}
 
-distclean: clean
-	rm -f config/active.mk
-
 install: all
 	mkdir -p ${DESTDIR}${PREFIX}/bin
 	cp -f polytreewm ${DESTDIR}${PREFIX}/bin
@@ -82,4 +76,4 @@ uninstall:
 		${DESTDIR}${PREFIX}/bin/polytreewm \
 		${DESTDIR}${MANPREFIX}/man1/polytreewm.1
 
-.PHONY: all options clean distclean install uninstall
+.PHONY: all options clean install uninstall
