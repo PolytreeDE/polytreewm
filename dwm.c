@@ -1045,23 +1045,34 @@ focusmon(const Arg *arg)
 void
 focusstack(const Arg *arg)
 {
-	Client *c = NULL, *i;
+	if (!selmon->sel) return;
 
-	if (!selmon->sel)
-		return;
+	Client *c = NULL;
+
 	if (arg->i > 0) {
 		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
-		if (!c)
+
+		if (!c) {
 			for (c = selmon->clients; c && !ISVISIBLE(c); c = c->next);
+		}
 	} else {
-		for (i = selmon->clients; i != selmon->sel; i = i->next)
-			if (ISVISIBLE(i))
+		Client *i = selmon->clients;
+
+		for (; i != selmon->sel; i = i->next) {
+			if (ISVISIBLE(i)) {
 				c = i;
-		if (!c)
-			for (; i; i = i->next)
-				if (ISVISIBLE(i))
+			}
+		}
+
+		if (!c) {
+			for (; i; i = i->next) {
+				if (ISVISIBLE(i)) {
 					c = i;
+				}
+			}
+		}
 	}
+
 	if (c) {
 		focus(c);
 		restack(selmon);
