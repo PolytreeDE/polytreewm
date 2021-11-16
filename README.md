@@ -11,13 +11,9 @@ In order to build PolytreeWM you need the Xlib header files.
 Installation
 ------------
 
-Edit config.mk to match your local setup (PolytreeWM is installed into the
-/usr/local namespace by default).
-
-Afterwards enter the following command to build and install PolytreeWM (if
-necessary as root):
-
-    make clean install
+    ./configure
+    make clean all
+    sudo make install
 
 Running
 -------
@@ -41,12 +37,6 @@ like this in your .xinitrc:
         sleep 1
     done &
     exec polytreewm
-
-Configuration
--------------
-
-The configuration of PolytreeWM is done by creating a custom config.h and
-(re)compiling the source code.
 
 Credits
 -------

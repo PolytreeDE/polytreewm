@@ -60,7 +60,7 @@ polytreewm: ${OBJ}
 	${CC} -c $< -o $@ ${CFLAGS}
 
 dwm.o: ${DWM_SRC} ${DWM_HDR}
-${OBJ}: config.mk ${HDR}
+${OBJ}: ${HDR}
 
 clean:
 	rm -f polytreewm ${OBJ}
