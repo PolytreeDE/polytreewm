@@ -32,6 +32,7 @@ File tuning of the installation directories:
   --mandir DIR            man documentation [DATAROOTDIR/man]
 
 Optional Features:
+  --enable-gnome-terminal use GNOME Terminal instead of ptterm
   --disable-xinerama      disable Xinerama
 HELP
 }
@@ -41,6 +42,7 @@ eprefix=''
 bindir=''
 datarootdir=''
 mandir=''
+enable_gnome_terminal='no'
 enable_xinerama='yes'
 
 while [ $# -gt 0 ]; do
@@ -68,6 +70,9 @@ while [ $# -gt 0 ]; do
 		--mandir)
 			shift
 			mandir="$1"
+			;;
+		--enable-gnome-terminal)
+			enable_gnome_terminal='yes'
 			;;
 		--disable-xinerama)
 			enable_xinerama='no'
@@ -97,24 +102,26 @@ if [ "$mandir" = '' ]; then
 	mandir="$datarootdir/man"
 fi
 
-echo "PREFIX          = $prefix"
-echo "EPREFIX         = $eprefix"
-echo "BINDIR          = $bindir"
-echo "DATAROOTDIR     = $datarootdir"
-echo "MANDIR          = $mandir"
-echo "ENABLE_XINERAMA = $enable_xinerama"
+echo "PREFIX                = $prefix"
+echo "EPREFIX               = $eprefix"
+echo "BINDIR                = $bindir"
+echo "DATAROOTDIR           = $datarootdir"
+echo "MANDIR                = $mandir"
+echo "ENABLE_GNOME_TERMINAL = $enable_gnome_terminal"
+echo "ENABLE_XINERAMA       = $enable_xinerama"
 
 touch 'config/1-custom.mk'
 touch 'config/3-custom.mk'
 touch 'config/5-custom.mk'
 
 cat > 'config/2-generated.mk' << MAKE
-PREFIX          = $prefix
-EPREFIX         = $eprefix
-BINDIR          = $bindir
-DATAROOTDIR     = $datarootdir
-MANDIR          = $mandir
-ENABLE_XINERAMA = $enable_xinerama
+PREFIX                = $prefix
+EPREFIX               = $eprefix
+BINDIR                = $bindir
+DATAROOTDIR           = $datarootdir
+MANDIR                = $mandir
+ENABLE_GNOME_TERMINAL = $enable_gnome_terminal
+ENABLE_XINERAMA       = $enable_xinerama
 MAKE
 
 make_help_result="$(make --help)"

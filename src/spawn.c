@@ -35,7 +35,11 @@ static struct Command commands[] = {
 	{
 		.name = "term",
 		.monitor_arg_index = 0,
+#ifdef ENABLE_GNOME_TERMINAL
+		.args = { "gnome-terminal", "--wait", NULL },
+#else
 		.args = { "ptterm", NULL },
+#endif
 	},
 	{
 		.name = "firefox",
