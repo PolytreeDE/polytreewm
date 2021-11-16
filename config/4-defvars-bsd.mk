@@ -3,11 +3,11 @@ PKGCONFIG = pkg-config
 
 PKGS += fontconfig freetype2 x11 x11-xcb xcb xcb-res xft
 
-.if "$(ENABLE_GNOME_TERMINAL)" == 'yes'
+.if "$(ENABLE_GNOME_TERMINAL)" == "yes"
 CPPFLAGS += -DENABLE_GNOME_TERMINAL
 .endif
 
-.if "$(ENABLE_XINERAMA)" == 'yes'
+.if "$(ENABLE_XINERAMA)" == "yes"
 CPPFLAGS += -DENABLE_XINERAMA
 PKGS += xinerama
 .endif
