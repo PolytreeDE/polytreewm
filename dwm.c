@@ -83,11 +83,19 @@
 #define VERSION_MINOR               0
 #define XEMBED_EMBEDDED_VERSION (VERSION_MAJOR << 16) | VERSION_MINOR
 
-/* enums */
+/*********
+ * types *
+ *********/
+
 enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
 enum { SchemeNorm, SchemeSel }; /* color schemes */
 enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
        ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
+
+typedef struct Monitor Monitor;
+typedef struct Client Client;
+typedef struct Pertag Pertag;
+typedef struct Systray Systray;
 
 typedef union {
 	int i;
@@ -104,8 +112,6 @@ typedef struct {
 	const Arg arg;
 } Button;
 
-typedef struct Monitor Monitor;
-typedef struct Client Client;
 struct Client {
 	char name[256];
 	float mina, maxa;
@@ -135,7 +141,6 @@ typedef struct {
 	void (*arrange)(Monitor *);
 } Layout;
 
-typedef struct Pertag Pertag;
 struct Monitor {
 	char ltsymbol[16];
 	float mfact;
@@ -169,13 +174,24 @@ typedef struct {
 	int monitor;
 } Rule;
 
-typedef struct Systray   Systray;
 struct Systray {
 	Window win;
 	Client *icons;
 };
 
-/* function declarations */
+struct Pertag {
+	unsigned int curtag, prevtag; /* current and previous tag */
+	int nmasters[TAGS_COUNT + 1]; /* number of windows in master area */
+	float mfacts[TAGS_COUNT + 1]; /* mfacts per tag */
+	unsigned int sellts[TAGS_COUNT + 1]; /* selected layouts */
+	const Layout *ltidxs[TAGS_COUNT + 1][2]; /* matrix of tags and layouts indexes  */
+	int showbars[TAGS_COUNT + 1]; /* display bar for the current tag */
+};
+
+/*************************
+ * function declarations *
+ *************************/
+
 static void applyrules(Client *c);
 static int applysizehints(Client *c, int *x, int *y, int *w, int *h, int bw, int interact);
 static void arrange(Monitor *m);
@@ -266,7 +282,10 @@ static void zoom(const Arg *arg);
 #include "dwm/swallow.h"
 #include "dwm/systray.h"
 
-/* variables */
+/*************
+ * variables *
+ *************/
+
 static Systray *systray =  NULL;
 static const char broken[] = "broken";
 static char stext[256];
@@ -302,25 +321,61 @@ static Window root, wmcheckwin;
 
 static xcb_connection_t *xcon;
 
-/* configuration, allows nested code to access above variables */
+/***************************************************************
+ * configuration, allows nested code to access above variables *
+ ***************************************************************/
+
 #include "config.h"
 
-struct Pertag {
-	unsigned int curtag, prevtag; /* current and previous tag */
-	int nmasters[TAGS_COUNT + 1]; /* number of windows in master area */
-	float mfacts[TAGS_COUNT + 1]; /* mfacts per tag */
-	unsigned int sellts[TAGS_COUNT + 1]; /* selected layouts */
-	const Layout *ltidxs[TAGS_COUNT + 1][2]; /* matrix of tags and layouts indexes  */
-	int showbars[TAGS_COUNT + 1]; /* display bar for the current tag */
-};
-
-
-/* function implementations */
+/****************************
+ * function implementations *
+ ****************************/
 
 #include "dwm/handlers.c"
 #include "dwm/layouts.c"
 #include "dwm/swallow.c"
 #include "dwm/systray.c"
+
+int
+main(int argc, char *argv[])
+{
+	if (argc == 2 && !strcmp("-v", argv[1])) {
+		die("polytreewm-"VERSION);
+	}
+
+	if (argc != 1) {
+		die("usage: polytreewm [-v]");
+	}
+
+	if (!setlocale(LC_CTYPE, "") || !XSupportsLocale()) {
+		fputs("warning: no locale support\n", stderr);
+	}
+
+	if (!(dpy = XOpenDisplay(NULL))) {
+		die("polytreewm: cannot open display");
+	}
+
+	if (!(xcon = XGetXCBConnection(dpy))) {
+		die("polytreewm: cannot get xcb connection");
+	}
+
+	checkotherwm();
+
+	setup();
+
+#ifdef __OpenBSD__
+	if (pledge("stdio rpath proc exec ps", NULL) == -1) {
+		die("pledge");
+	}
+#endif /* __OpenBSD__ */
+
+	scan();
+	run();
+	cleanup();
+	XCloseDisplay(dpy);
+
+	return EXIT_SUCCESS;
+}
 
 void
 applyrules(Client *c)
@@ -2350,45 +2405,4 @@ zoom(const Arg *arg)
 		if (!c || !(c = nexttiled(c->next)))
 			return;
 	pop(c);
-}
-
-int
-main(int argc, char *argv[])
-{
-	if (argc == 2 && !strcmp("-v", argv[1])) {
-		die("polytreewm-"VERSION);
-	}
-
-	if (argc != 1) {
-		die("usage: polytreewm [-v]");
-	}
-
-	if (!setlocale(LC_CTYPE, "") || !XSupportsLocale()) {
-		fputs("warning: no locale support\n", stderr);
-	}
-
-	if (!(dpy = XOpenDisplay(NULL))) {
-		die("polytreewm: cannot open display");
-	}
-
-	if (!(xcon = XGetXCBConnection(dpy))) {
-		die("polytreewm: cannot get xcb connection");
-	}
-
-	checkotherwm();
-
-	setup();
-
-#ifdef __OpenBSD__
-	if (pledge("stdio rpath proc exec ps", NULL) == -1) {
-		die("pledge");
-	}
-#endif /* __OpenBSD__ */
-
-	scan();
-	run();
-	cleanup();
-	XCloseDisplay(dpy);
-
-	return EXIT_SUCCESS;
 }
