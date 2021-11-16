@@ -41,6 +41,7 @@ static const Layout layouts[] = {
 	{ layouts_symbol_monocle,        monocle }, /* first entry is default */
 	{ layouts_symbol_floating,       NULL },    /* no layout function means floating behavior */
 	{ layouts_symbol_tile,           tile },
+	{ layouts_symbol_horizontile,    horizontile },
 	{ layouts_symbol_centeredmaster, centeredmaster },
 };
 
@@ -74,10 +75,11 @@ static Key keys[] = {
 	{ MODKEY,                       XK_Return, zoom,           {0} },
 	{ MODKEY,                       XK_Tab,    view,           {0} },
 	{ MODKEY|ShiftMask,             XK_x,      killclient,     {0} },
-	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[0]} },
-	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
-	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[2]} },
-	{ MODKEY,                       XK_u,      setlayout,      {.v = &layouts[3]} },
+	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[0]} }, // Monocle
+	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} }, // Floating
+	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[2]} }, // Tile
+	{ MODKEY|ShiftMask,             XK_t,      setlayout,      {.v = &layouts[3]} }, // Horizontile
+	{ MODKEY,                       XK_u,      setlayout,      {.v = &layouts[4]} }, // Centeredmaster
 	{ MODKEY,                       XK_space,  setlayout,      {0} },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
 	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },

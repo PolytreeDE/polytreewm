@@ -46,6 +46,13 @@ void layouts_symbol_tile(
 	unsigned int visible_clients
 );
 
+void layouts_symbol_horizontile(
+	char *buffer,
+	size_t buffer_size,
+	unsigned int clients_in_master,
+	unsigned int visible_clients
+);
+
 void layouts_symbol_centeredmaster(
 	char *buffer,
 	size_t buffer_size,

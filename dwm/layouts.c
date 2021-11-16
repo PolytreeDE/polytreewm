@@ -99,6 +99,74 @@ centeredmaster(Monitor *m)
 }
 
 void
+horizontile(Monitor *m)
+{
+	unsigned int n = 0;
+	for (Client *c = nexttiled(m->clients); c; c = nexttiled(c->next), ++n);
+	if (n == 0) return;
+
+	const bool is_fullscreen = m->sel == NULL ? false : m->sel->isfullscreen;
+
+	const int gap_size = helpers_gap_size(n, is_fullscreen, is_fullscreen);
+	const int border_width = helpers_border_width(n, is_fullscreen, is_fullscreen);
+
+	const int top_left_half_gap = gap_size / 2;
+	const int bottom_right_half_gap = gap_size - top_left_half_gap;
+
+	const unsigned int mh = n > m->nmaster ? (m->nmaster ? m->wh * m->mfact : 0) : m->wh;
+
+	Client *c = nexttiled(m->clients);
+
+	for (unsigned int i = 0, mx = 0, tx = 0; c; c = nexttiled(c->next), ++i) {
+		if (i < m->nmaster) {
+			const unsigned int w = (m->ww - mx) / (MIN(n, m->nmaster) - i);
+
+			const unsigned int left_gap   = i == 0 ? gap_size : top_left_half_gap;
+			const unsigned int top_gap    = gap_size;
+			const unsigned int right_gap  = (i == m->nmaster - 1 || i == n - 1) ? gap_size : bottom_right_half_gap;
+			const unsigned int bottom_gap = n <= m->nmaster ? gap_size : bottom_right_half_gap;
+
+			resize(
+				c,
+				m->wx + mx + left_gap,
+				m->wy + top_gap,
+				w - 2 * border_width - left_gap - right_gap,
+				mh - 2 * border_width - top_gap - bottom_gap,
+				border_width,
+				0
+			);
+
+			// FIXME: maybe need + left_gap + right_gap
+			if (mx + WIDTH(c) < m->ww) {
+				mx += WIDTH(c) + left_gap + right_gap;
+			}
+		} else {
+			const unsigned int w = (m->ww - tx) / (n - i);
+
+			const unsigned int left_gap   = i == m->nmaster ? gap_size : top_left_half_gap;
+			const unsigned int top_gap    = m->nmaster == 0 ? gap_size : top_left_half_gap;
+			const unsigned int right_gap  = (i == n - 1) ? gap_size : bottom_right_half_gap;
+			const unsigned int bottom_gap = gap_size;
+
+			resize(
+				c,
+				m->wx + tx + left_gap,
+				m->wy + mh + top_gap,
+				w - 2 * border_width - left_gap - right_gap,
+				m->wh - mh - 2 * border_width - top_gap - bottom_gap,
+				border_width,
+				0
+			);
+
+			// FIXME: maybe need + left_gap + right_gap
+			if (tx + WIDTH(c) < m->ww) {
+				tx += WIDTH(c) + left_gap + right_gap;
+			}
+		}
+	}
+}
+
+void
 monocle(Monitor *m)
 {
 	bool any_is_fullscreen = false;
@@ -162,6 +230,7 @@ tile(Monitor *m)
 				0
 			);
 
+			// FIXME: maybe need + top_gap + bottom_gap
 			if (my + HEIGHT(c) < m->wh) {
 				my += HEIGHT(c) + top_gap + bottom_gap;
 			}
@@ -183,6 +252,7 @@ tile(Monitor *m)
 				0
 			);
 
+			// FIXME: maybe need + top_gap + bottom_gap
 			if (ty + HEIGHT(c) < m->wh) {
 				ty += HEIGHT(c) + top_gap + bottom_gap;
 			}
