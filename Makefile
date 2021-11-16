@@ -4,11 +4,13 @@
 all: polytreewm
 
 include config/1-generated.mk
-include config/2-defvars.mk
+include config/2-conditionals.mk
+include config/3-defvars.mk
 
 CONFIGMKS = \
 	config/1-generated.mk \
-	config/2-defvars.mk \
+	config/2-conditionals.mk \
+	config/3-defvars.mk
 
 VERSION = 6.2
 

@@ -1,0 +1,8 @@
+.if "$(ENABLE_GNOME_TERMINAL)" == "yes"
+CPPFLAGS += -DENABLE_GNOME_TERMINAL
+.endif
+
+.if "$(ENABLE_XINERAMA)" == "yes"
+CPPFLAGS += -DENABLE_XINERAMA
+PKGS += xinerama
+.endif

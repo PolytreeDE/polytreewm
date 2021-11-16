@@ -1,0 +1,8 @@
+ifeq (yes,$(ENABLE_GNOME_TERMINAL))
+CPPFLAGS += -DENABLE_GNOME_TERMINAL
+endif
+
+ifeq (yes,$(ENABLE_XINERAMA))
+CPPFLAGS += -DENABLE_XINERAMA
+PKGS += xinerama
+endif
