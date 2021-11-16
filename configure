@@ -110,11 +110,7 @@ echo "MANDIR                = $mandir"
 echo "ENABLE_GNOME_TERMINAL = $enable_gnome_terminal"
 echo "ENABLE_XINERAMA       = $enable_xinerama"
 
-touch 'config/1-custom.mk'
-touch 'config/3-custom.mk'
-touch 'config/5-custom.mk'
-
-cat > 'config/2-generated.mk' << MAKE
+cat > 'config/1-generated.mk' << MAKE
 PREFIX                = $prefix
 EPREFIX               = $eprefix
 BINDIR                = $bindir
@@ -126,7 +122,7 @@ MAKE
 
 make_help_result="$(make --help 2>&1 || true)"
 if [ "$(echo "$make_help_result" | grep 'gnu.org')" = '' ]; then
-	ln -sf '4-defvars-bsd.mk' 'config/4-defvars.mk'
+	ln -sf '2-defvars-bsd.mk' 'config/2-defvars.mk'
 else
-	ln -sf '4-defvars-gnu.mk' 'config/4-defvars.mk'
+	ln -sf '2-defvars-gnu.mk' 'config/2-defvars.mk'
 fi

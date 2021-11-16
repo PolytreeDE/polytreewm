@@ -1,7 +1,4 @@
-/config/1-custom.mk
-/config/2-generated.mk
-/config/3-custom.mk
-/config/4-defvars.mk
-/config/5-custom.mk
+/config/1-generated.mk
+/config/2-defvars.mk
 /polytreewm
 /src/*.o
