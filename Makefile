@@ -7,9 +7,12 @@ include config/1-generated.mk
 include config/2-conditionals.mk
 include config/3-defvars.mk
 
-CONFIGMKS = \
+CONFIGMKS_TO_REMOVE = \
 	config/1-generated.mk \
-	config/2-conditionals.mk \
+	config/2-conditionals.mk
+
+CONFIGMKS = \
+	$(CONFIGMKS_TO_REMOVE) \
 	config/3-defvars.mk
 
 VERSION = 6.2
@@ -60,7 +63,7 @@ clean:
 	rm -f polytreewm ${OBJ}
 
 distclean: clean
-	rm -f $(CONFIGMKS)
+	rm -f $(CONFIGMKS_TO_REMOVE)
 
 install: all
 	mkdir -p ${DESTDIR}${BINDIR}
