@@ -1,14 +1,18 @@
 # PolytreeWM - tiling window manager
 # See LICENSE file for copyright and license details.
 
+include config/1-custom.mk
+include config/2-generated.mk
+include config/3-custom.mk
+include config/4-defvars.mk
+include config/5-custom.mk
+
 CONFIGMKS = \
 	config/1-custom.mk \
 	config/2-generated.mk \
 	config/3-custom.mk \
 	config/4-defvars.mk \
 	config/5-custom.mk
-
-include $(CONFIGMKS)
 
 VERSION = 6.2
 
@@ -66,7 +70,12 @@ clean:
 	rm -f polytreewm ${OBJ}
 
 distclean: clean
-	rm -f config/2-generated.mk
+	rm -f \
+		config/1-custom.mk \
+		config/2-generated.mk \
+		config/3-custom.mk \
+		config/4-defvars.mk \
+		config/5-custom.mk
 
 install: all
 	mkdir -p ${DESTDIR}${BINDIR}

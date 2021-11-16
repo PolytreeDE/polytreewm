@@ -108,11 +108,18 @@ touch 'config/1-custom.mk'
 touch 'config/3-custom.mk'
 touch 'config/5-custom.mk'
 
-rm -f 'config/2-generated.mk'
+cat > 'config/2-generated.mk' << MAKE
+PREFIX          = $prefix
+EPREFIX         = $eprefix
+BINDIR          = $bindir
+DATAROOTDIR     = $datarootdir
+MANDIR          = $mandir
+ENABLE_XINERAMA = $enable_xinerama
+MAKE
 
-echo "PREFIX          = $prefix"          >> 'config/2-generated.mk'
-echo "EPREFIX         = $eprefix"         >> 'config/2-generated.mk'
-echo "BINDIR          = $bindir"          >> 'config/2-generated.mk'
-echo "DATAROOTDIR     = $datarootdir"     >> 'config/2-generated.mk'
-echo "MANDIR          = $mandir"          >> 'config/2-generated.mk'
-echo "ENABLE_XINERAMA = $enable_xinerama" >> 'config/2-generated.mk'
+make_help_result="$(make --help)"
+if [ "$(echo "$make_help_result" | grep 'gnu.org')" = '' ]; then
+	ln -sf '4-defvars-bsd.mk' 'config/4-defvars.mk'
+else
+	ln -sf '4-defvars-gnu.mk' 'config/4-defvars.mk'
+fi
