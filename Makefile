@@ -17,7 +17,7 @@ options:
 %.o: %.c
 	${CC} -c $< -o $@ ${CFLAGS}
 
-dwm.o: dwm/layouts.c dwm/swallow.c dwm/systray.c
+dwm.o: dwm/handlers.c dwm/layouts.c dwm/swallow.c dwm/systray.c
 ${OBJ}: atoms.h drw.h config.def.h config.mk helpers.h layouts.h settings.h spawn.h tags.h util.h
 
 polytreewm: ${OBJ}
