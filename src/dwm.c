@@ -34,9 +34,9 @@
 #include <X11/Xlib.h>
 #include <X11/Xproto.h>
 #include <X11/Xutil.h>
-#ifdef XINERAMA
+#ifdef ENABLE_XINERAMA
 #include <X11/extensions/Xinerama.h>
-#endif /* XINERAMA */
+#endif /* ENABLE_XINERAMA */
 #include <X11/Xft/Xft.h>
 #include <X11/Xlib-xcb.h>
 #include <xcb/res.h>
@@ -1007,7 +1007,7 @@ incnmaster(const Arg *arg)
 	arrange(selmon);
 }
 
-#ifdef XINERAMA
+#ifdef ENABLE_XINERAMA
 static int
 isuniquegeom(XineramaScreenInfo *unique, size_t n, XineramaScreenInfo *info)
 {
@@ -1017,7 +1017,7 @@ isuniquegeom(XineramaScreenInfo *unique, size_t n, XineramaScreenInfo *info)
 			return 0;
 	return 1;
 }
-#endif /* XINERAMA */
+#endif /* ENABLE_XINERAMA */
 
 void
 killclient(const Arg *arg)
@@ -2047,7 +2047,7 @@ updategeom(void)
 {
 	int dirty = 0;
 
-#ifdef XINERAMA
+#ifdef ENABLE_XINERAMA
 	if (XineramaIsActive(dpy)) {
 		int i, j, n, nn;
 		Client *c;
@@ -2102,7 +2102,7 @@ updategeom(void)
 		}
 		free(unique);
 	} else
-#endif /* XINERAMA */
+#endif /* ENABLE_XINERAMA */
 	{ /* default monitor setup */
 		if (!mons)
 			mons = createmon();

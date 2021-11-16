@@ -1,0 +1,118 @@
+#!/bin/sh
+
+set -e
+
+help() {
+	cat <<HELP
+This script tries to be similar to autotools' \`configure', but is different.
+
+Usage: ./configure [OPTION]...
+
+Defaults for the options are specified in brackets.
+
+Configuration:
+  -h, --help              Display this help and exit
+
+Installation directories:
+  --prefix PREFIX         install architecture-independent files in PREFIX
+                          [/usr/local]
+  --exec-prefix EPREFIX   install architecture-dependent files in EPREFIX
+                          [PREFIX]
+
+By default, \`make install' will install all the files in
+\`/usr/local/bin', \`/usr/local/lib' etc. You can specify
+an installation prefix other than \`/usr/local' using \`--prefix',
+for instance \`--prefix \$HOME'.
+
+For better control, use the options below.
+
+File tuning of the installation directories:
+  --bindir DIR            user executables [EPREFIX/bin]
+  --datarootdir DIR       read-only arch.-independent data root [PREFIX/share]
+  --mandir DIR            man documentation [DATAROOTDIR/man]
+
+Optional Features:
+  --disable-xinerama      disable Xinerama
+HELP
+}
+
+prefix='/usr/local'
+eprefix=''
+bindir=''
+datarootdir=''
+mandir=''
+enable_xinerama='yes'
+
+while [ $# -gt 0 ]; do
+	case "$1" in
+		-h | -? | --help | -help | help)
+			help
+			exit
+			;;
+		--prefix)
+			shift
+			prefix="$1"
+			;;
+		--exec-prefix)
+			shift
+			eprefix="$1"
+			;;
+		--bindir)
+			shift
+			bindir="$1"
+			;;
+		--datarootdir)
+			shift
+			datarootdir="$1"
+			;;
+		--mandir)
+			shift
+			mandir="$1"
+			;;
+		--disable-xinerama)
+			enable_xinerama='no'
+			;;
+		*)
+			help
+			exit
+			;;
+	esac
+
+	shift
+done
+
+if [ "$eprefix" = '' ]; then
+	eprefix="$prefix"
+fi
+
+if [ "$bindir" = '' ]; then
+	bindir="$eprefix/bin"
+fi
+
+if [ "$datarootdir" = '' ]; then
+	datarootdir="$prefix/share"
+fi
+
+if [ "$mandir" = '' ]; then
+	mandir="$datarootdir/man"
+fi
+
+echo "PREFIX          = $prefix"
+echo "EPREFIX         = $eprefix"
+echo "BINDIR          = $bindir"
+echo "DATAROOTDIR     = $datarootdir"
+echo "MANDIR          = $mandir"
+echo "ENABLE_XINERAMA = $enable_xinerama"
+
+touch 'config/1-custom.mk'
+touch 'config/3-custom.mk'
+touch 'config/5-custom.mk'
+
+rm -f 'config/2-generated.mk'
+
+echo "PREFIX          = $prefix"          >> 'config/2-generated.mk'
+echo "EPREFIX         = $eprefix"         >> 'config/2-generated.mk'
+echo "BINDIR          = $bindir"          >> 'config/2-generated.mk'
+echo "DATAROOTDIR     = $datarootdir"     >> 'config/2-generated.mk'
+echo "MANDIR          = $mandir"          >> 'config/2-generated.mk'
+echo "ENABLE_XINERAMA = $enable_xinerama" >> 'config/2-generated.mk'

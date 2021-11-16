@@ -1,13 +1,16 @@
 # PolytreeWM - tiling window manager
 # See LICENSE file for copyright and license details.
 
-include config.mk
+CONFIGMKS = \
+	config/1-custom.mk \
+	config/2-generated.mk \
+	config/3-custom.mk \
+	config/4-defvars.mk \
+	config/5-custom.mk
+
+include $(CONFIGMKS)
 
 VERSION = 6.2
-
-CPPFLAGS += -DVERSION=\"$(VERSION)\" -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_C_SOURCE=200809L
-CFLAGS   += $(CPPFLAGS) -std=c99 -Os -pedantic -Wall -Wno-deprecated-declarations
-LDFLAGS  +=
 
 SRC = \
 	src/atoms.c \
@@ -57,23 +60,26 @@ polytreewm: ${OBJ}
 	${CC} -c $< -o $@ ${CFLAGS}
 
 dwm.o: ${DWM_SRC} ${DWM_HDR}
-${OBJ}: ${HDR}
+${OBJ}: ${CONFIGMKS} ${HDR}
 
 clean:
 	rm -f polytreewm ${OBJ}
 
+distclean: clean
+	rm -f config/2-generated.mk
+
 install: all
-	mkdir -p ${DESTDIR}${PREFIX}/bin
-	cp -f polytreewm ${DESTDIR}${PREFIX}/bin
-	chmod 755 ${DESTDIR}${PREFIX}/bin/polytreewm
+	mkdir -p ${DESTDIR}${BINDIR}
+	cp -f polytreewm ${DESTDIR}${BINDIR}
+	chmod 755 ${DESTDIR}${BINDIR}/polytreewm
 	
-	mkdir -p ${DESTDIR}${MANPREFIX}/man1
-	sed "s/VERSION/${VERSION}/g" < polytreewm.1 > ${DESTDIR}${MANPREFIX}/man1/polytreewm.1
-	chmod 644 ${DESTDIR}${MANPREFIX}/man1/polytreewm.1
+	mkdir -p ${DESTDIR}${MANDIR}/man1
+	sed "s/VERSION/${VERSION}/g" < polytreewm.1 > ${DESTDIR}${MANDIR}/man1/polytreewm.1
+	chmod 644 ${DESTDIR}${MANDIR}/man1/polytreewm.1
 
 uninstall:
 	rm -f \
-		${DESTDIR}${PREFIX}/bin/polytreewm \
-		${DESTDIR}${MANPREFIX}/man1/polytreewm.1
+		${DESTDIR}${BINDIR}/polytreewm \
+		${DESTDIR}${MANDIR}/man1/polytreewm.1
 
-.PHONY: all options clean install uninstall
+.PHONY: all options clean distclean install uninstall
