@@ -3,10 +3,37 @@
 
 include config.mk
 
-SRC = atoms.c drw.c dwm.c helpers.c layouts.c menu.c settings.c spawn.c tags.c util.c
-OBJ = ${SRC:.c=.o}
+SRC = \
+	src/atoms.c \
+	src/drw.c \
+	src/dwm.c \
+	src/helpers.c \
+	src/layouts.c \
+	src/menu.c \
+	src/settings.c \
+	src/spawn.c \
+	src/tags.c \
+	src/util.c
 
-DWM_SRC = dwm/handlers.c dwm/layouts.c dwm/swallow.c dwm/systray.c
+HDR = \
+	src/atoms.h \
+	src/drw.h \
+	src/config.def.h \
+	src/helpers.h \
+	src/layouts.h \
+	src/menu.h \
+	src/settings.h \
+	src/spawn.h \
+	src/tags.h \
+	src/util.h
+
+DWM_SRC = \
+	src/dwm/handlers.c \
+	src/dwm/layouts.c \
+	src/dwm/swallow.c \
+	src/dwm/systray.c
+
+OBJ = ${SRC:.c=.o}
 DWM_HDR = ${DWM_SRC:.c=.h}
 
 all: options polytreewm
@@ -17,17 +44,17 @@ options:
 	@echo "LDFLAGS  = ${LDFLAGS}"
 	@echo "CC       = ${CC}"
 
+polytreewm: ${OBJ}
+	${CC} -o $@ ${OBJ} ${LDFLAGS}
+
 %.o: %.c
 	${CC} -c $< -o $@ ${CFLAGS}
 
 dwm.o: ${DWM_SRC} ${DWM_HDR}
-${OBJ}: atoms.h drw.h config.def.h config.mk helpers.h layouts.h menu.h settings.h spawn.h tags.h util.h
-
-polytreewm: ${OBJ}
-	${CC} -o $@ ${OBJ} ${LDFLAGS}
+${OBJ}: config.mk ${HDR}
 
 clean:
-	rm -f polytreewm ${OBJ} polytreewm-${VERSION}.tar.gz
+	rm -f polytreewm ${OBJ}
 
 install: all
 	mkdir -p ${DESTDIR}${PREFIX}/bin
