@@ -1076,6 +1076,19 @@ focusstack(const Arg *arg)
 	if (c) {
 		focus(c);
 		restack(selmon);
+
+		{
+			unsigned int n = 0;
+			for (Client *cc = nexttiled(selmon->clients); cc; cc = nexttiled(cc->next), ++n);
+
+			// TODO: Maybe it's an unnecessary optimization
+			// and we don't need the condition.
+			if (n > 1) {
+				// We have to rearrange because borders and gaps may have
+				// changed in monocle layout.
+				arrange(selmon);
+			}
+		}
 	}
 }
 
@@ -1926,11 +1939,13 @@ setfullscreen(Client *c, int fullscreen)
 		XChangeProperty(dpy, c->win, atoms->netatom[NetWMState], XA_ATOM, 32,
 			PropModeReplace, (unsigned char*)&atoms->netatom[NetWMFullscreen], 1);
 		c->isfullscreen = 1;
+		// We have to rearrange because borders and gaps may have changed.
 		arrange(c->mon);
 	} else if (!fullscreen && c->isfullscreen){
 		XChangeProperty(dpy, c->win, atoms->netatom[NetWMState], XA_ATOM, 32,
 			PropModeReplace, (unsigned char*)0, 0);
 		c->isfullscreen = 0;
+		// We have to rearrange because borders and gaps may have changed.
 		arrange(c->mon);
 	}
 }
