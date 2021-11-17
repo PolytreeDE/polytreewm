@@ -144,6 +144,7 @@ typedef struct {
 
 struct Monitor {
 	Unit unit;
+	Pertag *pertag;
 	char ltsymbol[16];
 	float mfact;
 	int nmaster;
@@ -161,7 +162,6 @@ struct Monitor {
 	Monitor *next;
 	Window barwin;
 	const Layout *lt[2];
-	Pertag *pertag;
 };
 
 typedef struct {
@@ -181,12 +181,12 @@ struct Systray {
 };
 
 struct Pertag {
+	Unit units[TAGS_COUNT + 1];
 	unsigned int curtag, prevtag; /* current and previous tag */
 	int nmasters[TAGS_COUNT + 1]; /* number of windows in master area */
 	float mfacts[TAGS_COUNT + 1]; /* mfacts per tag */
 	unsigned int sellts[TAGS_COUNT + 1]; /* selected layouts */
 	const Layout *ltidxs[TAGS_COUNT + 1][2]; /* matrix of tags and layouts indexes  */
-	bool showbars[TAGS_COUNT + 1]; /* display bar for the current tag */
 };
 
 /*************************
@@ -629,6 +629,11 @@ cleanupmon(Monitor *mon)
 	}
 	XUnmapWindow(dpy, mon->barwin);
 	XDestroyWindow(dpy, mon->barwin);
+
+	for (int i = 0; i <= TAGS_COUNT; ++i) {
+		UNIT_DELETE(mon->pertag->units[i]);
+	}
+	free(mon->pertag);
 	UNIT_DELETE(mon->unit);
 	free(mon);
 }
@@ -655,15 +660,11 @@ configure(Client *c)
 Monitor *
 createmon(void)
 {
-	Monitor *m;
-	unsigned int i;
+	Monitor *const m = ecalloc(1, sizeof(Monitor));
 
-	m = ecalloc(1, sizeof(Monitor));
+	if (!m) goto fail_without_mon;
 
-	if (!(m->unit = unit_new())) {
-		free(m);
-		return NULL;
-	}
+	if (!(m->unit = unit_new())) goto fail_without_unit;
 
 	m->tagset[0] = m->tagset[1] = 1;
 	m->mfact = mfact;
@@ -680,21 +681,41 @@ createmon(void)
 		0
 	);
 
-	m->pertag = ecalloc(1, sizeof(Pertag));
+	if (!(m->pertag = ecalloc(1, sizeof(Pertag)))) goto fail_without_pertag;
+
 	m->pertag->curtag = m->pertag->prevtag = 1;
 
-	for (i = 0; i <= TAGS_COUNT; i++) {
+	for (int i = 0; i <= TAGS_COUNT; ++i) {
+		m->pertag->units[i] = NULL;
+	}
+
+	for (int i = 0; i <= TAGS_COUNT; i++) {
+		if (!(m->pertag->units[i] = unit_new())) goto fail_other;
+		m->pertag->units[i]->show_bar = m->unit->show_bar;
+
 		m->pertag->nmasters[i] = m->nmaster;
 		m->pertag->mfacts[i] = m->mfact;
 
 		m->pertag->ltidxs[i][0] = m->lt[0];
 		m->pertag->ltidxs[i][1] = m->lt[1];
 		m->pertag->sellts[i] = m->sellt;
-
-		m->pertag->showbars[i] = m->unit->show_bar;
 	}
 
 	return m;
+
+fail_other:
+	for (int i = 0; i <= TAGS_COUNT; ++i) {
+		if (m->pertag->units[i]) {
+			UNIT_DELETE(m->pertag->units[i]);
+		}
+	}
+	free(m->pertag);
+fail_without_pertag:
+	UNIT_DELETE(m->unit);
+fail_without_unit:
+	free(m);
+fail_without_mon:
+	return NULL;
 }
 
 void
@@ -1845,7 +1866,7 @@ void
 togglebar(const Arg *arg)
 {
 	selmon->unit->show_bar =
-		selmon->pertag->showbars[selmon->pertag->curtag] =
+		selmon->pertag->units[selmon->pertag->curtag]->show_bar =
 		!selmon->unit->show_bar;
 
 	updatebarpos(selmon);
@@ -1931,7 +1952,7 @@ toggleview(const Arg *arg)
 		selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];
 		selmon->lt[selmon->sellt^1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt^1];
 
-		if (selmon->unit->show_bar != selmon->pertag->showbars[selmon->pertag->curtag] &&
+		if (selmon->unit->show_bar != selmon->pertag->units[selmon->pertag->curtag]->show_bar &&
 			settings_get_show_bar_per_tag())
 		{
 			togglebar(NULL);
@@ -2278,7 +2299,7 @@ view(const Arg *arg)
 	selmon->lt[selmon->sellt]     = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];
 	selmon->lt[selmon->sellt ^ 1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt ^ 1];
 
-	if (selmon->unit->show_bar != selmon->pertag->showbars[selmon->pertag->curtag] &&
+	if (selmon->unit->show_bar != selmon->pertag->units[selmon->pertag->curtag]->show_bar &&
 		settings_get_show_bar_per_tag())
 	{
 		togglebar(NULL);
@@ -2323,7 +2344,7 @@ viewrel(const Arg *arg)
 	selmon->lt[selmon->sellt]     = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];
 	selmon->lt[selmon->sellt ^ 1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt ^ 1];
 
-	if (selmon->unit->show_bar != selmon->pertag->showbars[selmon->pertag->curtag] &&
+	if (selmon->unit->show_bar != selmon->pertag->units[selmon->pertag->curtag]->show_bar &&
 		settings_get_show_bar_per_tag())
 	{
 		togglebar(NULL);
