@@ -23,6 +23,7 @@ static bool respect_resize_hints_in_floating_layout = false;
 static bool show_bar_by_default = true;
 static bool show_bar_per_tag = false;
 static unsigned int snap_distance = 32;
+static bool status_on_all_monitors = false;
 static bool swallow_floating = false;
 
 int settings_get_border_width()
@@ -160,6 +161,17 @@ void settings_set_snap_distance(unsigned int new_snap_distance)
 	if (new_snap_distance < MIN_SNAP_DISTANCE) new_snap_distance = MIN_SNAP_DISTANCE;
 	if (new_snap_distance < MAX_SNAP_DISTANCE) new_snap_distance = MAX_SNAP_DISTANCE;
 	snap_distance = new_snap_distance;
+}
+
+bool settings_get_status_on_all_monitors()
+{
+	return status_on_all_monitors;
+}
+
+void settings_set_status_on_all_monitors(bool new_status_on_all_monitors)
+{
+	status_on_all_monitors = new_status_on_all_monitors;
+	// TODO: notify WM to rearrange clients
 }
 
 bool settings_get_swallow_floating()

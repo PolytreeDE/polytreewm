@@ -741,9 +741,11 @@ drawbar(Monitor *m)
 		stw = getsystraywidth();
 
 	/* draw status first so it can be overdrawn by tags later */
-	drw_setscheme(drw, scheme[SchemeNorm]);
-	tw = TEXTW(stext) - lrpad / 2 + 2; /* 2px extra right padding */
-	drw_text(drw, m->ww - tw - stw, 0, tw, bh, lrpad / 2 - 2, stext, 0);
+	if (m == selmon || settings_get_status_on_all_monitors()) {
+		drw_setscheme(drw, scheme[SchemeNorm]);
+		tw = TEXTW(stext) - lrpad / 2 + 2; /* 2px extra right padding */
+		drw_text(drw, m->ww - tw - stw, 0, tw, bh, lrpad / 2 - 2, stext, 0);
+	}
 
 	resizebarwin(m);
 	for (c = m->clients; c; c = c->next) {
@@ -783,10 +785,9 @@ drawbar(Monitor *m)
 void
 drawbars(void)
 {
-	Monitor *m;
-
-	for (m = mons; m; m = m->next)
+	for (Monitor *m = mons; m; m = m->next) {
 		drawbar(m);
+	}
 }
 
 void
@@ -2186,8 +2187,10 @@ updatestatus(void)
 		strcpy(stext, "polytreewm-"VERSION);
 	}
 
-	for (Monitor *m = mons; m; m = m->next) {
-		drawbar(m);
+	if (settings_get_status_on_all_monitors()) {
+		drawbars();
+	} else {
+		drawbar(selmon);
 	}
 
 	updatesystray();
