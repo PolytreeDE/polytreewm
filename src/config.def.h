@@ -55,6 +55,7 @@ static const Layout layouts[] = {
 static Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_n,      nametag,        {0} },
+	{ MODKEY,                       XK_z,      spawn,          {.v = "lock" } },
 	{ MODKEY,                       XK_slash,  spawn,          {.v = "menu" } },
 	{ MODKEY|ShiftMask,             XK_slash,  spawn,          {.v = "term" } },
 	{ MODKEY|ShiftMask,             XK_f,      spawn,          {.v = "firefox" } },

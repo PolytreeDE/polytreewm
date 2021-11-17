@@ -18,6 +18,11 @@ struct Command {
 
 static struct Command commands[] = {
 	{
+		.name = "lock",
+		.monitor_arg_index = 0,
+		.args = { "i3lock", NULL },
+	},
+	{
 		.name = "menu",
 		.monitor_arg_index = 6,
 		.args = {
