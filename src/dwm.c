@@ -265,6 +265,7 @@ static void unfocus(Client *c, int setfocus);
 static void unmanage(Client *c, int destroyed);
 static void updatebarpos(Monitor *m);
 static void updatebar(Monitor *m);
+static void updatebars();
 static void updateclientlist(void);
 static int updategeom(void);
 static void updatenumlockmask(void);
@@ -1914,7 +1915,7 @@ togglebar(const Arg *arg)
 {
 	unit_toggle_show_bar(selmon->pertag->units[selmon->pertag->curtag]);
 
-	updatebar(selmon);
+	updatebars();
 }
 
 void
@@ -2070,6 +2071,14 @@ updatebar(Monitor *m)
 		XConfigureWindow(dpy, systray->win, CWY, &wc);
 	}
 	arrange(m);
+}
+
+void
+updatebars()
+{
+	for (Monitor *m = mons; m; m = m->next) {
+		updatebar(m);
+	}
 }
 
 void
