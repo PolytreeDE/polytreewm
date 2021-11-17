@@ -7,7 +7,7 @@
 
 struct Unit {
 	UnitKind kind;
-	const struct Unit *parent;
+	struct Unit *parent;
 	bool show_bar;
 };
 
@@ -49,10 +49,28 @@ void unit_delete(const Unit unit)
 
 bool unit_get_show_bar(const Unit unit)
 {
-	return unit->show_bar;
+	const UnitKind show_bar_per_unit = settings_get_show_bar_per_unit();
+
+	if (unit->kind == show_bar_per_unit) {
+		return unit->show_bar;
+	} else if (unit->kind > show_bar_per_unit) {
+		return unit_get_show_bar(unit->parent);
+	} else {
+		// TODO: maybe we should assert here
+		return settings_get_show_bar_by_default();
+	}
 }
 
 bool unit_toggle_show_bar(const Unit unit)
 {
-	return unit->show_bar = !unit->show_bar;
+	const UnitKind show_bar_per_unit = settings_get_show_bar_per_unit();
+
+	if (unit->kind == show_bar_per_unit) {
+		return unit->show_bar = !unit->show_bar;
+	} else if (unit->kind > show_bar_per_unit) {
+		return unit_toggle_show_bar(unit->parent);
+	} else {
+		// TODO: maybe we should assert here
+		return settings_get_show_bar_by_default();
+	}
 }

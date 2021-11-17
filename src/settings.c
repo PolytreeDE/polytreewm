@@ -21,6 +21,7 @@ static int gap_size = 10;
 static int max_clients_in_master = 0; // 0 for no maximum
 static bool respect_resize_hints_in_floating_layout = false;
 static bool show_bar_by_default = true;
+static bool show_bar_per_unit = UNIT_MONITOR;
 static unsigned int snap_distance = 32;
 static bool status_on_all_monitors = false;
 static bool swallow_floating = false;
@@ -138,6 +139,17 @@ bool settings_get_show_bar_by_default()
 void settings_set_show_bar_by_default(bool new_show_bar_by_default)
 {
 	show_bar_by_default = new_show_bar_by_default;
+}
+
+UnitKind settings_get_show_bar_per_unit()
+{
+	return show_bar_per_unit;
+}
+
+void settings_set_show_bar_per_unit(const UnitKind new_show_bar_per_unit)
+{
+	show_bar_per_unit = new_show_bar_per_unit;
+	// TODO: notify WM to rearrange clients
 }
 
 unsigned int settings_get_snap_distance()
