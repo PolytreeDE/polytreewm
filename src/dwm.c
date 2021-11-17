@@ -263,6 +263,7 @@ static void toggleview(const Arg *arg);
 static void unfocus(Client *c, int setfocus);
 static void unmanage(Client *c, int destroyed);
 static void updatebarpos(Monitor *m);
+static void updatebar(Monitor *m);
 static void updatebars(void);
 static void updateclientlist(void);
 static int updategeom(void);
@@ -1883,23 +1884,9 @@ tagmon(const Arg *arg)
 void
 togglebar(const Arg *arg)
 {
-	selmon->show_bar =
-		unit_toggle_show_bar(selmon->pertag->units[selmon->pertag->curtag]);
+	unit_toggle_show_bar(selmon->pertag->units[selmon->pertag->curtag]);
 
-	updatebarpos(selmon);
-	resizebarwin(selmon);
-	if (showsystray) {
-		XWindowChanges wc;
-		if (!selmon->show_bar)
-			wc.y = -bh;
-		else if (selmon->show_bar) {
-			wc.y = 0;
-			if (!selmon->topbar)
-				wc.y = selmon->mh - bh;
-		}
-		XConfigureWindow(dpy, systray->win, CWY, &wc);
-	}
-	arrange(selmon);
+	updatebar(selmon);
 }
 
 void
@@ -1972,7 +1959,7 @@ toggleview(const Arg *arg)
 		if (selmon->show_bar !=
 			unit_get_show_bar(selmon->pertag->units[selmon->pertag->curtag]))
 		{
-			togglebar(NULL);
+			updatebar(selmon);
 		}
 
 		focus(NULL);
@@ -2033,6 +2020,28 @@ unmanage(Client *c, int destroyed)
 		focus(NULL);
 		updateclientlist();
 	}
+}
+
+void
+updatebar(Monitor *m)
+{
+	m->show_bar =
+		unit_get_show_bar(selmon->pertag->units[selmon->pertag->curtag]);
+
+	updatebarpos(m);
+	resizebarwin(m);
+	if (showsystray) {
+		XWindowChanges wc;
+		if (!m->show_bar)
+			wc.y = -bh;
+		else if (m->show_bar) {
+			wc.y = 0;
+			if (!m->topbar)
+				wc.y = m->mh - bh;
+		}
+		XConfigureWindow(dpy, systray->win, CWY, &wc);
+	}
+	arrange(m);
 }
 
 void
@@ -2319,7 +2328,7 @@ view(const Arg *arg)
 	if (selmon->show_bar !=
 		unit_get_show_bar(selmon->pertag->units[selmon->pertag->curtag]))
 	{
-		togglebar(NULL);
+		updatebar(selmon);
 	}
 
 	focus(NULL);
@@ -2364,7 +2373,7 @@ viewrel(const Arg *arg)
 	if (selmon->show_bar !=
 		unit_get_show_bar(selmon->pertag->units[selmon->pertag->curtag]))
 	{
-		togglebar(NULL);
+		updatebar(selmon);
 	}
 
 	focus(NULL);
