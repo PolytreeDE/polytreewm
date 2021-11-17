@@ -5,6 +5,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+struct Unit {
+	UnitKind kind;
+	const struct Unit *parent;
+	bool show_bar;
+};
+
 Unit unit_new(const UnitKind kind, const Unit parent)
 {
 	Unit unit = malloc(sizeof(struct Unit));
@@ -39,4 +45,14 @@ void unit_delete(const Unit unit)
 	if (unit == NULL) return;
 
 	free(unit);
+}
+
+bool unit_get_show_bar(const Unit unit)
+{
+	return unit->show_bar;
+}
+
+bool unit_toggle_show_bar(const Unit unit)
+{
+	return unit->show_bar = !unit->show_bar;
 }
