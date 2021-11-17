@@ -194,7 +194,7 @@ on_configure_notify(XEvent *e)
 		sh = ev->height;
 		if (updategeom() || dirty) {
 			drw_resize(drw, sw, bh);
-			updatebars();
+			createbars();
 			for (m = mons; m; m = m->next) {
 				resizebarwin(m);
 			}
