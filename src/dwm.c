@@ -245,7 +245,7 @@ static void setfocus(Client *c);
 static void setfullscreen(Client *c, int fullscreen);
 static void setlayout(const Arg *arg);
 static void setmfact(const Arg *arg);
-static void setup(void);
+static bool setup(void);
 static void seturgent(Client *c, int urg);
 static void showhide(Client *c);
 static void sigchld(int unused);
@@ -287,6 +287,7 @@ static void zoom(const Arg *arg);
  * variables *
  *************/
 
+static Unit global_unit = NULL;
 static Systray *systray =  NULL;
 static const char broken[] = "broken";
 static char stext[256];
@@ -362,7 +363,9 @@ main(int argc, char *argv[])
 
 	checkotherwm();
 
-	setup();
+	if (!setup()) {
+		die("polytreewm: cannot setup");
+	}
 
 #ifdef __OpenBSD__
 	if (pledge("stdio rpath proc exec ps", NULL) == -1) {
@@ -614,6 +617,8 @@ cleanup(void)
 	XSync(dpy, False);
 	XSetInputFocus(dpy, PointerRoot, RevertToPointerRoot, CurrentTime);
 	XDeleteProperty(dpy, root, atoms->netatom[NetActiveWindow]);
+
+	if (global_unit) UNIT_DELETE(global_unit);
 }
 
 void
@@ -664,7 +669,9 @@ createmon(void)
 
 	if (!m) goto fail_without_mon;
 
-	if (!(m->unit = unit_new())) goto fail_without_unit;
+	if (!(m->unit = unit_new(UNIT_MONITOR, global_unit))) {
+		goto fail_without_unit;
+	}
 
 	m->tagset[0] = m->tagset[1] = 1;
 	m->mfact = mfact;
@@ -690,8 +697,9 @@ createmon(void)
 	}
 
 	for (int i = 0; i <= TAGS_COUNT; i++) {
-		if (!(m->pertag->units[i] = unit_new())) goto fail_other;
-		m->pertag->units[i]->show_bar = m->unit->show_bar;
+		if (!(m->pertag->units[i] = unit_new(UNIT_TAG, m->unit))) {
+			goto fail_other;
+		}
 
 		m->pertag->nmasters[i] = m->nmaster;
 		m->pertag->mfacts[i] = m->mfact;
@@ -1693,7 +1701,7 @@ setmfact(const Arg *arg)
 	arrange(selmon);
 }
 
-void
+bool
 setup(void)
 {
 	int i;
@@ -1701,6 +1709,8 @@ setup(void)
 
 	/* clean up any zombies immediately */
 	sigchld(0);
+
+	if (!(global_unit = unit_new(UNIT_GLOBAL, NULL))) return false;
 
 	/* init screen */
 	screen = DefaultScreen(dpy);
@@ -1786,6 +1796,8 @@ setup(void)
 	XSelectInput(dpy, root, wa.event_mask);
 	grabkeys();
 	focus(NULL);
+
+	return true;
 }
 
 

@@ -9,11 +9,19 @@
 	unit = NULL;            \
 }
 
+typedef enum {
+	UNIT_GLOBAL  = 0,
+	UNIT_MONITOR = 1,
+	UNIT_TAG     = 2,
+} UnitKind;
+
 typedef struct Unit {
+	UnitKind kind;
+	const struct Unit *parent;
 	bool show_bar;
 } *Unit;
 
-Unit unit_new();
+Unit unit_new(UnitKind kind, Unit parent);
 
 void unit_delete(Unit unit);
 
