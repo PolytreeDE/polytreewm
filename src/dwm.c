@@ -53,6 +53,7 @@
 #include "settings.h"
 #include "spawn.h"
 #include "tags.h"
+#include "unit.h"
 #include "util.h"
 
 /* macros */
@@ -142,6 +143,7 @@ typedef struct {
 } Layout;
 
 struct Monitor {
+	Unit unit;
 	char ltsymbol[16];
 	float mfact;
 	int nmaster;
@@ -152,7 +154,6 @@ struct Monitor {
 	unsigned int seltags;
 	unsigned int sellt;
 	unsigned int tagset[2];
-	bool showbar;
 	int topbar;
 	Client *clients;
 	Client *sel;
@@ -628,6 +629,7 @@ cleanupmon(Monitor *mon)
 	}
 	XUnmapWindow(dpy, mon->barwin);
 	XDestroyWindow(dpy, mon->barwin);
+	UNIT_DELETE(mon->unit);
 	free(mon);
 }
 
@@ -657,10 +659,15 @@ createmon(void)
 	unsigned int i;
 
 	m = ecalloc(1, sizeof(Monitor));
+
+	if (!(m->unit = unit_new())) {
+		free(m);
+		return NULL;
+	}
+
 	m->tagset[0] = m->tagset[1] = 1;
 	m->mfact = mfact;
 	m->nmaster = settings_get_default_clients_in_master();
-	m->showbar = settings_get_show_bar_by_default();
 	m->topbar = topbar;
 	m->lt[0] = &layouts[0];
 	m->lt[1] = &layouts[1 % LENGTH(layouts)];
@@ -684,7 +691,7 @@ createmon(void)
 		m->pertag->ltidxs[i][1] = m->lt[1];
 		m->pertag->sellts[i] = m->sellt;
 
-		m->pertag->showbars[i] = m->showbar;
+		m->pertag->showbars[i] = m->unit->show_bar;
 	}
 
 	return m;
@@ -1837,15 +1844,17 @@ tagmon(const Arg *arg)
 void
 togglebar(const Arg *arg)
 {
-	selmon->showbar = selmon->pertag->showbars[selmon->pertag->curtag] = !selmon->showbar;
+	selmon->unit->show_bar =
+		selmon->pertag->showbars[selmon->pertag->curtag] =
+		!selmon->unit->show_bar;
 
 	updatebarpos(selmon);
 	resizebarwin(selmon);
 	if (showsystray) {
 		XWindowChanges wc;
-		if (!selmon->showbar)
+		if (!selmon->unit->show_bar)
 			wc.y = -bh;
-		else if (selmon->showbar) {
+		else if (selmon->unit->show_bar) {
 			wc.y = 0;
 			if (!selmon->topbar)
 				wc.y = selmon->mh - bh;
@@ -1922,7 +1931,7 @@ toggleview(const Arg *arg)
 		selmon->lt[selmon->sellt] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];
 		selmon->lt[selmon->sellt^1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt^1];
 
-		if (selmon->showbar != selmon->pertag->showbars[selmon->pertag->curtag] &&
+		if (selmon->unit->show_bar != selmon->pertag->showbars[selmon->pertag->curtag] &&
 			settings_get_show_bar_per_tag())
 		{
 			togglebar(NULL);
@@ -2021,7 +2030,7 @@ updatebarpos(Monitor *m)
 {
 	m->wy = m->my;
 	m->wh = m->mh;
-	if (m->showbar) {
+	if (m->unit->show_bar) {
 		m->wh -= bh;
 		m->by = m->topbar ? m->wy : m->wy + m->wh;
 		m->wy = m->topbar ? m->wy + bh : m->wy;
@@ -2269,7 +2278,7 @@ view(const Arg *arg)
 	selmon->lt[selmon->sellt]     = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];
 	selmon->lt[selmon->sellt ^ 1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt ^ 1];
 
-	if (selmon->showbar != selmon->pertag->showbars[selmon->pertag->curtag] &&
+	if (selmon->unit->show_bar != selmon->pertag->showbars[selmon->pertag->curtag] &&
 		settings_get_show_bar_per_tag())
 	{
 		togglebar(NULL);
@@ -2314,7 +2323,7 @@ viewrel(const Arg *arg)
 	selmon->lt[selmon->sellt]     = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];
 	selmon->lt[selmon->sellt ^ 1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt ^ 1];
 
-	if (selmon->showbar != selmon->pertag->showbars[selmon->pertag->curtag] &&
+	if (selmon->unit->show_bar != selmon->pertag->showbars[selmon->pertag->curtag] &&
 		settings_get_show_bar_per_tag())
 	{
 		togglebar(NULL);

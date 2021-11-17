@@ -26,6 +26,7 @@ MODULES_SRC = \
 	src/settings.c \
 	src/spawn.c \
 	src/tags.c \
+	src/unit.c \
 	src/util.c
 
 DWM_SRC = \
