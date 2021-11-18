@@ -41,14 +41,17 @@ static struct Command commands[] = {
 	{
 		.name = "term",
 		.monitor_arg_index = 0,
-#ifdef WITH_TERMINAL_PTTERM
-		.args = { "ptterm", NULL },
-#endif
-#ifdef WITH_TERMINAL_XTERM
-		.args = { "xterm", NULL },
+#ifdef WITH_TERMINAL_ALACRITTY
+		.args = { "alacritty", NULL },
 #endif
 #ifdef WITH_TERMINAL_GNOME
 		.args = { "gnome-terminal", "--wait", NULL },
+#endif
+#ifdef WITH_TERMINAL_ST
+		.args = { "st", NULL },
+#endif
+#ifdef WITH_TERMINAL_XTERM
+		.args = { "xterm", NULL },
 #endif
 	},
 #endif

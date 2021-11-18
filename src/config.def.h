@@ -27,9 +27,9 @@ static const Rule rules[] = {
 	 *	WM_CLASS(STRING) = instance, class
 	 *	WM_NAME(STRING) = title
 	 */
-	/* class,   instance, title,          tags mask, isfloating, isterminal, noswallow, monitor */
-	{ "ptterm", NULL,     NULL,           0,         0,          1,          0,         -1      },
-	{ NULL,     NULL,     "Event Tester", 0,         0,          0,          1,         -1      }, // xev
+	/* class,      instance, title,          tags mask, isfloating, isterminal, noswallow, monitor */
+	{ "alacritty", NULL,     NULL,           0,         0,          1,          0,         -1      },
+	{ NULL,        NULL,     "Event Tester", 0,         0,          0,          1,         -1      }, // xev
 };
 
 /* layout(s) */
