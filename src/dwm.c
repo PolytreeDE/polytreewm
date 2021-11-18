@@ -992,7 +992,7 @@ isuniquegeom(XineramaScreenInfo *unique, size_t n, XineramaScreenInfo *info)
 #endif /* ENABLE_XINERAMA */
 
 void
-killclient(const Arg *arg)
+killclient(__attribute__((unused)) const Arg *arg)
 {
 	if (!selmon->sel)
 		return;
@@ -1132,7 +1132,7 @@ manage(Window w, XWindowAttributes *wa)
 }
 
 void
-movemouse(const Arg *arg)
+movemouse(__attribute__((unused)) const Arg *arg)
 {
 	Client *const c = selmon->sel;
 	if (c == NULL) return;
@@ -1214,7 +1214,7 @@ movemouse(const Arg *arg)
 
 // TODO: this function really needs to be refactored
 void
-nametag(const Arg *arg) {
+nametag(__attribute__((unused)) const Arg *arg) {
 	char name[TAGS_CUSTOM_NAME_SIZE];
 
 	if (!menu_run(name, TAGS_CUSTOM_NAME_SIZE, "Tag name")) return;
@@ -1294,7 +1294,7 @@ pop(Client *c)
 }
 
 void
-quit(const Arg *arg)
+quit(__attribute__((unused)) const Arg *arg)
 {
 	running = 0;
 }
@@ -1350,7 +1350,7 @@ resizeclient(Client *c, int x, int y, int w, int h, int bw)
 }
 
 void
-resizemouse(const Arg *arg)
+resizemouse(__attribute__((unused)) const Arg *arg)
 {
 	Client *const c = selmon->sel;
 	if (c == NULL) return;
@@ -1631,7 +1631,6 @@ setmfact(const Arg *arg)
 bool
 setup(void)
 {
-	int i;
 	XSetWindowAttributes wa;
 
 	/* clean up any zombies immediately */
@@ -1659,7 +1658,7 @@ setup(void)
 	cursor[CurMove] = drw_cur_create(drw, XC_fleur);
 	/* init appearance */
 	scheme = ecalloc(LENGTH(colors), sizeof(Clr *));
-	for (i = 0; i < LENGTH(colors); i++)
+	for (unsigned int i = 0; i < LENGTH(colors); i++)
 		scheme[i] = drw_scm_create(drw, colors[i], 3);
 	/* init system tray */
 	updatesystray();
@@ -1760,7 +1759,7 @@ showhide(Client *c)
 }
 
 void
-sigchld(int unused)
+sigchld(__attribute__((unused)) int unused)
 {
 	if (signal(SIGCHLD, sigchld) == SIG_ERR)
 		die("can't install SIGCHLD handler:");
@@ -1802,7 +1801,7 @@ tagmon(const Arg *arg)
 }
 
 void
-togglefloating(const Arg *arg)
+togglefloating(__attribute__((unused)) const Arg *arg)
 {
 	if (!selmon->sel) return;
 
@@ -1849,7 +1848,7 @@ toggleview(const Arg *arg)
 	if (newtagset) {
 		selmon->tagset[selmon->seltags] = newtagset;
 
-		if (newtagset == ~0) {
+		if (newtagset == ~0u) {
 			selmon->pertag->prevtag = selmon->pertag->curtag;
 			selmon->pertag->curtag = 0;
 		}
@@ -2028,13 +2027,13 @@ updategeom(void)
 void
 updatenumlockmask(void)
 {
-	unsigned int i, j;
+	unsigned int i;
 	XModifierKeymap *modmap;
 
 	numlockmask = 0;
 	modmap = XGetModifierMapping(dpy);
 	for (i = 0; i < 8; i++)
-		for (j = 0; j < modmap->max_keypermod; j++)
+		for (int j = 0; j < modmap->max_keypermod; j++)
 			if (modmap->modifiermap[i * modmap->max_keypermod + j]
 				== XKeysymToKeycode(dpy, XK_Num_Lock))
 				numlockmask = (1 << i);
@@ -2158,7 +2157,7 @@ view(const Arg *arg)
 		selmon->tagset[selmon->seltags] = new_tagset;
 		selmon->pertag->prevtag = selmon->pertag->curtag;
 
-		if (arg->ui == ~0) {
+		if (arg->ui == ~0u) {
 			selmon->pertag->curtag = 0;
 		} else {
 			int i = 0;
@@ -2257,7 +2256,7 @@ wintomon(Window w)
 }
 
 void
-zoom(const Arg *arg)
+zoom(__attribute__((unused)) const Arg *arg)
 {
 	Client *c = selmon->sel;
 

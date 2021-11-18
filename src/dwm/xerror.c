@@ -4,8 +4,7 @@
 /* There's no way to check accesses to destroyed windows, thus those cases are
  * ignored (especially on UnmapNotify's). Other types of errors call Xlibs
  * default error handler, which may call exit. */
-int
-xerror(Display *dpy, XErrorEvent *ee)
+int xerror(Display *const dpy, XErrorEvent *const ee)
 {
 	if (ee->error_code == BadWindow
 		|| (ee->request_code == X_SetInputFocus && ee->error_code == BadMatch)
@@ -30,17 +29,19 @@ xerror(Display *dpy, XErrorEvent *ee)
 	return xerrorxlib(dpy, ee); /* may call exit */
 }
 
-int
-xerrordummy(Display *dpy, XErrorEvent *ee)
-{
+int xerrordummy(
+	__attribute__((unused)) Display *const dpy,
+	__attribute__((unused)) XErrorEvent *const ee
+) {
 	return 0;
 }
 
 /* Startup Error handler to check if another window manager
  * is already running. */
-int
-xerrorstart(Display *dpy, XErrorEvent *ee)
-{
+int xerrorstart(
+	__attribute__((unused)) Display *const dpy,
+	__attribute__((unused)) XErrorEvent *const ee
+) {
 	die("polytreewm: another window manager is already running");
 	return -1;
 }

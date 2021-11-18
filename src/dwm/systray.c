@@ -27,12 +27,12 @@ removesystrayicon(Client *i)
 Monitor *
 systraytomon(Monitor *m) {
 	Monitor *t;
-	int i, n;
 	if(!systraypinning) {
 		if(!m)
 			return selmon;
 		return m == selmon ? m : NULL;
 	}
+	unsigned int i, n;
 	for(n = 1, t = mons; t && t->next; n++, t = t->next) ;
 	for(i = 1, t = mons; t && t->next && i < systraypinning; i++, t = t->next) ;
 	if(systraypinningfailfirst && n < systraypinning)
