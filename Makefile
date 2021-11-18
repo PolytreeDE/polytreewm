@@ -31,6 +31,7 @@ MODULES_SRC = \
 	src/util.c
 
 DWM_SRC = \
+	src/dwm/bar.c \
 	src/dwm/handlers.c \
 	src/dwm/layouts.c \
 	src/dwm/swallow.c \

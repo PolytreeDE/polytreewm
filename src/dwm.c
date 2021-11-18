@@ -207,13 +207,10 @@ static void checkotherwm(void);
 static void cleanup(void);
 static void cleanupmon(Monitor *mon);
 static void configure(Client *c);
-static void createbars(void);
 static Monitor *createmon(void);
 static void detach(Client *c);
 static void detachstack(Client *c);
 static Monitor *dirtomon(int dir);
-static void drawbar(Monitor *m);
-static void drawbars(void);
 static void focus(Client *c);
 static void focusmon(const Arg *arg);
 static void focusstack(const Arg *arg);
@@ -235,7 +232,6 @@ static void quit(const Arg *arg);
 static Monitor *recttomon(int x, int y, int w, int h);
 static void resetnmaster(const Arg *arg);
 static void resize(Client *c, int x, int y, int w, int h, int bw, int interact);
-static void resizebarwin(Monitor *m);
 static void resizeclient(Client *c, int x, int y, int w, int h, int bw);
 static void resizemouse(const Arg *arg);
 static void restack(Monitor *m);
@@ -256,15 +252,11 @@ static void spawn(const Arg *arg);
 static void spawn_callback();
 static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
-static void togglebar(const Arg *arg);
 static void togglefloating(const Arg *arg);
 static void toggletag(const Arg *arg);
 static void toggleview(const Arg *arg);
 static void unfocus(Client *c, int setfocus);
 static void unmanage(Client *c, int destroyed);
-static void updatebarpos(Monitor *m);
-static void updatebar(Monitor *m);
-static void updatebars();
 static void updateclientlist(void);
 static int updategeom(void);
 static void updatenumlockmask(void);
@@ -279,6 +271,7 @@ static Client *wintoclient(Window w);
 static Monitor *wintomon(Window w);
 static void zoom(const Arg *arg);
 
+#include "dwm/bar.h"
 #include "dwm/handlers.h"
 #include "dwm/layouts.h"
 #include "dwm/swallow.h"
@@ -335,6 +328,7 @@ static xcb_connection_t *xcon;
  * function implementations *
  ****************************/
 
+#include "dwm/bar.c"
 #include "dwm/handlers.c"
 #include "dwm/layouts.c"
 #include "dwm/swallow.c"
@@ -665,34 +659,6 @@ configure(Client *c)
 	XSendEvent(dpy, c->win, False, StructureNotifyMask, (XEvent *)&ce);
 }
 
-void
-createbars(void)
-{
-	unsigned int w;
-	Monitor *m;
-	XSetWindowAttributes wa = {
-		.override_redirect = True,
-		.background_pixmap = ParentRelative,
-		.event_mask = ButtonPressMask|ExposureMask
-	};
-	XClassHint ch = {"polytreewm", "polytreewm"};
-	for (m = mons; m; m = m->next) {
-		if (m->barwin)
-			continue;
-		w = m->ww;
-		if (showsystray && m == systraytomon(m))
-			w -= getsystraywidth();
-		m->barwin = XCreateWindow(dpy, root, m->wx, m->by, w, bh, 0, DefaultDepth(dpy, screen),
-				CopyFromParent, DefaultVisual(dpy, screen),
-				CWOverrideRedirect|CWBackPixmap|CWEventMask, &wa);
-		XDefineCursor(dpy, m->barwin, cursor[CurNormal]->cursor);
-		if (showsystray && m == systraytomon(m))
-			XMapRaised(dpy, systray->win);
-		XMapRaised(dpy, m->barwin);
-		XSetClassHint(dpy, m->barwin, &ch);
-	}
-}
-
 Monitor *
 createmon(void)
 {
@@ -795,68 +761,6 @@ dirtomon(int dir)
 	else
 		for (m = mons; m->next != selmon; m = m->next);
 	return m;
-}
-
-void
-drawbar(Monitor *m)
-{
-	int x, w, tw = 0, stw = 0;
-	int boxs = drw->fonts->h / 9;
-	int boxw = drw->fonts->h / 6 + 2;
-	unsigned int i, occ = 0, urg = 0;
-	Client *c;
-
-	if(showsystray && m == systraytomon(m) && !systrayonleft)
-		stw = getsystraywidth();
-
-	/* draw status first so it can be overdrawn by tags later */
-	if (m == selmon || settings_get_status_on_all_monitors()) {
-		drw_setscheme(drw, scheme[SchemeNorm]);
-		tw = TEXTW(stext) - lrpad / 2 + 2; /* 2px extra right padding */
-		drw_text(drw, m->ww - tw - stw, 0, tw, bh, lrpad / 2 - 2, stext, 0);
-	}
-
-	resizebarwin(m);
-	for (c = m->clients; c; c = c->next) {
-		occ |= c->tags == 255 ? 0 : c->tags;
-		if (c->isurgent)
-			urg |= c->tags;
-	}
-	x = 0;
-	for (i = 0; i < TAGS_COUNT; i++) {
-		/* do not draw vacant tags */
-		if (!(occ & 1 << i || m->tagset[m->seltags] & 1 << i || tags_get(i)->has_custom_name))
-		continue;
-
-		w = TEXTW(tags_get(i)->name.cstr);
-		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
-		drw_text(drw, x, 0, w, bh, lrpad / 2, tags_get(i)->name.cstr, urg & 1 << i);
-		x += w;
-	}
-	w = blw = TEXTW(m->ltsymbol);
-	drw_setscheme(drw, scheme[SchemeNorm]);
-	x = drw_text(drw, x, 0, w, bh, lrpad / 2, m->ltsymbol, 0);
-
-	if ((w = m->ww - tw - stw - x) > bh) {
-		if (m->sel) {
-			drw_setscheme(drw, scheme[m == selmon ? SchemeSel : SchemeNorm]);
-			drw_text(drw, x, 0, w, bh, lrpad / 2, m->sel->name, 0);
-			if (m->sel->isfloating)
-				drw_rect(drw, x + boxs, boxs, boxw, boxw, m->sel->isfixed, 0);
-		} else {
-			drw_setscheme(drw, scheme[SchemeNorm]);
-			drw_rect(drw, x, 0, w, bh, 1, 1);
-		}
-	}
-	drw_map(drw, m->barwin, 0, 0, m->ww - stw, bh);
-}
-
-void
-drawbars(void)
-{
-	for (Monitor *m = mons; m; m = m->next) {
-		drawbar(m);
-	}
 }
 
 void
@@ -1433,14 +1337,6 @@ resize(Client *c, int x, int y, int w, int h, int bw, int interact)
 }
 
 void
-resizebarwin(Monitor *m) {
-	unsigned int w = m->ww;
-	if (showsystray && m == systraytomon(m) && !systrayonleft)
-		w -= getsystraywidth();
-	XMoveResizeWindow(dpy, m->barwin, m->wx, m->by, w, bh);
-}
-
-void
 resizeclient(Client *c, int x, int y, int w, int h, int bw)
 {
 	XWindowChanges wc;
@@ -1907,14 +1803,6 @@ tagmon(const Arg *arg)
 }
 
 void
-togglebar(const Arg *arg)
-{
-	unit_toggle_show_bar(selmon->pertag->units[selmon->pertag->curtag]);
-
-	updatebars();
-}
-
-void
 togglefloating(const Arg *arg)
 {
 	if (!selmon->sel) return;
@@ -2048,49 +1936,6 @@ unmanage(Client *c, int destroyed)
 		focus(NULL);
 		updateclientlist();
 	}
-}
-
-void
-updatebar(Monitor *m)
-{
-	m->show_bar =
-		unit_get_show_bar(selmon->pertag->units[selmon->pertag->curtag]);
-
-	updatebarpos(m);
-	resizebarwin(m);
-	if (showsystray) {
-		XWindowChanges wc;
-		if (!m->show_bar)
-			wc.y = -bh;
-		else if (m->show_bar) {
-			wc.y = 0;
-			if (!m->topbar)
-				wc.y = m->mh - bh;
-		}
-		XConfigureWindow(dpy, systray->win, CWY, &wc);
-	}
-	arrange(m);
-}
-
-void
-updatebars()
-{
-	for (Monitor *m = mons; m; m = m->next) {
-		updatebar(m);
-	}
-}
-
-void
-updatebarpos(Monitor *m)
-{
-	m->wy = m->my;
-	m->wh = m->mh;
-	if (m->show_bar) {
-		m->wh -= bh;
-		m->by = m->topbar ? m->wy : m->wy + m->wh;
-		m->wy = m->topbar ? m->wy + bh : m->wy;
-	} else
-		m->by = -bh;
 }
 
 void
