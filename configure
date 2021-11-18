@@ -2,6 +2,14 @@
 
 set -e
 
+usage() {
+	cat <<USAGE
+There is an error in your command.
+More information: ./configure --help
+USAGE
+	exit
+}
+
 help() {
 	cat <<HELP
 This script tries to be similar to autotools' \`configure', but is different.
@@ -34,7 +42,15 @@ File tuning of the installation directories:
 Optional Features:
   --enable-gnome-terminal use GNOME Terminal instead of ptterm
   --disable-xinerama      disable Xinerama
+
+Optional Packages:
+  --with-PACKAGE[ ARG]    use PACKAGE [ARG=yes]
+  --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE no)
+  --with-terminal [ptterm|xterm|gnome]
+                          use ARG as terminal [ptterm]
+  --without-terminal      do not use terminal at all
 HELP
+	exit
 }
 
 prefix='/usr/local'
@@ -42,14 +58,15 @@ eprefix=''
 bindir=''
 datarootdir=''
 mandir=''
-enable_gnome_terminal='no'
-enable_xinerama='yes'
+enable_xinerama=''
+with_terminal=''
 
 while [ $# -gt 0 ]; do
+	do_shift='yes'
+
 	case "$1" in
 		-h | -? | --help | -help | help)
 			help
-			exit
 			;;
 		--prefix)
 			shift
@@ -71,19 +88,66 @@ while [ $# -gt 0 ]; do
 			shift
 			mandir="$1"
 			;;
-		--enable-gnome-terminal)
-			enable_gnome_terminal='yes'
-			;;
 		--disable-xinerama)
 			enable_xinerama='no'
 			;;
+		--without-terminal)
+			if [ "$with_terminal" = '' ]; then
+				with_terminal='no'
+			elif [ "$with_terminal" != 'no' ]; then
+				usage
+			fi
+			;;
+		--with-terminal)
+			shift
+
+			case "$1" in
+				yes)
+					if [ "$with_terminal" = '' ]; then
+						with_terminal='yes'
+					elif [ "$with_terminal" != 'yes' ]; then
+						usage
+					fi
+					;;
+				no)
+					if [ "$with_terminal" = '' ]; then
+						with_terminal='no'
+					elif [ "$with_terminal" != 'no' ]; then
+						usage
+					fi
+					;;
+				ptterm)
+					if [ "$with_terminal" = '' ]; then
+						with_terminal='ptterm'
+					elif [ "$with_terminal" != 'ptterm' ]; then
+						usage
+					fi
+					;;
+				xterm)
+					if [ "$with_terminal" = '' ]; then
+						with_terminal='xterm'
+					elif [ "$with_terminal" != 'xterm' ]; then
+						usage
+					fi
+					;;
+				gnome)
+					if [ "$with_terminal" = '' ]; then
+						with_terminal='gnome'
+					elif [ "$with_terminal" != 'gnome' ]; then
+						usage
+					fi
+					;;
+				*)
+					do_shift='no'
+					;;
+			esac
+			;;
 		*)
-			help
-			exit
+			usage
 			;;
 	esac
 
-	shift
+	if [ "$do_shift" = 'yes' ]; then shift; fi
 done
 
 if [ "$eprefix" = '' ]; then
@@ -102,22 +166,30 @@ if [ "$mandir" = '' ]; then
 	mandir="$datarootdir/man"
 fi
 
-echo "PREFIX                = $prefix"
-echo "EPREFIX               = $eprefix"
-echo "BINDIR                = $bindir"
-echo "DATAROOTDIR           = $datarootdir"
-echo "MANDIR                = $mandir"
-echo "ENABLE_GNOME_TERMINAL = $enable_gnome_terminal"
-echo "ENABLE_XINERAMA       = $enable_xinerama"
+if [ "$enable_xinerama" = '' ]; then
+	enable_xinerama='yes'
+fi
+
+if [ "$with_terminal" = '' -o "$with_terminal" = 'yes' ]; then
+	with_terminal='ptterm'
+fi
+
+echo "PREFIX          = $prefix"
+echo "EPREFIX         = $eprefix"
+echo "BINDIR          = $bindir"
+echo "DATAROOTDIR     = $datarootdir"
+echo "MANDIR          = $mandir"
+echo "ENABLE_XINERAMA = $enable_xinerama"
+echo "WITH_TERMINAL   = $with_terminal"
 
 cat > 'config/1-generated.mk' << MAKE
-PREFIX                = $prefix
-EPREFIX               = $eprefix
-BINDIR                = $bindir
-DATAROOTDIR           = $datarootdir
-MANDIR                = $mandir
-ENABLE_GNOME_TERMINAL = $enable_gnome_terminal
-ENABLE_XINERAMA       = $enable_xinerama
+PREFIX          = $prefix
+EPREFIX         = $eprefix
+BINDIR          = $bindir
+DATAROOTDIR     = $datarootdir
+MANDIR          = $mandir
+ENABLE_XINERAMA = $enable_xinerama
+WITH_TERMINAL   = $with_terminal
 MAKE
 
 make_help_result="$(make --help 2>&1 || true)"

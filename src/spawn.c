@@ -37,15 +37,21 @@ static struct Command commands[] = {
 			NULL,
 		},
 	},
+#ifdef WITH_TERMINAL
 	{
 		.name = "term",
 		.monitor_arg_index = 0,
-#ifdef ENABLE_GNOME_TERMINAL
-		.args = { "gnome-terminal", "--wait", NULL },
-#else
+#ifdef WITH_TERMINAL_PTTERM
 		.args = { "ptterm", NULL },
 #endif
+#ifdef WITH_TERMINAL_XTERM
+		.args = { "xterm", NULL },
+#endif
+#ifdef WITH_TERMINAL_GNOME
+		.args = { "gnome-terminal", "--wait", NULL },
+#endif
 	},
+#endif
 	{
 		.name = "firefox",
 		.monitor_arg_index = 0,
