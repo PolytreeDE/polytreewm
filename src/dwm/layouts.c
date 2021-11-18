@@ -8,12 +8,15 @@ centeredmaster(Monitor *m)
 	for (Client *c = nexttiled(m->clients); c; c = nexttiled(c->next), ++n);
 	if (n == 0) return;
 
+	const bool master_area_factor =
+		unit_get_master_area_factor(m->pertag->units[m->pertag->curtag]);
+
 	unsigned int mx = 0;
 	unsigned int mw = m->ww;
 	unsigned int tw = mw;
 	if (n > m->nmaster) {
 		/* go mfact box in the center if more than nmaster clients */
-		mw = m->nmaster ? m->ww * m->mfact : 0;
+		mw = m->nmaster ? m->ww * master_area_factor : 0;
 		tw = m->ww - mw;
 
 		if (n - m->nmaster > 1) {
@@ -108,6 +111,9 @@ horizontile(Monitor *m)
 	for (Client *c = nexttiled(m->clients); c; c = nexttiled(c->next), ++n);
 	if (n == 0) return;
 
+	const bool master_area_factor =
+		unit_get_master_area_factor(m->pertag->units[m->pertag->curtag]);
+
 	const bool is_fullscreen = m->sel == NULL ? false : m->sel->isfullscreen;
 
 	const int gap_size = helpers_gap_size(n, is_fullscreen, is_fullscreen);
@@ -116,7 +122,7 @@ horizontile(Monitor *m)
 	const int top_left_half_gap = gap_size / 2;
 	const int bottom_right_half_gap = gap_size - top_left_half_gap;
 
-	const unsigned int mh = n > m->nmaster ? (m->nmaster ? m->wh * m->mfact : 0) : m->wh;
+	const unsigned int mh = n > m->nmaster ? (m->nmaster ? m->wh * master_area_factor : 0) : m->wh;
 
 	Client *c = nexttiled(m->clients);
 
@@ -202,6 +208,9 @@ tile(Monitor *m)
 	for (Client *c = nexttiled(m->clients); c; c = nexttiled(c->next), ++n);
 	if (n == 0) return;
 
+	const bool master_area_factor =
+		unit_get_master_area_factor(m->pertag->units[m->pertag->curtag]);
+
 	const bool is_fullscreen = m->sel == NULL ? false : m->sel->isfullscreen;
 
 	const int gap_size = helpers_gap_size(n, is_fullscreen, is_fullscreen);
@@ -210,7 +219,7 @@ tile(Monitor *m)
 	const int top_left_half_gap = gap_size / 2;
 	const int bottom_right_half_gap = gap_size - top_left_half_gap;
 
-	const unsigned int mw = n > m->nmaster ? (m->nmaster ? m->ww * m->mfact : 0) : m->ww;
+	const unsigned int mw = n > m->nmaster ? (m->nmaster ? m->ww * master_area_factor : 0) : m->ww;
 
 	Client *c = nexttiled(m->clients);
 

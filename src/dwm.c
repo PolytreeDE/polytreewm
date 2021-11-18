@@ -164,7 +164,6 @@ struct Monitor {
 
 	// actual state
 	bool show_bar;
-	float mfact;
 };
 
 typedef struct {
@@ -706,7 +705,6 @@ createmon(void)
 
 	// actual state
 	m->show_bar = unit_get_show_bar(m->pertag->units[m->pertag->curtag]);
-	m->mfact    = unit_get_master_area_factor(m->pertag->units[m->pertag->curtag]);
 
 	return m;
 
@@ -1620,8 +1618,7 @@ setmfact(const Arg *arg)
 {
 	if (!arg) return;
 
-	// actual state
-	selmon->mfact = unit_inc_master_area_factor(
+	unit_inc_master_area_factor(
 		selmon->pertag->units[selmon->pertag->curtag],
 		arg->f
 	);
@@ -1867,10 +1864,6 @@ toggleview(const Arg *arg)
 		selmon->sellt               = selmon->pertag->sellts[selmon->pertag->curtag];
 		selmon->lt[selmon->sellt]   = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];
 		selmon->lt[selmon->sellt^1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt^1];
-
-		// actual state
-		// TODO: maybe also set selmon->show_bar here to fix issue #7?
-		selmon->mfact = unit_get_master_area_factor(selmon->pertag->units[selmon->pertag->curtag]);
 
 		if (selmon->show_bar !=
 			unit_get_show_bar(selmon->pertag->units[selmon->pertag->curtag]))
@@ -2177,10 +2170,6 @@ view(const Arg *arg)
 	selmon->lt[selmon->sellt]     = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];
 	selmon->lt[selmon->sellt ^ 1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt ^ 1];
 
-	// actual state
-	// TODO: maybe also set selmon->show_bar here to fix issue #7?
-	selmon->mfact = unit_get_master_area_factor(selmon->pertag->units[selmon->pertag->curtag]);
-
 	if (selmon->show_bar !=
 		unit_get_show_bar(selmon->pertag->units[selmon->pertag->curtag]))
 	{
@@ -2224,10 +2213,6 @@ viewrel(const Arg *arg)
 	selmon->sellt                 = selmon->pertag->sellts[selmon->pertag->curtag];
 	selmon->lt[selmon->sellt]     = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt];
 	selmon->lt[selmon->sellt ^ 1] = selmon->pertag->ltidxs[selmon->pertag->curtag][selmon->sellt ^ 1];
-
-	// actual state
-	// TODO: maybe also set selmon->show_bar here to fix issue #7?
-	selmon->mfact = unit_get_master_area_factor(selmon->pertag->units[selmon->pertag->curtag]);
 
 	if (selmon->show_bar !=
 		unit_get_show_bar(selmon->pertag->units[selmon->pertag->curtag]))
