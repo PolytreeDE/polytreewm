@@ -1,5 +1,6 @@
 #include "unit.h"
 
+#include "constraints.h"
 #include "settings.h"
 
 #include <stdlib.h>
@@ -99,11 +100,8 @@ float unit_inc_master_area_factor(const Unit unit, const float delta)
 		settings_get_master_area_factor_per_unit();
 
 	if (unit->kind == master_area_factor_per_unit) {
-		float new_master_area_factor = unit->master_area_factor + delta;
-		// TODO: DRY
-		if (new_master_area_factor < 0.05) new_master_area_factor = 0.05;
-		if (new_master_area_factor > 0.95) new_master_area_factor = 0.95;
-		return unit->master_area_factor = new_master_area_factor;
+		return unit->master_area_factor =
+			constraints_master_area_factor(unit->master_area_factor + delta);
 	} else if (unit->kind > master_area_factor_per_unit) {
 		return unit_inc_master_area_factor(unit->parent, delta);
 	} else {

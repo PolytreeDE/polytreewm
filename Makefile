@@ -19,6 +19,7 @@ VERSION = 6.2
 
 MODULES_SRC = \
 	src/atoms.c \
+	src/constraints.c \
 	src/drw.c \
 	src/helpers.c \
 	src/layouts.c \

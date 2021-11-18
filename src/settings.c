@@ -1,17 +1,6 @@
 #include "settings.h"
 
-#define MIN_BORDER_WIDTH 0
-#define MAX_BORDER_WIDTH 10000
-#define MIN_DEFAULT_CLIENTS_IN_MASTER 1
-#define MAX_DEFAULT_CLIENTS_IN_MASTER 10000
-#define MIN_DEFAULT_MASTER_AREA_FACTOR 0.05
-#define MAX_DEFAULT_MASTER_AREA_FACTOR 0.95
-#define MIN_GAP_SIZE 0
-#define MAX_GAP_SIZE 10000
-#define MIN_MAX_CLIENTS_IN_MASTER 1
-#define MAX_MAX_CLIENTS_IN_MASTER 10000
-#define MIN_SNAP_DISTANCE 1
-#define MAX_SNAP_DISTANCE 10000
+#include "constraints.h"
 
 static SettingsForSingleWindow border_for_single_window = SETTINGS_FOR_SINGLE_WINDOW_NOBODY_IS_FULLSCREEN;
 static int border_width = 2;
@@ -46,11 +35,9 @@ int settings_get_border_width()
 	return border_width;
 }
 
-void settings_set_border_width(int new_border_width)
+void settings_set_border_width(const int new_border_width)
 {
-	if (new_border_width < MIN_BORDER_WIDTH) new_border_width = MIN_BORDER_WIDTH;
-	if (new_border_width > MAX_BORDER_WIDTH) new_border_width = MAX_BORDER_WIDTH;
-	border_width = new_border_width;
+	border_width = constraints_border_width(new_border_width);
 	// TODO: notify WM to rearrange clients
 }
 
@@ -59,11 +46,9 @@ int settings_get_default_clients_in_master()
 	return default_clients_in_master;
 }
 
-void settings_set_default_clients_in_master(int new_default_clients_in_master)
+void settings_set_default_clients_in_master(const int new_default_clients_in_master)
 {
-	if (new_default_clients_in_master < MIN_DEFAULT_CLIENTS_IN_MASTER) new_default_clients_in_master = MIN_DEFAULT_CLIENTS_IN_MASTER;
-	if (new_default_clients_in_master < MAX_DEFAULT_CLIENTS_IN_MASTER) new_default_clients_in_master = MAX_DEFAULT_CLIENTS_IN_MASTER;
-	default_clients_in_master = new_default_clients_in_master;
+	default_clients_in_master = constraints_default_clients_in_master(new_default_clients_in_master);
 }
 
 float settings_get_default_master_area_factor()
@@ -71,11 +56,9 @@ float settings_get_default_master_area_factor()
 	return default_master_area_factor;
 }
 
-void settings_set_default_master_area_factor(float new_default_master_area_factor)
+void settings_set_default_master_area_factor(const float new_default_master_area_factor)
 {
-	if (new_default_master_area_factor < MIN_DEFAULT_MASTER_AREA_FACTOR) new_default_master_area_factor = MIN_DEFAULT_MASTER_AREA_FACTOR;
-	if (new_default_master_area_factor > MAX_DEFAULT_MASTER_AREA_FACTOR) new_default_master_area_factor = MAX_DEFAULT_MASTER_AREA_FACTOR;
-	default_master_area_factor = new_default_master_area_factor;
+	default_master_area_factor = constraints_default_master_area_factor(new_default_master_area_factor);
 }
 
 SettingsForSingleWindow settings_get_gap_for_single_window()
@@ -115,11 +98,9 @@ int settings_get_gap_size()
 	return gap_size;
 }
 
-void settings_set_gap_size(int new_gap_size)
+void settings_set_gap_size(const int new_gap_size)
 {
-	if (new_gap_size < MIN_GAP_SIZE) new_gap_size = MIN_GAP_SIZE;
-	if (new_gap_size > MAX_GAP_SIZE) new_gap_size = MAX_GAP_SIZE;
-	gap_size = new_gap_size;
+	gap_size = constraints_gap_size(new_gap_size);
 	// TODO: notify WM to rearrange clients
 }
 
@@ -139,11 +120,9 @@ int settings_get_max_clients_in_master()
 	return max_clients_in_master;
 }
 
-void settings_set_max_clients_in_master(int new_max_clients_in_master)
+void settings_set_max_clients_in_master(const int new_max_clients_in_master)
 {
-	if (new_max_clients_in_master < MIN_MAX_CLIENTS_IN_MASTER) new_max_clients_in_master = MIN_MAX_CLIENTS_IN_MASTER;
-	if (new_max_clients_in_master < MAX_MAX_CLIENTS_IN_MASTER) new_max_clients_in_master = MAX_MAX_CLIENTS_IN_MASTER;
-	max_clients_in_master = new_max_clients_in_master;
+	max_clients_in_master = constraints_max_clients_in_master(new_max_clients_in_master);
 	// TODO: notify WM to rearrange clients
 }
 
@@ -186,9 +165,7 @@ unsigned int settings_get_snap_distance()
 
 void settings_set_snap_distance(unsigned int new_snap_distance)
 {
-	if (new_snap_distance < MIN_SNAP_DISTANCE) new_snap_distance = MIN_SNAP_DISTANCE;
-	if (new_snap_distance < MAX_SNAP_DISTANCE) new_snap_distance = MAX_SNAP_DISTANCE;
-	snap_distance = new_snap_distance;
+	snap_distance = constraints_snap_distance(new_snap_distance);
 }
 
 bool settings_get_status_on_all_monitors()
