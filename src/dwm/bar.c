@@ -110,8 +110,7 @@ togglebar(const Arg *arg)
 void
 updatebar(Monitor *m)
 {
-	m->show_bar =
-		unit_get_show_bar(selmon->pertag->units[selmon->pertag->curtag]);
+	m->show_bar = unit_get_show_bar(m->pertag->units[m->pertag->curtag]);
 
 	updatebarpos(m);
 	resizebarwin(m);
