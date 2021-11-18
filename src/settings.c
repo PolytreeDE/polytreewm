@@ -4,6 +4,8 @@
 #define MAX_BORDER_WIDTH 10000
 #define MIN_DEFAULT_CLIENTS_IN_MASTER 1
 #define MAX_DEFAULT_CLIENTS_IN_MASTER 10000
+#define MIN_DEFAULT_MASTER_AREA_FACTOR 0.05
+#define MAX_DEFAULT_MASTER_AREA_FACTOR 0.95
 #define MIN_GAP_SIZE 0
 #define MAX_GAP_SIZE 10000
 #define MIN_MAX_CLIENTS_IN_MASTER 1
@@ -14,6 +16,7 @@
 static SettingsForSingleWindow border_for_single_window = SETTINGS_FOR_SINGLE_WINDOW_NOBODY_IS_FULLSCREEN;
 static int border_width = 2;
 static int default_clients_in_master = 1;
+static float default_master_area_factor = 0.6;
 static SettingsForSingleWindow gap_for_single_window = SETTINGS_FOR_SINGLE_WINDOW_NOBODY_IS_FULLSCREEN;
 static bool enable_swallowing = true;
 static bool focus_on_wheel = true;
@@ -60,6 +63,18 @@ void settings_set_default_clients_in_master(int new_default_clients_in_master)
 	if (new_default_clients_in_master < MIN_DEFAULT_CLIENTS_IN_MASTER) new_default_clients_in_master = MIN_DEFAULT_CLIENTS_IN_MASTER;
 	if (new_default_clients_in_master < MAX_DEFAULT_CLIENTS_IN_MASTER) new_default_clients_in_master = MAX_DEFAULT_CLIENTS_IN_MASTER;
 	default_clients_in_master = new_default_clients_in_master;
+}
+
+float settings_get_default_master_area_factor()
+{
+	return default_master_area_factor;
+}
+
+void settings_set_default_master_area_factor(float new_default_master_area_factor)
+{
+	if (new_default_master_area_factor < MIN_DEFAULT_MASTER_AREA_FACTOR) new_default_master_area_factor = MIN_DEFAULT_MASTER_AREA_FACTOR;
+	if (new_default_master_area_factor > MAX_DEFAULT_MASTER_AREA_FACTOR) new_default_master_area_factor = MAX_DEFAULT_MASTER_AREA_FACTOR;
+	default_master_area_factor = new_default_master_area_factor;
 }
 
 SettingsForSingleWindow settings_get_gap_for_single_window()

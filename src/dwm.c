@@ -706,7 +706,7 @@ createmon(void)
 	}
 
 	m->tagset[0] = m->tagset[1] = 1;
-	m->mfact = mfact;
+	m->mfact = settings_get_default_master_area_factor();
 	m->nmaster = settings_get_default_clients_in_master();
 	m->topbar = topbar;
 	m->lt[0] = &layouts[0];
@@ -741,7 +741,7 @@ createmon(void)
 		m->pertag->sellts[i] = m->sellt;
 	}
 
-	// actial state
+	// actual state
 	m->show_bar = unit_get_show_bar(m->pertag->units[m->pertag->curtag]);
 
 	return m;
