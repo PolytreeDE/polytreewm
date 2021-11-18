@@ -1623,7 +1623,9 @@ setmfact(const Arg *arg)
 		arg->f
 	);
 
-	arrange(selmon);
+	for (Monitor *m = mons; m; m = m->next) {
+		arrange(m);
+	}
 }
 
 bool
