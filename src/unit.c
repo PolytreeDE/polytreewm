@@ -9,6 +9,7 @@ struct Unit {
 	UnitKind kind;
 	struct Unit *parent;
 	bool show_bar;
+	float master_area_factor;
 };
 
 Unit unit_new(const UnitKind kind, const Unit parent)
@@ -19,7 +20,9 @@ Unit unit_new(const UnitKind kind, const Unit parent)
 	memset(unit, 0, sizeof(struct Unit));
 	unit->kind = kind;
 	unit->parent = parent;
-	unit->show_bar = settings_get_show_bar_by_default();
+
+	unit->show_bar           = settings_get_show_bar_by_default();
+	unit->master_area_factor = settings_get_default_master_area_factor();
 
 	if (unit->kind == UNIT_GLOBAL) {
 		// TODO: maybe we should assert here
@@ -72,5 +75,39 @@ bool unit_toggle_show_bar(const Unit unit)
 	} else {
 		// TODO: maybe we should assert here
 		return settings_get_show_bar_by_default();
+	}
+}
+
+float unit_get_master_area_factor(const Unit unit)
+{
+	const UnitKind master_area_factor_per_unit =
+		settings_get_master_area_factor_per_unit();
+
+	if (unit->kind == master_area_factor_per_unit) {
+		return unit->master_area_factor;
+	} else if (unit->kind > master_area_factor_per_unit) {
+		return unit_get_master_area_factor(unit->parent);
+	} else {
+		// TODO: maybe we should assert here
+		return settings_get_default_master_area_factor();
+	}
+}
+
+float unit_inc_master_area_factor(const Unit unit, const float delta)
+{
+	const UnitKind master_area_factor_per_unit =
+		settings_get_master_area_factor_per_unit();
+
+	if (unit->kind == master_area_factor_per_unit) {
+		float new_master_area_factor = unit->master_area_factor + delta;
+		// TODO: DRY
+		if (new_master_area_factor < 0.05) new_master_area_factor = 0.05;
+		if (new_master_area_factor > 0.95) new_master_area_factor = 0.95;
+		return unit->master_area_factor = new_master_area_factor;
+	} else if (unit->kind > master_area_factor_per_unit) {
+		return unit_inc_master_area_factor(unit->parent, delta);
+	} else {
+		// TODO: maybe we should assert here
+		return settings_get_default_master_area_factor();
 	}
 }
