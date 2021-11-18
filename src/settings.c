@@ -11,9 +11,9 @@
 #define MIN_SNAP_DISTANCE 1
 #define MAX_SNAP_DISTANCE 10000
 
+static SettingsForSingleWindow border_for_single_window = SETTINGS_FOR_SINGLE_WINDOW_NOBODY_IS_FULLSCREEN;
 static int border_width = 2;
 static int default_clients_in_master = 1;
-static SettingsForSingleWindow border_for_single_window = SETTINGS_FOR_SINGLE_WINDOW_NOBODY_IS_FULLSCREEN;
 static SettingsForSingleWindow gap_for_single_window = SETTINGS_FOR_SINGLE_WINDOW_NOBODY_IS_FULLSCREEN;
 static bool enable_swallowing = true;
 static bool focus_on_wheel = true;
@@ -25,6 +25,17 @@ static bool show_bar_per_unit = UNIT_MONITOR;
 static unsigned int snap_distance = 32;
 static bool status_on_all_monitors = false;
 static bool swallow_floating = false;
+
+SettingsForSingleWindow settings_get_border_for_single_window()
+{
+	return border_for_single_window;
+}
+
+void settings_set_border_for_single_window(const SettingsForSingleWindow new_border_for_single_window)
+{
+	border_for_single_window = new_border_for_single_window;
+	// TODO: notify WM to rearrange clients
+}
 
 int settings_get_border_width()
 {
@@ -49,17 +60,6 @@ void settings_set_default_clients_in_master(int new_default_clients_in_master)
 	if (new_default_clients_in_master < MIN_DEFAULT_CLIENTS_IN_MASTER) new_default_clients_in_master = MIN_DEFAULT_CLIENTS_IN_MASTER;
 	if (new_default_clients_in_master < MAX_DEFAULT_CLIENTS_IN_MASTER) new_default_clients_in_master = MAX_DEFAULT_CLIENTS_IN_MASTER;
 	default_clients_in_master = new_default_clients_in_master;
-}
-
-SettingsForSingleWindow settings_get_border_for_single_window()
-{
-	return border_for_single_window;
-}
-
-void settings_set_border_for_single_window(const SettingsForSingleWindow new_border_for_single_window)
-{
-	border_for_single_window = new_border_for_single_window;
-	// TODO: notify WM to rearrange clients
 }
 
 SettingsForSingleWindow settings_get_gap_for_single_window()

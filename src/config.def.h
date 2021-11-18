@@ -3,6 +3,7 @@
 static const char wm_name[] = "PolytreeWM";
 
 /* appearance */
+
 static const int topbar             = 1;        /* 0 means bottom bar */
 static const char *fonts[]          = { "monospace:size=10" };
 static const char col_gray1[]       = "#222222";
@@ -33,6 +34,7 @@ static const Rule rules[] = {
 };
 
 /* layout(s) */
+
 static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
 
 static const Layout layouts[] = {
@@ -45,6 +47,7 @@ static const Layout layouts[] = {
 };
 
 /* key definitions */
+
 #define MODKEY Mod4Mask
 #define TAGKEYS(KEY,TAG) \
 	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
@@ -113,6 +116,7 @@ static Key keys[] = {
 
 /* button definitions */
 /* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle, ClkClientWin, or ClkRootWin */
+
 static Button buttons[] = {
 	/* click                event mask      button          function        argument */
 	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
