@@ -21,6 +21,7 @@ static SettingsForSingleWindow gap_for_single_window = SETTINGS_FOR_SINGLE_WINDO
 static bool enable_swallowing = true;
 static bool focus_on_wheel = true;
 static int gap_size = 10;
+static float master_area_factor_per_unit = UNIT_MONITOR;
 static int max_clients_in_master = 0; // 0 for no maximum
 static bool respect_resize_hints_in_floating_layout = false;
 static bool show_bar_by_default = true;
@@ -122,6 +123,17 @@ void settings_set_gap_size(int new_gap_size)
 	// TODO: notify WM to rearrange clients
 }
 
+float settings_get_master_area_factor_per_unit()
+{
+	return master_area_factor_per_unit;
+}
+
+void settings_set_master_area_factor_per_unit(const UnitKind new_master_area_factor_per_unit)
+{
+	master_area_factor_per_unit = new_master_area_factor_per_unit;
+	// TODO: notify WM to rearrange clients
+}
+
 int settings_get_max_clients_in_master()
 {
 	return max_clients_in_master;
@@ -151,7 +163,7 @@ bool settings_get_show_bar_by_default()
 	return show_bar_by_default;
 }
 
-void settings_set_show_bar_by_default(bool new_show_bar_by_default)
+void settings_set_show_bar_by_default(const bool new_show_bar_by_default)
 {
 	show_bar_by_default = new_show_bar_by_default;
 }
@@ -184,7 +196,7 @@ bool settings_get_status_on_all_monitors()
 	return status_on_all_monitors;
 }
 
-void settings_set_status_on_all_monitors(bool new_status_on_all_monitors)
+void settings_set_status_on_all_monitors(const bool new_status_on_all_monitors)
 {
 	status_on_all_monitors = new_status_on_all_monitors;
 	// TODO: notify WM to rearrange clients
