@@ -36,8 +36,8 @@ void settings_set_focus_on_wheel(bool new_focus_on_wheel);
 int  settings_get_gap_size();
 void settings_set_gap_size(int new_gap_size);
 
-float settings_get_master_area_factor_per_unit();
-void  settings_set_master_area_factor_per_unit(UnitKind new_master_area_factor_per_unit);
+UnitKind settings_get_master_area_factor_per_unit();
+void     settings_set_master_area_factor_per_unit(UnitKind new_master_area_factor_per_unit);
 
 int  settings_get_max_clients_in_master();
 void settings_set_max_clients_in_master(int new_max_clients_in_master);

@@ -104,7 +104,7 @@ void settings_set_gap_size(const int new_gap_size)
 	// TODO: notify WM to rearrange clients
 }
 
-float settings_get_master_area_factor_per_unit()
+UnitKind settings_get_master_area_factor_per_unit()
 {
 	return master_area_factor_per_unit;
 }
