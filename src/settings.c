@@ -16,7 +16,6 @@ static bool respect_resize_hints_in_floating_layout = false;
 static bool show_bar_by_default = true;
 static UnitKind show_bar_per_unit = UNIT_MONITOR;
 static unsigned int snap_distance = 32;
-static bool status_on_all_monitors = false;
 static bool swallow_floating = false;
 
 SettingsForSingleWindow settings_get_border_for_single_window()
@@ -166,17 +165,6 @@ unsigned int settings_get_snap_distance()
 void settings_set_snap_distance(unsigned int new_snap_distance)
 {
 	snap_distance = constraints_snap_distance(new_snap_distance);
-}
-
-bool settings_get_status_on_all_monitors()
-{
-	return status_on_all_monitors;
-}
-
-void settings_set_status_on_all_monitors(const bool new_status_on_all_monitors)
-{
-	status_on_all_monitors = new_status_on_all_monitors;
-	// TODO: notify WM to rearrange clients
 }
 
 bool settings_get_swallow_floating()

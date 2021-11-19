@@ -21,8 +21,7 @@ Windows are grouped by tags. Each window can be tagged with one or multiple
 tags. Selecting certain tags displays all windows with these tags.
 .P
 Each screen contains a small status bar which displays all available tags, the
-layout, the title of the focused window, and the text read from the root window
-name property, if the screen is focused. A floating window is indicated with an
+layout, the title of the focused window. A floating window is indicated with an
 empty square and a maximised floating window is indicated with a filled square
 before the windows title.  The selected tags are indicated with a different
 color. The tags of the focused window are indicated with a filled square in the
@@ -36,11 +35,6 @@ PolytreeWM draws a small border around windows to indicate the focus state.
 prints version information to stderr, then exits.
 .SH USAGE
 .SS Status bar
-.TP
-.B X root window name
-is read and displayed in the status text area. It can be set with the
-.BR xsetroot (1)
-command.
 .TP
 .B Button1
 click on a tag label to display all windows with that tag, click on the layout

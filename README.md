@@ -29,15 +29,6 @@ environment variable is set correctly, e.g.:
 
 (This will start PolytreeWM on display :1 of the host foo.bar.)
 
-In order to display status info in the bar, you can do something
-like this in your .xinitrc:
-
-    while xsetroot -name "`date` `uptime | sed 's/.*,//'`"
-    do
-        sleep 1
-    done &
-    exec polytreewm
-
 Credits
 -------
 
@@ -56,7 +47,6 @@ Applied patches
 * pertag
 * resetnmaster
 * smartborders
-* statusallmons
 * swallow
 
 Interesting patches (not applied)

@@ -54,9 +54,6 @@ void     settings_set_show_bar_per_unit(UnitKind new_show_bar_per_unit);
 unsigned int settings_get_snap_distance();
 void         settings_set_snap_distance(unsigned int new_snap_distance);
 
-bool settings_get_status_on_all_monitors();
-void settings_set_status_on_all_monitors(bool new_status_on_all_monitors);
-
 bool settings_get_swallow_floating();
 void settings_set_swallow_floating(bool new_swallow_floating);
 
