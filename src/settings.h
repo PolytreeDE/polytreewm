@@ -12,6 +12,9 @@ typedef enum {
 	SETTINGS_FOR_SINGLE_WINDOW_NOBODY_IS_FULLSCREEN,
 } SettingsForSingleWindow;
 
+bool settings_get_bar_on_top_by_default();
+void settings_set_bar_on_top_by_default(bool new_bar_on_top_by_default);
+
 SettingsForSingleWindow settings_get_border_for_single_window();
 void                    settings_set_border_for_single_window(SettingsForSingleWindow new_border_for_single_window);
 

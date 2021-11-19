@@ -4,7 +4,6 @@ static const char wm_name[] = "PolytreeWM";
 
 /* appearance */
 
-static const int topbar             = 1;        /* 0 means bottom bar */
 static const char *fonts[]          = { "monospace:size=10" };
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";

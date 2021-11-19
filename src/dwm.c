@@ -637,7 +637,7 @@ createmon(void)
 
 	m->tagset[0] = m->tagset[1] = 1;
 	m->nmaster = settings_get_default_clients_in_master();
-	m->topbar = topbar;
+	m->topbar = settings_get_bar_on_top_by_default();
 	m->lt[0] = &layouts[0];
 	m->lt[1] = &layouts[1 % LENGTH(layouts)];
 
