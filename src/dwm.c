@@ -124,24 +124,29 @@ typedef struct {
 	void (*arrange)(Monitor *);
 } Layout;
 
+typedef struct Bar {
+	int by;
+	int topbar;
+	Window barwin;
+} *Bar;
+
 struct Monitor {
 	Unit unit;
+	Bar bar;
+
 	Pertag *pertag;
 	char ltsymbol[16];
 	int nmaster;
 	int num;
-	int by;               /* bar geometry */
 	int mx, my, mw, mh;   /* screen size */
 	int wx, wy, ww, wh;   /* window area  */
 	unsigned int seltags;
 	unsigned int sellt;
 	unsigned int tagset[2];
-	int topbar;
 	Client *clients;
 	Client *sel;
 	Client *stack;
 	Monitor *next;
-	Window barwin;
 	const Layout *lt[2];
 
 	// actual state
@@ -594,13 +599,16 @@ cleanupmon(Monitor *mon)
 		for (m = mons; m && m->next != mon; m = m->next);
 		m->next = mon->next;
 	}
-	XUnmapWindow(dpy, mon->barwin);
-	XDestroyWindow(dpy, mon->barwin);
 
 	for (int i = 0; i <= TAGS_COUNT; ++i) {
 		UNIT_DELETE(mon->pertag->units[i]);
 	}
 	free(mon->pertag);
+	{
+		XUnmapWindow(dpy, mon->bar->barwin);
+		XDestroyWindow(dpy, mon->bar->barwin);
+		free(mon->bar);
+	}
 	UNIT_DELETE(mon->unit);
 	free(mon);
 }
@@ -635,9 +643,15 @@ createmon(void)
 		goto fail_without_unit;
 	}
 
+	if (!(m->bar = malloc(sizeof(struct Bar)))) {
+		goto fail_without_bar;
+	}
+
+	memset(m->bar, 0, sizeof(struct Bar));
+
 	m->tagset[0] = m->tagset[1] = 1;
 	m->nmaster = settings_get_default_clients_in_master();
-	m->topbar = settings_get_bar_on_top_by_default();
+	m->bar->topbar = settings_get_bar_on_top_by_default();
 	m->lt[0] = &layouts[0];
 	m->lt[1] = &layouts[1 % LENGTH(layouts)];
 
@@ -682,6 +696,8 @@ fail_other:
 	}
 	free(m->pertag);
 fail_without_pertag:
+	free(m->bar);
+fail_without_bar:
 	UNIT_DELETE(m->unit);
 fail_without_unit:
 	free(m);
@@ -1011,7 +1027,7 @@ manage(Window w, XWindowAttributes *wa)
 	c->y = MAX(
 		c->y,
 		(
-			(c->mon->by == c->mon->my) &&
+			(c->mon->bar->by == c->mon->my) &&
 			(c->x + (c->w / 2) >= c->mon->wx) &&
 			(c->x + (c->w / 2) < c->mon->wx + c->mon->ww)
 		)
@@ -1400,7 +1416,7 @@ restack(Monitor *m)
 		XRaiseWindow(dpy, m->sel->win);
 	if (m->lt[m->sellt]->arrange) {
 		wc.stack_mode = Below;
-		wc.sibling = m->barwin;
+		wc.sibling = m->bar->barwin;
 		for (c = m->stack; c; c = c->snext)
 			if (!c->isfloating && ISVISIBLE(c)) {
 				XConfigureWindow(dpy, c->win, CWSibling|CWStackMode, &wc);
@@ -2178,7 +2194,7 @@ wintomon(Window w)
 	if (w == root && getrootptr(&x, &y))
 		return recttomon(x, y, 1, 1);
 	for (m = mons; m; m = m->next)
-		if (w == m->barwin)
+		if (w == m->bar->barwin)
 			return m;
 	if ((c = wintoclient(w)))
 		return c->mon;

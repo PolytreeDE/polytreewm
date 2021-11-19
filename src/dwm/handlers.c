@@ -134,7 +134,7 @@ on_configure_notify(XEvent *e)
 			drw_resize(drw, sw, bh);
 			createbars();
 			for (m = mons; m; m = m->next) {
-				XMoveResizeWindow(dpy, m->barwin, m->wx, m->by, m->ww, bh);
+				XMoveResizeWindow(dpy, m->bar->barwin, m->wx, m->bar->by, m->ww, bh);
 			}
 			focus(NULL);
 			arrange(NULL);

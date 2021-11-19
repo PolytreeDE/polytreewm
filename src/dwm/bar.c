@@ -12,13 +12,13 @@ createbars(void)
 	};
 
 	for (Monitor *m = mons; m; m = m->next) {
-		if (m->barwin) continue;
+		if (m->bar->barwin) continue;
 
-		m->barwin = XCreateWindow(
+		m->bar->barwin = XCreateWindow(
 			dpy,
 			root,
 			m->wx,
-			m->by,
+			m->bar->by,
 			m->ww,
 			bh,
 			0,
@@ -29,9 +29,9 @@ createbars(void)
 			&wa
 		);
 
-		XDefineCursor(dpy, m->barwin, cursor[CurNormal]->cursor);
-		XMapRaised(dpy, m->barwin);
-		XSetClassHint(dpy, m->barwin, &ch);
+		XDefineCursor(dpy, m->bar->barwin, cursor[CurNormal]->cursor);
+		XMapRaised(dpy, m->bar->barwin);
+		XSetClassHint(dpy, m->bar->barwin, &ch);
 	}
 }
 
@@ -67,7 +67,7 @@ drawbar(Monitor *m)
 		drw_rect(drw, x, 0, w, bh, 1, 1);
 	}
 
-	drw_map(drw, m->barwin, 0, 0, m->ww, bh);
+	drw_map(drw, m->bar->barwin, 0, 0, m->ww, bh);
 }
 
 void
@@ -92,7 +92,7 @@ updatebar(Monitor *m)
 	m->show_bar = unit_get_show_bar(m->pertag->units[m->pertag->curtag]);
 
 	updatebarpos(m);
-	XMoveResizeWindow(dpy, selmon->barwin, selmon->wx, selmon->by, selmon->ww, bh);
+	XMoveResizeWindow(dpy, selmon->bar->barwin, selmon->wx, selmon->bar->by, selmon->ww, bh);
 	arrange(m);
 }
 
@@ -111,10 +111,10 @@ updatebarpos(Monitor *m)
 	m->wh = m->mh;
 	if (m->show_bar) {
 		m->wh -= bh;
-		m->by = m->topbar ? m->wy : m->wy + m->wh;
-		m->wy = m->topbar ? m->wy + bh : m->wy;
+		m->bar->by = m->bar->topbar ? m->wy : m->wy + m->wh;
+		m->wy = m->bar->topbar ? m->wy + bh : m->wy;
 	} else
-		m->by = -bh;
+		m->bar->by = -bh;
 }
 
 #endif // _DWM_BAR_C
