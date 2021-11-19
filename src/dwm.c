@@ -74,8 +74,7 @@
 
 enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
 enum { SchemeNorm, SchemeSel }; /* color schemes */
-enum { ClkTagBar, ClkLtSymbol, ClkWinTitle,
-       ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
+enum { ClkTagBar, ClkLtSymbol, ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
 
 typedef struct Monitor Monitor;
 typedef struct Client Client;

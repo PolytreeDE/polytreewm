@@ -31,10 +31,9 @@ on_button_press(XEvent *e)
 		if (i < TAGS_COUNT) {
 			click = ClkTagBar;
 			arg.ui = 1 << i;
-		} else if (ev->x < x + blw)
+		} else if (ev->x < x + blw) {
 			click = ClkLtSymbol;
-		else
-			click = ClkWinTitle;
+		}
 	} else if ((c = wintoclient(ev->window))) {
 		if (settings_get_focus_on_wheel() || (ev->button != Button4 && ev->button != Button5))
 			focus(c);
