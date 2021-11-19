@@ -4,26 +4,43 @@
 void
 createbars(void)
 {
-	unsigned int w;
-	Monitor *m;
+	XClassHint ch = {"polytreewm", "polytreewm"};
 	XSetWindowAttributes wa = {
 		.override_redirect = True,
 		.background_pixmap = ParentRelative,
 		.event_mask = ButtonPressMask|ExposureMask
 	};
-	XClassHint ch = {"polytreewm", "polytreewm"};
-	for (m = mons; m; m = m->next) {
-		if (m->barwin)
-			continue;
-		w = m->ww;
-		if (showsystray && m == systraytomon(m))
+
+	for (Monitor *m = mons; m; m = m->next) {
+		if (m->barwin) continue;
+
+		unsigned int w = m->ww;
+
+		if (showsystray && m == systraytomon(m)) {
 			w -= getsystraywidth();
-		m->barwin = XCreateWindow(dpy, root, m->wx, m->by, w, bh, 0, DefaultDepth(dpy, screen),
-				CopyFromParent, DefaultVisual(dpy, screen),
-				CWOverrideRedirect|CWBackPixmap|CWEventMask, &wa);
+		}
+
+		m->barwin = XCreateWindow(
+			dpy,
+			root,
+			m->wx,
+			m->by,
+			w,
+			bh,
+			0,
+			DefaultDepth(dpy, screen),
+			CopyFromParent,
+			DefaultVisual(dpy, screen),
+			CWOverrideRedirect | CWBackPixmap | CWEventMask,
+			&wa
+		);
+
 		XDefineCursor(dpy, m->barwin, cursor[CurNormal]->cursor);
-		if (showsystray && m == systraytomon(m))
+
+		if (showsystray && m == systraytomon(m)) {
 			XMapRaised(dpy, systray->win);
+		}
+
 		XMapRaised(dpy, m->barwin);
 		XSetClassHint(dpy, m->barwin, &ch);
 	}
