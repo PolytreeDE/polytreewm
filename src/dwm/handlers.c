@@ -4,8 +4,7 @@
 void
 on_button_press(XEvent *e)
 {
-	unsigned int i, x, click, occ = 0;
-	Arg arg = {0};
+	unsigned int i, click;
 	Client *c;
 	Monitor *m;
 	XButtonPressedEvent *ev = &e->xbutton;
@@ -18,32 +17,23 @@ on_button_press(XEvent *e)
 		selmon = m;
 		focus(NULL);
 	}
-	if (ev->window == selmon->barwin) {
-		i = x = 0;
-		for (c = m->clients; c; c = c->next)
-			occ |= c->tags == 255 ? 0 : c->tags;
-		do {
-			/* do not reserve space for vacant tags */
-			if (!(occ & 1 << i || m->tagset[m->seltags] & 1 << i || tags_get(i)->has_custom_name))
-				continue;
-			x += TEXTW(tags_get(i)->name.cstr);
-		} while (ev->x >= x && ++i < TAGS_COUNT);
-		if (i < TAGS_COUNT) {
-			click = ClkTagBar;
-			arg.ui = 1 << i;
-		} else if (ev->x < x + blw) {
-			click = ClkLtSymbol;
-		}
-	} else if ((c = wintoclient(ev->window))) {
+	if ((c = wintoclient(ev->window))) {
 		if (settings_get_focus_on_wheel() || (ev->button != Button4 && ev->button != Button5))
 			focus(c);
 		XAllowEvents(dpy, ReplayPointer, CurrentTime);
 		click = ClkClientWin;
 	}
 	for (i = 0; i < LENGTH(buttons); i++)
-		if (click == buttons[i].click && buttons[i].func && buttons[i].button == ev->button
-		&& CLEANMASK(buttons[i].mask) == CLEANMASK(ev->state))
-			buttons[i].func(click == ClkTagBar && buttons[i].arg.i == 0 ? &arg : &buttons[i].arg);
+		if (
+			click == buttons[i].click
+			&&
+			buttons[i].func
+			&&
+			buttons[i].button == ev->button
+			&&
+			CLEANMASK(buttons[i].mask) == CLEANMASK(ev->state)
+		)
+			buttons[i].func(&buttons[i].arg);
 }
 
 void
