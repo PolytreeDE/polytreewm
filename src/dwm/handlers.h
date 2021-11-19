@@ -12,7 +12,6 @@ static void on_key_press(XEvent *e);
 static void on_mapping_notify(XEvent *e);
 static void on_map_request(XEvent *e);
 static void on_property_notify(XEvent *e);
-static void on_resize_request(XEvent *e);
 static void on_unmap_notify(XEvent *e);
 
 #endif // _DWM_HANDLERS_H

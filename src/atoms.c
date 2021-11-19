@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 
-Atom wmatom[WMLast], netatom[NetLast], xatom[XLast];
+Atom wmatom[WMLast], netatom[NetLast];
 
 Atoms atoms_create(Display *const dpy)
 {
@@ -15,10 +15,6 @@ Atoms atoms_create(Display *const dpy)
 
 	atoms->netatom[NetActiveWindow] = XInternAtom(dpy, "_NET_ACTIVE_WINDOW", False);
 	atoms->netatom[NetSupported] = XInternAtom(dpy, "_NET_SUPPORTED", False);
-	atoms->netatom[NetSystemTray] = XInternAtom(dpy, "_NET_SYSTEM_TRAY_S0", False);
-	atoms->netatom[NetSystemTrayOP] = XInternAtom(dpy, "_NET_SYSTEM_TRAY_OPCODE", False);
-	atoms->netatom[NetSystemTrayOrientation] = XInternAtom(dpy, "_NET_SYSTEM_TRAY_ORIENTATION", False);
-	atoms->netatom[NetSystemTrayOrientationHorz] = XInternAtom(dpy, "_NET_SYSTEM_TRAY_ORIENTATION_HORZ", False);
 	atoms->netatom[NetWMName] = XInternAtom(dpy, "_NET_WM_NAME", False);
 	atoms->netatom[NetWMState] = XInternAtom(dpy, "_NET_WM_STATE", False);
 	atoms->netatom[NetWMCheck] = XInternAtom(dpy, "_NET_SUPPORTING_WM_CHECK", False);
@@ -26,10 +22,6 @@ Atoms atoms_create(Display *const dpy)
 	atoms->netatom[NetWMWindowType] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE", False);
 	atoms->netatom[NetWMWindowTypeDialog] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE_DIALOG", False);
 	atoms->netatom[NetClientList] = XInternAtom(dpy, "_NET_CLIENT_LIST", False);
-
-	atoms->xatom[Manager] = XInternAtom(dpy, "MANAGER", False);
-	atoms->xatom[Xembed] = XInternAtom(dpy, "_XEMBED", False);
-	atoms->xatom[XembedInfo] = XInternAtom(dpy, "_XEMBED_INFO", False);
 
 	atoms->utf8string = XInternAtom(dpy, "UTF8_STRING", False);
 

@@ -68,22 +68,6 @@
 #define HEIGHT(X)               ((X)->h + 2 * (X)->bw)
 #define TEXTW(X)                (drw_fontset_getwidth(drw, (X)) + lrpad)
 
-#define SYSTEM_TRAY_REQUEST_DOCK    0
-
-/* XEMBED messages */
-#define XEMBED_EMBEDDED_NOTIFY      0
-#define XEMBED_WINDOW_ACTIVATE      1
-#define XEMBED_FOCUS_IN             4
-#define XEMBED_MODALITY_ON         10
-
-#define XEMBED_MAPPED              (1 << 0)
-#define XEMBED_WINDOW_ACTIVATE      1
-#define XEMBED_WINDOW_DEACTIVATE    2
-
-#define VERSION_MAJOR               0
-#define VERSION_MINOR               0
-#define XEMBED_EMBEDDED_VERSION (VERSION_MAJOR << 16) | VERSION_MINOR
-
 /*********
  * types *
  *********/
@@ -96,7 +80,6 @@ enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
 typedef struct Monitor Monitor;
 typedef struct Client Client;
 typedef struct Pertag Pertag;
-typedef struct Systray Systray;
 
 typedef union {
 	int i;
@@ -177,11 +160,6 @@ typedef struct {
 	int monitor;
 } Rule;
 
-struct Systray {
-	Window win;
-	Client *icons;
-};
-
 struct Pertag {
 	Unit units[TAGS_COUNT + 1];
 	unsigned int curtag, prevtag; /* current and previous tag */
@@ -236,7 +214,7 @@ static void resizemouse(const Arg *arg);
 static void restack(Monitor *m);
 static void run(void);
 static void scan(void);
-static int sendevent(Window w, Atom proto, int m, long d0, long d1, long d2, long d3, long d4);
+static int sendevent(Client *c, Atom proto);
 static void sendmon(Client *c, Monitor *m);
 static void setclientstate(Client *c, long state);
 static void setfocus(Client *c);
@@ -274,7 +252,6 @@ static void zoom(const Arg *arg);
 #include "dwm/handlers.h"
 #include "dwm/layouts.h"
 #include "dwm/swallow.h"
-#include "dwm/systray.h"
 #include "dwm/xerror.h"
 
 /*************
@@ -282,7 +259,6 @@ static void zoom(const Arg *arg);
  *************/
 
 static Unit global_unit = NULL;
-static Systray *systray =  NULL;
 static const char broken[] = "broken";
 static char stext[256];
 static int screen;
@@ -303,7 +279,6 @@ static void (*handler[LASTEvent]) (XEvent *) = {
 	[MappingNotify] = on_mapping_notify,
 	[MapRequest] = on_map_request,
 	[PropertyNotify] = on_property_notify,
-	[ResizeRequest] = on_resize_request,
 	[UnmapNotify] = on_unmap_notify
 };
 static Atoms atoms = NULL;
@@ -331,7 +306,6 @@ static xcb_connection_t *xcon;
 #include "dwm/handlers.c"
 #include "dwm/layouts.c"
 #include "dwm/swallow.c"
-#include "dwm/systray.c"
 #include "dwm/xerror.c"
 
 int
@@ -598,11 +572,6 @@ cleanup(void)
 	XUngrabKey(dpy, AnyKey, AnyModifier, root);
 	while (mons)
 		cleanupmon(mons);
-	if (showsystray) {
-		XUnmapWindow(dpy, systray->win);
-		XDestroyWindow(dpy, systray->win);
-		free(systray);
-	}
 	for (i = 0; i < CurLast; i++)
 		drw_cur_free(drw, cursor[i]);
 	for (i = 0; i < LENGTH(colors); i++)
@@ -857,17 +826,10 @@ getatomprop(Client *c, Atom prop)
 	unsigned long dl;
 	unsigned char *p = NULL;
 	Atom da, atom = None;
-	/* FIXME getatomprop should return the number of items and a pointer to
-	 * the stored data instead of this workaround */
-	Atom req = XA_ATOM;
-	if (prop == atoms->xatom[XembedInfo])
-		req = atoms->xatom[XembedInfo];
 
-	if (XGetWindowProperty(dpy, c->win, prop, 0L, sizeof atom, False, req,
+	if (XGetWindowProperty(dpy, c->win, prop, 0L, sizeof atom, False, XA_ATOM,
 		&da, &di, &dl, &dl, &p) == Success && p) {
 		atom = *(Atom *)p;
-		if (da == atoms->xatom[XembedInfo] && dl == 2)
-			atom = ((Atom *)p)[1];
 		XFree(p);
 	}
 	return atom;
@@ -996,7 +958,7 @@ killclient(__attribute__((unused)) const Arg *arg)
 {
 	if (!selmon->sel)
 		return;
-	if (!sendevent(selmon->sel->win, atoms->wmatom[WMDelete], NoEventMask, atoms->wmatom[WMDelete], CurrentTime, 0 , 0, 0)) {
+	if (!sendevent(selmon->sel, atoms->wmatom[WMDelete])) {
 		XGrabServer(dpy);
 		XSetErrorHandler(xerrordummy);
 		XSetCloseDownMode(dpy, DestroyAll);
@@ -1516,36 +1478,26 @@ setclientstate(Client *c, long state)
 }
 
 int
-sendevent(Window w, Atom proto, int mask, long d0, long d1, long d2, long d3, long d4)
+sendevent(Client *c, Atom proto)
 {
 	int n;
-	Atom *protocols, mt;
+	Atom *protocols;
 	int exists = 0;
 	XEvent ev;
 
-	if (proto == atoms->wmatom[WMTakeFocus] || proto == atoms->wmatom[WMDelete]) {
-		mt = atoms->wmatom[WMProtocols];
-		if (XGetWMProtocols(dpy, w, &protocols, &n)) {
-			while (!exists && n--)
-				exists = protocols[n] == proto;
-			XFree(protocols);
-		}
-	}
-	else {
-		exists = True;
-		mt = proto;
+	if (XGetWMProtocols(dpy, c->win, &protocols, &n)) {
+		while (!exists && n--)
+			exists = protocols[n] == proto;
+		XFree(protocols);
 	}
 	if (exists) {
 		ev.type = ClientMessage;
-		ev.xclient.window = w;
-		ev.xclient.message_type = mt;
+		ev.xclient.window = c->win;
+		ev.xclient.message_type = atoms->wmatom[WMProtocols];
 		ev.xclient.format = 32;
-		ev.xclient.data.l[0] = d0;
-		ev.xclient.data.l[1] = d1;
-		ev.xclient.data.l[2] = d2;
-		ev.xclient.data.l[3] = d3;
-		ev.xclient.data.l[4] = d4;
-		XSendEvent(dpy, w, False, mask, &ev);
+		ev.xclient.data.l[0] = proto;
+		ev.xclient.data.l[1] = CurrentTime;
+		XSendEvent(dpy, c->win, False, NoEventMask, &ev);
 	}
 	return exists;
 }
@@ -1559,7 +1511,7 @@ setfocus(Client *c)
 			XA_WINDOW, 32, PropModeReplace,
 			(unsigned char *) &(c->win), 1);
 	}
-	sendevent(c->win, atoms->wmatom[WMTakeFocus], NoEventMask, atoms->wmatom[WMTakeFocus], CurrentTime, 0, 0, 0);
+	sendevent(c, atoms->wmatom[WMTakeFocus]);
 }
 
 void
@@ -1660,8 +1612,6 @@ setup(void)
 	scheme = ecalloc(LENGTH(colors), sizeof(Clr *));
 	for (unsigned int i = 0; i < LENGTH(colors); i++)
 		scheme[i] = drw_scm_create(drw, colors[i], 3);
-	/* init system tray */
-	updatesystray();
 	/* init bars */
 	createbars();
 	updatestatus();
@@ -2095,8 +2045,6 @@ updatestatus(void)
 	} else {
 		drawbar(selmon);
 	}
-
-	updatesystray();
 }
 
 void

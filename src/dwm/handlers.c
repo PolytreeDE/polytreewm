@@ -33,7 +33,7 @@ on_button_press(XEvent *e)
 			arg.ui = 1 << i;
 		} else if (ev->x < x + blw)
 			click = ClkLtSymbol;
-		else if (ev->x > selmon->ww - (int)TEXTW(stext) - getsystraywidth())
+		else if (ev->x > selmon->ww - (int)TEXTW(stext))
 			click = ClkStatusText;
 		else
 			click = ClkWinTitle;
@@ -52,57 +52,8 @@ on_button_press(XEvent *e)
 void
 on_client_message(XEvent *e)
 {
-	XWindowAttributes wa;
-	XSetWindowAttributes swa;
 	XClientMessageEvent *cme = &e->xclient;
 	Client *c = wintoclient(cme->window);
-
-	if (showsystray && cme->window == systray->win && cme->message_type == atoms->netatom[NetSystemTrayOP]) {
-		/* add systray icons */
-		if (cme->data.l[1] == SYSTEM_TRAY_REQUEST_DOCK) {
-			if (!(c = (Client *)calloc(1, sizeof(Client))))
-				die("fatal: could not malloc() %u bytes\n", sizeof(Client));
-			if (!(c->win = cme->data.l[2])) {
-				free(c);
-				return;
-			}
-			c->mon = selmon;
-			c->next = systray->icons;
-			systray->icons = c;
-			if (!XGetWindowAttributes(dpy, c->win, &wa)) {
-				/* use sane defaults */
-				wa.width = bh;
-				wa.height = bh;
-				wa.border_width = 0;
-			}
-			c->x = c->oldx = c->y = c->oldy = 0;
-			c->w = c->oldw = wa.width;
-			c->h = c->oldh = wa.height;
-			c->oldbw = wa.border_width;
-			c->bw = 0;
-			c->isfloating = True;
-			/* reuse tags field as mapped status */
-			c->tags = 1;
-			updatesizehints(c);
-			updatesystrayicongeom(c, wa.width, wa.height);
-			XAddToSaveSet(dpy, c->win);
-			XSelectInput(dpy, c->win, StructureNotifyMask | PropertyChangeMask | ResizeRedirectMask);
-			XReparentWindow(dpy, c->win, systray->win, 0, 0);
-			/* use parents background color */
-			swa.background_pixel  = scheme[SchemeNorm][ColBg].pixel;
-			XChangeWindowAttributes(dpy, c->win, CWBackPixel, &swa);
-			sendevent(c->win, atoms->netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_EMBEDDED_NOTIFY, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
-			/* FIXME not sure if I have to send these events, too */
-			sendevent(c->win, atoms->netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_FOCUS_IN, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
-			sendevent(c->win, atoms->netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_WINDOW_ACTIVATE, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
-			sendevent(c->win, atoms->netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_MODALITY_ON, 0 , systray->win, XEMBED_EMBEDDED_VERSION);
-			XSync(dpy, False);
-			resizebarwin(selmon);
-			updatesystray();
-			setclientstate(c, NormalState);
-		}
-		return;
-	}
 
 	if (!c) return;
 
@@ -196,7 +147,7 @@ on_configure_notify(XEvent *e)
 			drw_resize(drw, sw, bh);
 			createbars();
 			for (m = mons; m; m = m->next) {
-				resizebarwin(m);
+				XMoveResizeWindow(dpy, m->barwin, m->wx, m->by, m->ww, bh);
 			}
 			focus(NULL);
 			arrange(NULL);
@@ -213,10 +164,6 @@ on_destroy_notify(XEvent *e)
 
 	if ((c = wintoclient(ev->window))) {
 		unmanage(c, 1);
-	} else if ((c = wintosystrayicon(ev->window))) {
-		removesystrayicon(c);
-		resizebarwin(selmon);
-		updatesystray();
 	} else if ((c = swallowingclient(ev->window))) {
 		unmanage(c->swallowing, 1);
 	}
@@ -230,8 +177,6 @@ on_expose(XEvent *e)
 
 	if (ev->count == 0 && (m = wintomon(ev->window))) {
 		drawbar(m);
-		if (m == selmon)
-			updatesystray();
 	}
 }
 
@@ -276,12 +221,6 @@ on_map_request(XEvent *e)
 {
 	static XWindowAttributes wa;
 	XMapRequestEvent *ev = &e->xmaprequest;
-	Client *i;
-	if ((i = wintosystrayicon(ev->window))) {
-		sendevent(i->win, atoms->netatom[Xembed], StructureNotifyMask, CurrentTime, XEMBED_WINDOW_ACTIVATE, 0, systray->win, XEMBED_EMBEDDED_VERSION);
-		resizebarwin(selmon);
-		updatesystray();
-	}
 
 	if (!XGetWindowAttributes(dpy, ev->window, &wa))
 		return;
@@ -298,16 +237,6 @@ on_property_notify(XEvent *e)
 	Window trans;
 	XPropertyEvent *ev = &e->xproperty;
 
-	if ((c = wintosystrayicon(ev->window))) {
-		if (ev->atom == XA_WM_NORMAL_HINTS) {
-			updatesizehints(c);
-			updatesystrayicongeom(c, c->w, c->h);
-		}
-		else
-			updatesystrayiconstate(c, ev);
-		resizebarwin(selmon);
-		updatesystray();
-	}
 	if ((ev->window == root) && (ev->atom == XA_WM_NAME))
 		updatestatus();
 	else if (ev->state == PropertyDelete)
@@ -339,19 +268,6 @@ on_property_notify(XEvent *e)
 }
 
 void
-on_resize_request(XEvent *e)
-{
-	XResizeRequestEvent *ev = &e->xresizerequest;
-	Client *i;
-
-	if ((i = wintosystrayicon(ev->window))) {
-		updatesystrayicongeom(i, ev->width, ev->height);
-		resizebarwin(selmon);
-		updatesystray();
-	}
-}
-
-void
 on_unmap_notify(XEvent *e)
 {
 	Client *c;
@@ -362,12 +278,6 @@ on_unmap_notify(XEvent *e)
 			setclientstate(c, WithdrawnState);
 		else
 			unmanage(c, 0);
-	}
-	else if ((c = wintosystrayicon(ev->window))) {
-		/* KLUDGE! sometimes icons occasionally unmap their windows, but do
-		 * _not_ destroy them. We map those windows back */
-		XMapRaised(dpy, c->win);
-		updatesystray();
 	}
 }
 

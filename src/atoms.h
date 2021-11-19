@@ -5,20 +5,16 @@
 
 /* EWMH atoms */
 enum {
-	NetSupported, NetWMName, NetWMState, NetWMCheck, NetSystemTray,
-	NetSystemTrayOP, NetSystemTrayOrientation, NetSystemTrayOrientationHorz,
+	NetSupported, NetWMName, NetWMState, NetWMCheck,
 	NetWMFullscreen, NetActiveWindow, NetWMWindowType, NetWMWindowTypeDialog,
 	NetClientList, NetLast,
 };
-
-/* Xembed atoms */
-enum { Manager, Xembed, XembedInfo, XLast };
 
 /* default atoms */
 enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMLast };
 
 typedef struct Atoms {
-	Atom wmatom[WMLast], netatom[NetLast], xatom[XLast], utf8string;
+	Atom wmatom[WMLast], netatom[NetLast], utf8string;
 } *Atoms;
 
 Atoms atoms_create(Display *dpy);
