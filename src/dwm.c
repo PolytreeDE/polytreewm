@@ -477,20 +477,23 @@ void cleanupmon(Monitor *mon)
 
 void configure(Client *c)
 {
-	XConfigureEvent ce;
+	XConfigureEvent ce = {
+		.type = ConfigureNotify,
+		.serial = 0,
+		.send_event = False,
+		.display = dpy,
+		.event = c->win,
+		.window = c->win,
+		.x = c->x,
+		.y = c->y,
+		.width = c->w,
+		.height = c->h,
+		.border_width = c->bw,
+		.above = None,
+		.override_redirect = False,
+	};
 
-	ce.type = ConfigureNotify;
-	ce.display = dpy;
-	ce.event = c->win;
-	ce.window = c->win;
-	ce.x = c->x;
-	ce.y = c->y;
-	ce.width = c->w;
-	ce.height = c->h;
-	ce.border_width = c->bw;
-	ce.above = None;
-	ce.override_redirect = False;
-	XSendEvent(dpy, c->win, False, StructureNotifyMask, (XEvent *)&ce);
+	XSendEvent(dpy, c->win, False, StructureNotifyMask, (XEvent*)&ce);
 }
 
 Monitor *createmon()
