@@ -131,10 +131,10 @@ on_configure_notify(XEvent *e)
 		sw = ev->width;
 		sh = ev->height;
 		if (updategeom() || dirty) {
-			drw_resize(drw, sw, bh);
 			createbars();
 			for (m = mons; m; m = m->next) {
-				XMoveResizeWindow(dpy, m->bar->barwin, m->wx, m->bar->by, m->ww, bh);
+				drw_resize(drw, sw, m->bar->bh);
+				XMoveResizeWindow(dpy, m->bar->barwin, m->wx, m->bar->by, m->ww, m->bar->bh);
 			}
 			focus(NULL);
 			arrange(NULL);

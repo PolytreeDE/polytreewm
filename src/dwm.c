@@ -128,6 +128,7 @@ typedef struct Bar {
 	int by;
 	int topbar;
 	Window barwin;
+	int bh;
 } *Bar;
 
 struct Monitor {
@@ -265,7 +266,6 @@ static Unit global_unit = NULL;
 static const char broken[] = "broken";
 static int screen;
 static int sw, sh;           /* X display screen geometry width, height */
-static int bh, blw = 0;      /* bar geometry */
 static int lrpad;            /* sum of left and right padding for text */
 static int (*xerrorxlib)(Display *, XErrorEvent *);
 static unsigned int numlockmask = 0;
@@ -419,10 +419,10 @@ applysizehints(Client *c, int *x, int *y, int *w, int *h, int bw, int interact)
 		if (*y + *h + 2 * bw <= m->wy)
 			*y = m->wy;
 	}
-	if (*h < bh)
-		*h = bh;
-	if (*w < bh)
-		*w = bh;
+	if (*h < m->bar->bh)
+		*h = m->bar->bh;
+	if (*w < m->bar->bh)
+		*w = m->bar->bh;
 	if (
 		c->isfloating
 		||
@@ -648,6 +648,7 @@ createmon(void)
 	}
 
 	memset(m->bar, 0, sizeof(struct Bar));
+	m->bar->bh = drw->fonts->h + 2;
 
 	m->tagset[0] = m->tagset[1] = 1;
 	m->nmaster = settings_get_default_clients_in_master();
@@ -1031,7 +1032,7 @@ manage(Window w, XWindowAttributes *wa)
 			(c->x + (c->w / 2) >= c->mon->wx) &&
 			(c->x + (c->w / 2) < c->mon->wx + c->mon->ww)
 		)
-			? bh
+			? c->mon->bar->bh
 			: c->mon->my
 	);
 
@@ -1612,7 +1613,6 @@ setup(void)
 	if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
 		die("no fonts could be loaded.");
 	lrpad = drw->fonts->h;
-	bh = drw->fonts->h + 2;
 	updategeom();
 	/* init atoms */
 	atoms = atoms_create(dpy);
