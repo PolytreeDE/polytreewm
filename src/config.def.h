@@ -21,9 +21,9 @@ static const Rule rules[] = {
 	 *	WM_CLASS(STRING) = instance, class
 	 *	WM_NAME(STRING) = title
 	 */
-	/* class,      instance, title,          tags mask, isfloating, isterminal, noswallow, monitor */
-	{ "alacritty", NULL,     NULL,           0,         0,          1,          0,         -1      },
-	{ NULL,        NULL,     "Event Tester", 0,         0,          0,          1,         -1      }, // xev
+	/* class,      instance, title,          isfloating, isterminal, noswallow, monitor */
+	{ "alacritty", NULL,     NULL,           0,          1,          0,         -1      },
+	{ NULL,        NULL,     "Event Tester", 0,          0,          1,         -1      }, // xev
 };
 
 /* layout(s) */
@@ -40,10 +40,6 @@ static const Layout layouts[] = {
 /* key definitions */
 
 #define MODKEY Mod4Mask
-#define TAGKEYS(KEY,TAG) \
-	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
-	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
-	{ MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG} },
 
 static Key keys[] = {
 	// WM
@@ -53,20 +49,6 @@ static Key keys[] = {
 	{ MODKEY,                       XK_bracketright, focusmon,       {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_bracketleft,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_bracketright, tagmon,         {.i = +1 } },
-	// Tag
-	{ MODKEY,                       XK_n,            nametag,        {0} },
-	TAGKEYS(                        XK_1,                            0)
-	TAGKEYS(                        XK_2,                            1)
-	TAGKEYS(                        XK_3,                            2)
-	TAGKEYS(                        XK_4,                            3)
-	TAGKEYS(                        XK_5,                            4)
-	TAGKEYS(                        XK_6,                            5)
-	TAGKEYS(                        XK_7,                            6)
-	TAGKEYS(                        XK_8,                            7)
-	TAGKEYS(                        XK_9,                            8)
-	{ MODKEY,                       XK_Tab,          view,           {0} },
-	{ MODKEY|ShiftMask,             XK_h,            viewrel,        {.i = -1 } },
-	{ MODKEY|ShiftMask,             XK_l,            viewrel,        {.i = +1 } },
 	// Layout
 	{ MODKEY,                       XK_m,            setlayout,      {.v = &layouts[0]} }, // Monocle
 	{ MODKEY,                       XK_f,            setlayout,      {.v = &layouts[1]} }, // Floating

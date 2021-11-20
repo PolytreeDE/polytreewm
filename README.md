@@ -40,11 +40,8 @@ Applied patches
 * alwayscenter
 * fakefullscreen
 * focusonclick
-* hide_vacant_tags
 * movestack
-* nametag
 * nmaxmaster
-* pertag
 * resetnmaster
 * smartborders
 * swallow

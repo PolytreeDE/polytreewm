@@ -26,7 +26,6 @@ MODULES_SRC = \
 	src/menu.c \
 	src/settings.c \
 	src/spawn.c \
-	src/tags.c \
 	src/unit.c \
 	src/util.c
 
