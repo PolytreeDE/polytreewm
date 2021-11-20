@@ -85,15 +85,19 @@ void on_configure_request(XEvent *e)
 					m->screen_geometry.position.y + ev->y;
 			}
 			if (ev->value_mask & CWWidth) {
-				c->state.geometry.basic.w = ev->width;
+				c->state.geometry.basic.sizes.w = ev->width;
 			}
 			if (ev->value_mask & CWHeight) {
-				c->state.geometry.basic.h = ev->height;
+				c->state.geometry.basic.sizes.h = ev->height;
 			}
 			if (
-				(c->state.geometry.basic.position.x + c->state.geometry.basic.w)
+				(
+					c->state.geometry.basic.position.x
+					+
+					c->state.geometry.basic.sizes.w
+				)
 				>
-				m->screen_geometry.position.x + m->screen_geometry.w
+				m->screen_geometry.position.x + m->screen_geometry.sizes.w
 				&&
 				c->state.is_floating
 			) {
@@ -102,15 +106,19 @@ void on_configure_request(XEvent *e)
 					m->screen_geometry.position.x
 					+
 					(
-						m->screen_geometry.w / 2
+						m->screen_geometry.sizes.w / 2
 						-
 						client_geometry_total_width(&c->state.geometry) / 2
 					);
 			}
 			if (
-				(c->state.geometry.basic.position.y + c->state.geometry.basic.h)
+				(
+					c->state.geometry.basic.position.y
+					+
+					c->state.geometry.basic.sizes.h
+				)
 				>
-				m->screen_geometry.position.y + m->screen_geometry.h
+				m->screen_geometry.position.y + m->screen_geometry.sizes.h
 				&&
 				c->state.is_floating
 			) {
@@ -119,7 +127,7 @@ void on_configure_request(XEvent *e)
 					m->screen_geometry.position.y
 					+
 					(
-						m->screen_geometry.h / 2
+						m->screen_geometry.sizes.h / 2
 						-
 						client_geometry_total_height(&c->state.geometry) / 2
 					);
@@ -133,8 +141,8 @@ void on_configure_request(XEvent *e)
 					c->win,
 					c->state.geometry.basic.position.x,
 					c->state.geometry.basic.position.y,
-					c->state.geometry.basic.w,
-					c->state.geometry.basic.h
+					c->state.geometry.basic.sizes.w,
+					c->state.geometry.basic.sizes.h
 				);
 			}
 		} else

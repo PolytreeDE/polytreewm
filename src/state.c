@@ -8,11 +8,16 @@ void position_init(const Position position)
 	position->y = 0;
 }
 
+void sizes_init(const Sizes sizes)
+{
+	sizes->w = 0;
+	sizes->h = 0;
+}
+
 void basic_geometry_init(const BasicGeometry basic_geometry)
 {
 	position_init(&basic_geometry->position);
-	basic_geometry->w = 0;
-	basic_geometry->h = 0;
+	sizes_init(&basic_geometry->sizes);
 }
 
 void client_geometry_init(const ClientGeometry client_geometry)
@@ -49,13 +54,13 @@ void client_state_init(const ClientState client_state)
 int client_geometry_total_width(
 	const struct ClientGeometry *const client_geometry
 ) {
-	return client_geometry->basic.w + 2 * client_geometry->border_width;
+	return client_geometry->basic.sizes.w + 2 * client_geometry->border_width;
 }
 
 int client_geometry_total_height(
 	const struct ClientGeometry *const client_geometry
 ) {
-	return client_geometry->basic.h + 2 * client_geometry->border_width;
+	return client_geometry->basic.sizes.h + 2 * client_geometry->border_width;
 }
 
 void client_size_hints_update(

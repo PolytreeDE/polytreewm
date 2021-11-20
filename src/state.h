@@ -9,6 +9,7 @@
  *****************/
 
 typedef struct Position        *Position;
+typedef struct Sizes           *Sizes;
 typedef struct BasicGeometry   *BasicGeometry;
 typedef struct ClientGeometry  *ClientGeometry;
 typedef struct ClientSizeHints *ClientSizeHints;
@@ -22,9 +23,13 @@ struct Position {
 	int x, y;
 };
 
+struct Sizes {
+	int w, h;
+};
+
 struct BasicGeometry {
 	struct Position position;
-	int w, h;
+	struct Sizes sizes;
 };
 
 struct ClientGeometry {
@@ -48,6 +53,7 @@ struct ClientState {
  *************/
 
 void position_init(Position position);
+void sizes_init(Sizes sizes);
 void basic_geometry_init(BasicGeometry basic_geometry);
 void client_geometry_init(ClientGeometry client_geometry);
 void client_size_hints_init(ClientSizeHints client_size_hints);
