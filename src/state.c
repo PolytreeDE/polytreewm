@@ -1,5 +1,46 @@
 #include "state.h"
 
+#include <string.h>
+
+void basic_geometry_init(const BasicGeometry basic_geometry)
+{
+	basic_geometry->x = 0;
+	basic_geometry->y = 0;
+	basic_geometry->w = 0;
+	basic_geometry->h = 0;
+}
+
+void client_geometry_init(const ClientGeometry client_geometry)
+{
+	basic_geometry_init(&client_geometry->basic);
+	client_geometry->bw = 0;
+}
+
+void client_size_hints_init(const ClientSizeHints client_size_hints)
+{
+	client_size_hints->mina = 0;
+	client_size_hints->maxa = 0;
+	client_size_hints->basew = 0;
+	client_size_hints->baseh = 0;
+	client_size_hints->incw = 0;
+	client_size_hints->inch = 0;
+	client_size_hints->maxw = 0;
+	client_size_hints->maxh = 0;
+	client_size_hints->minw = 0;
+	client_size_hints->minh = 0;
+}
+
+void client_state_init(const ClientState client_state)
+{
+	memset(client_state->name, 0, sizeof(client_state->name));
+	client_geometry_init(&client_state->geometry);
+	client_state->is_fixed = false;
+	client_state->is_floating = false;
+	client_state->is_urgent = false;
+	client_state->never_focus = false;
+	client_state->is_fullscreen = false;
+}
+
 void client_size_hints_update(
 	const ClientSizeHints size_hints,
 	const XSizeHints *const size

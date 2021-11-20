@@ -561,6 +561,9 @@ Monitor *createmon()
 {
 	Monitor *const m = ecalloc(1, sizeof(Monitor));
 
+	basic_geometry_init(&m->screen_geometry);
+	basic_geometry_init(&m->window_area_geometry);
+
 	if (!m) goto fail_without_mon;
 
 	if (!(m->unit = unit_new(UNIT_MONITOR, global_unit))) {
@@ -859,6 +862,8 @@ void killclient(__attribute__((unused)) const Arg *arg)
 void manage(Window w, XWindowAttributes *wa)
 {
 	Client *const c = ecalloc(1, sizeof(Client));
+
+	client_state_init(&c->state);
 
 	c->win = w;
 	c->state.geometry.basic.x = wa->x;
