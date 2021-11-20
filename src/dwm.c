@@ -180,8 +180,8 @@ static void pop(Client *);
 static void quit(const Arg *arg);
 static Monitor *recttomon(int x, int y, int w, int h);
 static void resetnmaster(const Arg *arg);
-static void resize(Client *c, int x, int y, int w, int h, int bw, int interact);
-static void resizeclient(Client *c, int x, int y, int w, int h, int bw);
+static void resize(Client *c, struct ClientGeometry client_geometry, int interact);
+static void resizeclient(Client *c, struct ClientGeometry client_geometry);
 static void resizemouse(const Arg *arg);
 static void restack(Monitor *m);
 static void run();
@@ -1116,15 +1116,9 @@ void movemouse(__attribute__((unused)) const Arg *arg)
 			}
 
 			if (!selmon->lt[selmon->sellt]->arrange || c->state.is_floating) {
-				resize(
-					c,
-					nx,
-					ny,
-					c->state.geometry.basic.sizes.w,
-					c->state.geometry.basic.sizes.h,
-					c->state.geometry.border_width,
-					1
-				);
+				struct ClientGeometry client_geometry = c->state.geometry;
+				position_init_from_args(&client_geometry.basic.position, nx, ny);
+				resize(c, client_geometry, 1);
 			}
 
 			break;
@@ -1261,21 +1255,29 @@ void resetnmaster(const Arg *arg)
 	arrange(selmon);
 }
 
-void resize(Client *c, int x, int y, int w, int h, int bw, int interact)
+void resize(Client *c, struct ClientGeometry client_geometry, int interact)
 {
-	if (applysizehints(c, &x, &y, &w, &h, bw, interact))
-		resizeclient(c, x, y, w, h, bw);
+	if (
+		applysizehints(
+			c,
+			&client_geometry.basic.position.x,
+			&client_geometry.basic.position.y,
+			&client_geometry.basic.sizes.w,
+			&client_geometry.basic.sizes.h,
+			client_geometry.border_width,
+			interact
+		)
+	) {
+		resizeclient(c, client_geometry);
+	}
 }
 
-void resizeclient(Client *c, int x, int y, int w, int h, int bw)
+void resizeclient(Client *c, const struct ClientGeometry client_geometry)
 {
-	XWindowChanges wc;
+	c->state.geometry = client_geometry;
 
-	c->state.geometry.basic.position.x = wc.x = x;
-	c->state.geometry.basic.position.y = wc.y = y;
-	c->state.geometry.basic.sizes.w = wc.width = w;
-	c->state.geometry.basic.sizes.h = wc.height = h;
-	c->state.geometry.border_width = wc.border_width = bw;
+	XWindowChanges wc = { 0 };
+	client_geometry_to_x_window_changes(&client_geometry, &wc);
 
 	XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
 	configure(c);
@@ -1392,15 +1394,9 @@ void resizemouse(__attribute__((unused)) const Arg *arg)
 			}
 
 			if (!selmon->lt[selmon->sellt]->arrange || c->state.is_floating) {
-				resize(
-					c,
-					c->state.geometry.basic.position.x,
-					c->state.geometry.basic.position.y,
-					nw,
-					nh,
-					c->state.geometry.border_width,
-					1
-				);
+				struct ClientGeometry client_geometry = c->state.geometry;
+				sizes_init_from_args(&client_geometry.basic.sizes, nw, nh);
+				resize(c, client_geometry, 1);
 			}
 
 			break;
@@ -1737,15 +1733,7 @@ void showhide(Client *c)
 		);
 
 		if (!c->mon->lt[c->mon->sellt]->arrange || c->state.is_floating) {
-			resize(
-				c,
-				c->state.geometry.basic.position.x,
-				c->state.geometry.basic.position.y,
-				c->state.geometry.basic.sizes.w,
-				c->state.geometry.basic.sizes.h,
-				c->state.geometry.border_width,
-				0
-			);
+			resize(c, c->state.geometry, 0);
 		}
 		showhide(c->snext);
 	} else {
@@ -1798,17 +1786,19 @@ void togglefloating(__attribute__((unused)) const Arg *arg)
 	const int border_width = settings_get_border_width();
 
 	if (selmon->sel->state.is_floating) {
-		resize(
-			selmon->sel,
-			selmon->sel->state.geometry.basic.position.x,
-			selmon->sel->state.geometry.basic.position.y,
+		struct ClientGeometry client_geometry = selmon->sel->state.geometry;
+
+		sizes_init_from_args(
+			&client_geometry.basic.sizes,
 			selmon->sel->state.geometry.basic.sizes.w -
 				2 * (border_width - selmon->sel->state.geometry.border_width),
 			selmon->sel->state.geometry.basic.sizes.h -
-				2 * (border_width - selmon->sel->state.geometry.border_width),
-			border_width,
-			0
+				2 * (border_width - selmon->sel->state.geometry.border_width)
 		);
+
+		client_geometry.border_width = border_width;
+
+		resize(selmon->sel, client_geometry, 0);
 	}
 
 	arrange(selmon);

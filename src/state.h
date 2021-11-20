@@ -48,9 +48,9 @@ struct ClientState {
 	bool is_fixed, is_floating, is_urgent, never_focus, is_fullscreen;
 };
 
-/*************
- * Functions *
- *************/
+/******************
+ * Init functions *
+ ******************/
 
 void position_init(Position position);
 void sizes_init(Sizes sizes);
@@ -59,8 +59,29 @@ void client_geometry_init(ClientGeometry client_geometry);
 void client_size_hints_init(ClientSizeHints client_size_hints);
 void client_state_init(ClientState client_state);
 
+void position_init_from_args(Position position, int x, int y);
+void sizes_init_from_args(Sizes sizes, int width, int height);
+
+void client_geometry_init_from_args(
+	ClientGeometry client_geometry,
+	int x,
+	int y,
+	int width,
+	int height,
+	int border_width
+);
+
+/*************
+ * Functions *
+ *************/
+
 int client_geometry_total_width(const struct ClientGeometry *client_geometry);
 int client_geometry_total_height(const struct ClientGeometry *client_geometry);
+
+void client_geometry_to_x_window_changes(
+	const struct ClientGeometry *client_geometry,
+	XWindowChanges *x_window_changes
+);
 
 void client_geometry_adjust_to_boundary(
 	ClientGeometry client_geometry,

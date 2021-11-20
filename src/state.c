@@ -51,6 +51,31 @@ void client_state_init(const ClientState client_state)
 	client_state->is_fullscreen = false;
 }
 
+void position_init_from_args(const Position position, const int x, const int y)
+{
+	position->x = x;
+	position->y = y;
+}
+
+void sizes_init_from_args(const Sizes sizes, const int width, const int height)
+{
+	sizes->w = width;
+	sizes->h = height;
+}
+
+void client_geometry_init_from_args(
+	const ClientGeometry client_geometry,
+	int x,
+	int y,
+	int width,
+	int height,
+	int border_width
+) {
+	position_init_from_args(&client_geometry->basic.position, x, y);
+	sizes_init_from_args(&client_geometry->basic.sizes, width, height);
+	client_geometry->border_width = border_width;
+}
+
 int client_geometry_total_width(
 	const struct ClientGeometry *const client_geometry
 ) {
@@ -61,6 +86,17 @@ int client_geometry_total_height(
 	const struct ClientGeometry *const client_geometry
 ) {
 	return client_geometry->basic.sizes.h + 2 * client_geometry->border_width;
+}
+
+void client_geometry_to_x_window_changes(
+	const struct ClientGeometry *const client_geometry,
+	XWindowChanges *const x_window_changes
+) {
+	x_window_changes->x            = client_geometry->basic.position.x;
+	x_window_changes->y            = client_geometry->basic.position.y;
+	x_window_changes->width        = client_geometry->basic.sizes.w;
+	x_window_changes->height       = client_geometry->basic.sizes.h;
+	x_window_changes->border_width = client_geometry->border_width;
 }
 
 void client_geometry_adjust_to_boundary(
