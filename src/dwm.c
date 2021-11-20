@@ -180,7 +180,7 @@ static void setfullscreen(Client *c, int fullscreen);
 static void setlayout(const Arg *arg);
 static void setmfact(const Arg *arg);
 static bool setup();
-static void seturgent(Client *c, int urg);
+static void seturgent(Client *c, bool is_urgent);
 static void showhide(Client *c);
 static void sigchld(int unused);
 static void spawn(const Arg *arg);
@@ -624,7 +624,7 @@ void focus(Client *c)
 		if (c->mon != selmon)
 			selmon = c->mon;
 		if (c->state.is_urgent)
-			seturgent(c, 0);
+			seturgent(c, false);
 		detachstack(c);
 		attachstack(c);
 		grabbuttons(c, 1);
@@ -865,7 +865,7 @@ void manage(Window w, XWindowAttributes *wa)
 	c->state.geometry.basic.y = wa->y;
 	c->state.geometry.basic.w = wa->width;
 	c->state.geometry.basic.h = wa->height;
-	c->state.is_floating = 0;
+	c->state.is_floating = false;
 
 	updatetitle(c);
 
@@ -1523,13 +1523,13 @@ void setfullscreen(Client *c, int fullscreen)
 	if (fullscreen && !c->state.is_fullscreen) {
 		XChangeProperty(dpy, c->win, atoms->netatom[NetWMState], XA_ATOM, 32,
 			PropModeReplace, (unsigned char*)&atoms->netatom[NetWMFullscreen], 1);
-		c->state.is_fullscreen = 1;
+		c->state.is_fullscreen = true;
 		// We have to rearrange because borders and gaps may have changed.
 		arrange(c->mon);
 	} else if (!fullscreen && c->state.is_fullscreen){
 		XChangeProperty(dpy, c->win, atoms->netatom[NetWMState], XA_ATOM, 32,
 			PropModeReplace, (unsigned char*)0, 0);
-		c->state.is_fullscreen = 0;
+		c->state.is_fullscreen = false;
 		// We have to rearrange because borders and gaps may have changed.
 		arrange(c->mon);
 	}
@@ -1657,14 +1657,15 @@ bool setup()
 	return true;
 }
 
-void seturgent(Client *c, int urg)
+void seturgent(Client *c, bool is_urgent)
 {
 	XWMHints *wmh;
 
-	c->state.is_urgent = urg;
+	c->state.is_urgent = is_urgent;
 	if (!(wmh = XGetWMHints(dpy, c->win)))
 		return;
-	wmh->flags = urg ? (wmh->flags | XUrgencyHint) : (wmh->flags & ~XUrgencyHint);
+	wmh->flags =
+		is_urgent ? (wmh->flags | XUrgencyHint) : (wmh->flags & ~XUrgencyHint);
 	XSetWMHints(dpy, c->win, wmh);
 	XFree(wmh);
 }
@@ -1955,7 +1956,7 @@ void updatewindowtype(Client *c)
 	if (state == atoms->netatom[NetWMFullscreen])
 		setfullscreen(c, 1);
 	if (wtype == atoms->netatom[NetWMWindowTypeDialog])
-		c->state.is_floating = 1;
+		c->state.is_floating = true;
 }
 
 void updatewmhints(Client *c)
@@ -1967,13 +1968,13 @@ void updatewmhints(Client *c)
 		wmh->flags &= ~XUrgencyHint;
 		XSetWMHints(dpy, c->win, wmh);
 	} else {
-		c->state.is_urgent = (wmh->flags & XUrgencyHint) ? 1 : 0;
+		c->state.is_urgent = (wmh->flags & XUrgencyHint) ? true : false;
 	}
 
 	if (wmh->flags & InputHint) {
 		c->state.never_focus = !wmh->input;
 	} else {
-		c->state.never_focus = 0;
+		c->state.never_focus = false;
 	}
 
 	XFree(wmh);

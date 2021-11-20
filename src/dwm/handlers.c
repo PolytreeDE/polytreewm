@@ -59,7 +59,7 @@ void on_client_message(XEvent *e)
 		}
 	} else if (cme->message_type == atoms->netatom[NetActiveWindow]) {
 		if (c != selmon->sel && !c->state.is_urgent) {
-			seturgent(c, 1);
+			seturgent(c, true);
 		}
 	}
 }

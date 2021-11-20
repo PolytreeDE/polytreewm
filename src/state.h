@@ -1,6 +1,7 @@
 #ifndef _STATE_H
 #define _STATE_H
 
+#include <stdbool.h>
 #include <X11/Xutil.h>
 
 struct BasicGeometry {
@@ -20,7 +21,7 @@ typedef struct ClientSizeHints {
 struct ClientState {
 	char name[256];
 	struct ClientGeometry geometry;
-	int is_fixed, is_floating, is_urgent, never_focus, is_fullscreen;
+	bool is_fixed, is_floating, is_urgent, never_focus, is_fullscreen;
 };
 
 void client_size_hints_update(
