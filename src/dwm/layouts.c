@@ -49,8 +49,8 @@ void centeredmaster(Monitor *m)
 
 			resize(
 				c,
-				m->window_area_geometry.x + mx + left_gap,
-				m->window_area_geometry.y + my + top_gap,
+				m->window_area_geometry.position.x + mx + left_gap,
+				m->window_area_geometry.position.y + my + top_gap,
 				mw - 2 * border_width - left_gap - right_gap,
 				h - 2 * border_width - top_gap - bottom_gap,
 				border_width,
@@ -74,8 +74,8 @@ void centeredmaster(Monitor *m)
 
 				resize(
 					c,
-					m->window_area_geometry.x + left_gap,
-					m->window_area_geometry.y + ety + top_gap,
+					m->window_area_geometry.position.x + left_gap,
+					m->window_area_geometry.position.y + ety + top_gap,
 					tw - 2 * border_width - left_gap - right_gap,
 					h - 2 * border_width - top_gap - bottom_gap,
 					border_width,
@@ -97,8 +97,8 @@ void centeredmaster(Monitor *m)
 
 				resize(
 					c,
-					m->window_area_geometry.x + mx + mw + left_gap,
-					m->window_area_geometry.y + oty + top_gap,
+					m->window_area_geometry.position.x + mx + mw + left_gap,
+					m->window_area_geometry.position.y + oty + top_gap,
 					tw - 2 * border_width - left_gap - right_gap,
 					h - 2 * border_width - top_gap - bottom_gap,
 					border_width,
@@ -122,8 +122,8 @@ void floating(Monitor *m)
 		if (ISVISIBLE(c) && c->state.geometry.border_width == 0) {
 			resize(
 				c,
-				c->state.geometry.basic.x,
-				c->state.geometry.basic.y,
+				c->state.geometry.basic.position.x,
+				c->state.geometry.basic.position.y,
 				c->state.geometry.basic.w - 2 * border_width,
 				c->state.geometry.basic.h - 2 * border_width,
 				border_width,
@@ -170,8 +170,8 @@ void horizontile(Monitor *m)
 
 			resize(
 				c,
-				m->window_area_geometry.x + mx + left_gap,
-				m->window_area_geometry.y + top_gap,
+				m->window_area_geometry.position.x + mx + left_gap,
+				m->window_area_geometry.position.y + top_gap,
 				w - 2 * border_width - left_gap - right_gap,
 				mh - 2 * border_width - top_gap - bottom_gap,
 				border_width,
@@ -195,8 +195,8 @@ void horizontile(Monitor *m)
 
 			resize(
 				c,
-				m->window_area_geometry.x + tx + left_gap,
-				m->window_area_geometry.y + mh + top_gap,
+				m->window_area_geometry.position.x + tx + left_gap,
+				m->window_area_geometry.position.y + mh + top_gap,
 				w - 2 * border_width - left_gap - right_gap,
 				m->window_area_geometry.h - mh - 2 * border_width - top_gap - bottom_gap,
 				border_width,
@@ -229,8 +229,8 @@ void monocle(Monitor *m)
 	for (Client *c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
 		resize(
 			c,
-			m->window_area_geometry.x + gap_size,
-			m->window_area_geometry.y + gap_size,
+			m->window_area_geometry.position.x + gap_size,
+			m->window_area_geometry.position.y + gap_size,
 			m->window_area_geometry.w - 2 * border_width - 2 * gap_size,
 			m->window_area_geometry.h - 2 * border_width - 2 * gap_size,
 			border_width,
@@ -276,8 +276,8 @@ void tile(Monitor *m)
 
 			resize(
 				c,
-				m->window_area_geometry.x + left_gap,
-				m->window_area_geometry.y + my + top_gap,
+				m->window_area_geometry.position.x + left_gap,
+				m->window_area_geometry.position.y + my + top_gap,
 				mw - 2 * border_width - left_gap - right_gap,
 				h - 2 * border_width - top_gap - bottom_gap,
 				border_width,
@@ -301,8 +301,8 @@ void tile(Monitor *m)
 
 			resize(
 				c,
-				m->window_area_geometry.x + mw + left_gap,
-				m->window_area_geometry.y + ty + top_gap,
+				m->window_area_geometry.position.x + mw + left_gap,
+				m->window_area_geometry.position.y + ty + top_gap,
 				m->window_area_geometry.w - mw - 2 * border_width - left_gap - right_gap,
 				h - 2 * border_width - top_gap - bottom_gap,
 				border_width,

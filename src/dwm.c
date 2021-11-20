@@ -51,12 +51,14 @@
 		0,                                                  \
 		MIN(                                                \
 			(x) + (w),                                      \
-			window_area_geometry.x + window_area_geometry.w \
+			window_area_geometry.position.x                 \
+			+                                               \
+			window_area_geometry.w                          \
 		)                                                   \
 		-                                                   \
 		MAX(                                                \
 			(x),                                            \
-			window_area_geometry.x                          \
+			window_area_geometry.position.x                 \
 		)                                                   \
 	)                                                       \
 	*                                                       \
@@ -64,12 +66,14 @@
 		0,                                                  \
 		MIN(                                                \
 			(y) + (h),                                      \
-			window_area_geometry.y + window_area_geometry.h \
+			window_area_geometry.position.y                 \
+			+                                               \
+			window_area_geometry.h                          \
 		)                                                   \
 		-                                                   \
 		MAX(                                                \
 			(y),                                            \
-			window_area_geometry.y                          \
+			window_area_geometry.position.y                          \
 		)                                                   \
 	)                                                       \
 )
@@ -327,27 +331,35 @@ int applysizehints(
 			*y = 0;
 		}
 	} else {
-		if (*x >= m->window_area_geometry.x + m->window_area_geometry.w) {
+		if (
+			*x
+			>=
+			m->window_area_geometry.position.x + m->window_area_geometry.w
+		) {
 			*x =
-				m->window_area_geometry.x
+				m->window_area_geometry.position.x
 				+
 				m->window_area_geometry.w
 				-
 				client_geometry_total_width(&c->state.geometry);
 		}
-		if (*y >= m->window_area_geometry.y + m->window_area_geometry.h) {
+		if (
+			*y
+			>=
+			m->window_area_geometry.position.y + m->window_area_geometry.h
+		) {
 			*y =
-				m->window_area_geometry.y
+				m->window_area_geometry.position.y
 				+
 				m->window_area_geometry.h
 				-
 				client_geometry_total_height(&c->state.geometry);
 		}
-		if (*x + *w + 2 * bw <= m->window_area_geometry.x) {
-			*x = m->window_area_geometry.x;
+		if (*x + *w + 2 * bw <= m->window_area_geometry.position.x) {
+			*x = m->window_area_geometry.position.x;
 		}
-		if (*y + *h + 2 * bw <= m->window_area_geometry.y) {
-			*y = m->window_area_geometry.y;
+		if (*y + *h + 2 * bw <= m->window_area_geometry.position.y) {
+			*y = m->window_area_geometry.position.y;
 		}
 	}
 
@@ -408,9 +420,9 @@ int applysizehints(
 	}
 
 	return (
-		*x != c->state.geometry.basic.x
+		*x != c->state.geometry.basic.position.x
 		||
-		*y != c->state.geometry.basic.y
+		*y != c->state.geometry.basic.position.y
 		||
 		*w != c->state.geometry.basic.w
 		||
@@ -555,8 +567,8 @@ void configure(Client *c)
 		.display = dpy,
 		.event = c->win,
 		.window = c->win,
-		.x = c->state.geometry.basic.x,
-		.y = c->state.geometry.basic.y,
+		.x = c->state.geometry.basic.position.x,
+		.y = c->state.geometry.basic.position.y,
 		.width = c->state.geometry.basic.w,
 		.height = c->state.geometry.basic.h,
 		.border_width = c->state.geometry.border_width,
@@ -876,8 +888,8 @@ void manage(Window w, XWindowAttributes *wa)
 	client_state_init(&c->state);
 
 	c->win = w;
-	c->state.geometry.basic.x = wa->x;
-	c->state.geometry.basic.y = wa->y;
+	c->state.geometry.basic.position.x = wa->x;
+	c->state.geometry.basic.position.y = wa->y;
 	c->state.geometry.basic.w = wa->width;
 	c->state.geometry.basic.h = wa->height;
 	c->state.is_floating = false;
@@ -900,12 +912,12 @@ void manage(Window w, XWindowAttributes *wa)
 		const int total_width = client_geometry_total_width(&c->state.geometry);
 
 		if (
-			c->state.geometry.basic.x + total_width
+			c->state.geometry.basic.position.x + total_width
 			>
-			c->mon->screen_geometry.x + c->mon->screen_geometry.w
+			c->mon->screen_geometry.position.x + c->mon->screen_geometry.w
 		) {
-			c->state.geometry.basic.x =
-				c->mon->screen_geometry.x
+			c->state.geometry.basic.position.x =
+				c->mon->screen_geometry.position.x
 				+
 				c->mon->screen_geometry.w
 				-
@@ -916,12 +928,12 @@ void manage(Window w, XWindowAttributes *wa)
 			client_geometry_total_height(&c->state.geometry);
 
 		if (
-			c->state.geometry.basic.y + total_height
+			c->state.geometry.basic.position.y + total_height
 			>
-			c->mon->screen_geometry.y + c->mon->screen_geometry.h
+			c->mon->screen_geometry.position.y + c->mon->screen_geometry.h
 		) {
-			c->state.geometry.basic.y =
-				c->mon->screen_geometry.y
+			c->state.geometry.basic.position.y =
+				c->mon->screen_geometry.position.y
 				+
 				c->mon->screen_geometry.h
 				-
@@ -929,10 +941,14 @@ void manage(Window w, XWindowAttributes *wa)
 		}
 	}
 
-	c->state.geometry.basic.x =
-		MAX(c->state.geometry.basic.x, c->mon->screen_geometry.x);
-	c->state.geometry.basic.y =
-		MAX(c->state.geometry.basic.y, c->mon->screen_geometry.y);
+	c->state.geometry.basic.position.x = MAX(
+		c->state.geometry.basic.position.x,
+		c->mon->screen_geometry.position.x
+	);
+	c->state.geometry.basic.position.y = MAX(
+		c->state.geometry.basic.position.y,
+		c->mon->screen_geometry.position.y
+	);
 
 	c->state.geometry.border_width = settings_get_border_width();
 
@@ -954,12 +970,12 @@ void manage(Window w, XWindowAttributes *wa)
 		const int total_height =
 			client_geometry_total_height(&c->state.geometry);
 
-		c->state.geometry.basic.x =
-			c->mon->screen_geometry.x
+		c->state.geometry.basic.position.x =
+			c->mon->screen_geometry.position.x
 			+
 			(c->mon->screen_geometry.w - total_width) / 2;
-		c->state.geometry.basic.y =
-			c->mon->screen_geometry.y
+		c->state.geometry.basic.position.y =
+			c->mon->screen_geometry.position.y
 			+
 			(c->mon->screen_geometry.h - total_height) / 2;
 	}
@@ -1001,8 +1017,8 @@ void manage(Window w, XWindowAttributes *wa)
 	XMoveResizeWindow(
 		dpy,
 		c->win,
-		c->state.geometry.basic.x + 2 * sw,
-		c->state.geometry.basic.y,
+		c->state.geometry.basic.position.x + 2 * sw,
+		c->state.geometry.basic.position.y,
 		c->state.geometry.basic.w,
 		c->state.geometry.basic.h
 	);
@@ -1038,8 +1054,8 @@ void movemouse(__attribute__((unused)) const Arg *arg)
 	if (!getrootptr(&x, &y)) return;
 
 	const unsigned int snap_distance = settings_get_snap_distance();
-	const int ocx = c->state.geometry.basic.x;
-	const int ocy = c->state.geometry.basic.y;
+	const int ocx = c->state.geometry.basic.position.x;
+	const int ocy = c->state.geometry.basic.position.y;
 
 	Time lasttime = 0;
 
@@ -1066,12 +1082,16 @@ void movemouse(__attribute__((unused)) const Arg *arg)
 			int nx = ocx + (ev.xmotion.x - x);
 			int ny = ocy + (ev.xmotion.y - y);
 
-			if (abs(selmon->window_area_geometry.x - nx) < snap_distance) {
-				nx = selmon->window_area_geometry.x;
+			if (
+				abs(selmon->window_area_geometry.position.x - nx)
+				<
+				snap_distance
+			) {
+				nx = selmon->window_area_geometry.position.x;
 			} else if (
 				abs(
 					(
-						selmon->window_area_geometry.x
+						selmon->window_area_geometry.position.x
 						+
 						selmon->window_area_geometry.w
 					)
@@ -1082,19 +1102,23 @@ void movemouse(__attribute__((unused)) const Arg *arg)
 				snap_distance
 			) {
 				nx =
-					selmon->window_area_geometry.x
+					selmon->window_area_geometry.position.x
 					+
 					selmon->window_area_geometry.w
 					-
 					client_geometry_total_width(&c->state.geometry);
 			}
 
-			if (abs(selmon->window_area_geometry.y - ny) < snap_distance) {
-				ny = selmon->window_area_geometry.y;
+			if (
+				abs(selmon->window_area_geometry.position.y - ny)
+				<
+				snap_distance
+			) {
+				ny = selmon->window_area_geometry.position.y;
 			} else if (
 				abs(
 					(
-						selmon->window_area_geometry.y
+						selmon->window_area_geometry.position.y
 						+
 						selmon->window_area_geometry.h
 					) - (ny + client_geometry_total_height(&c->state.geometry))
@@ -1103,17 +1127,21 @@ void movemouse(__attribute__((unused)) const Arg *arg)
 				snap_distance
 			) {
 				ny =
-					selmon->window_area_geometry.y
+					selmon->window_area_geometry.position.y
 					+
 					selmon->window_area_geometry.h
 					-
 					client_geometry_total_height(&c->state.geometry);
 			}
 
-			if (!c->state.is_floating &&
-				(abs(nx - c->state.geometry.basic.x) > snap_distance ||
-					abs(ny - c->state.geometry.basic.y) > snap_distance))
-			{
+			if (
+				!c->state.is_floating
+				&&
+				(
+					abs(nx - c->state.geometry.basic.position.x) > snap_distance
+					||
+					abs(ny - c->state.geometry.basic.position.y) > snap_distance)
+			) {
 				togglefloating(NULL);
 			}
 
@@ -1136,8 +1164,8 @@ void movemouse(__attribute__((unused)) const Arg *arg)
 	XUngrabPointer(dpy, CurrentTime);
 
 	Monitor *const m = recttomon(
-		c->state.geometry.basic.x,
-		c->state.geometry.basic.y,
+		c->state.geometry.basic.position.x,
+		c->state.geometry.basic.position.y,
 		c->state.geometry.basic.w,
 		c->state.geometry.basic.h
 	);
@@ -1273,8 +1301,8 @@ void resizeclient(Client *c, int x, int y, int w, int h, int bw)
 {
 	XWindowChanges wc;
 
-	c->state.geometry.basic.x = wc.x = x;
-	c->state.geometry.basic.y = wc.y = y;
+	c->state.geometry.basic.position.x = wc.x = x;
+	c->state.geometry.basic.position.y = wc.y = y;
 	c->state.geometry.basic.w = wc.width = w;
 	c->state.geometry.basic.h = wc.height = h;
 	c->state.geometry.border_width = wc.border_width = bw;
@@ -1311,8 +1339,8 @@ void resizemouse(__attribute__((unused)) const Arg *arg)
 	);
 
 	const unsigned int snap_distance = settings_get_snap_distance();
-	const int ocx = c->state.geometry.basic.x;
-	const int ocy = c->state.geometry.basic.y;
+	const int ocx = c->state.geometry.basic.position.x;
+	const int ocy = c->state.geometry.basic.position.y;
 
 	Time lasttime = 0;
 
@@ -1347,32 +1375,32 @@ void resizemouse(__attribute__((unused)) const Arg *arg)
 
 			if (
 				(
-					c->mon->window_area_geometry.x + nw
+					c->mon->window_area_geometry.position.x + nw
 					>=
-					selmon->window_area_geometry.x
+					selmon->window_area_geometry.position.x
 				)
 				&&
 				(
-					c->mon->window_area_geometry.x + nw
+					c->mon->window_area_geometry.position.x + nw
 					<=
 					(
-						selmon->window_area_geometry.x
+						selmon->window_area_geometry.position.x
 						+
 						selmon->window_area_geometry.w
 					)
 				)
 				&&
 				(
-					c->mon->window_area_geometry.y + nh
+					c->mon->window_area_geometry.position.y + nh
 					>=
-					selmon->window_area_geometry.y
+					selmon->window_area_geometry.position.y
 				)
 				&&
 				(
-					c->mon->window_area_geometry.y + nh
+					c->mon->window_area_geometry.position.y + nh
 					<=
 					(
-						selmon->window_area_geometry.y
+						selmon->window_area_geometry.position.y
 						+
 						selmon->window_area_geometry.h
 					)
@@ -1390,8 +1418,8 @@ void resizemouse(__attribute__((unused)) const Arg *arg)
 			if (!selmon->lt[selmon->sellt]->arrange || c->state.is_floating) {
 				resize(
 					c,
-					c->state.geometry.basic.x,
-					c->state.geometry.basic.y,
+					c->state.geometry.basic.position.x,
+					c->state.geometry.basic.position.y,
 					nw,
 					nh,
 					c->state.geometry.border_width,
@@ -1420,8 +1448,8 @@ void resizemouse(__attribute__((unused)) const Arg *arg)
 	while (XCheckMaskEvent(dpy, EnterWindowMask, &ev));
 
 	Monitor *const m = recttomon(
-		c->state.geometry.basic.x,
-		c->state.geometry.basic.y,
+		c->state.geometry.basic.position.x,
+		c->state.geometry.basic.position.y,
 		c->state.geometry.basic.w,
 		c->state.geometry.basic.h
 	);
@@ -1728,15 +1756,15 @@ void showhide(Client *c)
 		XMoveWindow(
 			dpy,
 			c->win,
-			c->state.geometry.basic.x,
-			c->state.geometry.basic.y
+			c->state.geometry.basic.position.x,
+			c->state.geometry.basic.position.y
 		);
 
 		if (!c->mon->lt[c->mon->sellt]->arrange || c->state.is_floating) {
 			resize(
 				c,
-				c->state.geometry.basic.x,
-				c->state.geometry.basic.y,
+				c->state.geometry.basic.position.x,
+				c->state.geometry.basic.position.y,
 				c->state.geometry.basic.w,
 				c->state.geometry.basic.h,
 				c->state.geometry.border_width,
@@ -1751,7 +1779,7 @@ void showhide(Client *c)
 			dpy,
 			c->win,
 			client_geometry_total_width(&c->state.geometry) * -2,
-			c->state.geometry.basic.y
+			c->state.geometry.basic.position.y
 		);
 	}
 }
@@ -1796,8 +1824,8 @@ void togglefloating(__attribute__((unused)) const Arg *arg)
 	if (selmon->sel->state.is_floating) {
 		resize(
 			selmon->sel,
-			selmon->sel->state.geometry.basic.x,
-			selmon->sel->state.geometry.basic.y,
+			selmon->sel->state.geometry.basic.position.x,
+			selmon->sel->state.geometry.basic.position.y,
 			selmon->sel->state.geometry.basic.w -
 				2 * (border_width - selmon->sel->state.geometry.border_width),
 			selmon->sel->state.geometry.basic.h -
@@ -1898,9 +1926,9 @@ int updategeom()
 				if (
 					i >= n
 					||
-					unique[i].x_org != m->screen_geometry.x
+					unique[i].x_org != m->screen_geometry.position.x
 					||
-					unique[i].y_org != m->screen_geometry.y
+					unique[i].y_org != m->screen_geometry.position.y
 					||
 					unique[i].width != m->screen_geometry.w
 					||
@@ -1908,11 +1936,11 @@ int updategeom()
 				) {
 					dirty = 1;
 					m->num = i;
-					m->screen_geometry.x =
-						m->window_area_geometry.x =
+					m->screen_geometry.position.x =
+						m->window_area_geometry.position.x =
 						unique[i].x_org;
-					m->screen_geometry.y =
-						m->window_area_geometry.y =
+					m->screen_geometry.position.y =
+						m->window_area_geometry.position.y =
 						unique[i].y_org;
 					m->screen_geometry.w =
 						m->window_area_geometry.w =

@@ -2,10 +2,15 @@
 
 #include <string.h>
 
+void position_init(const Position position)
+{
+	position->x = 0;
+	position->y = 0;
+}
+
 void basic_geometry_init(const BasicGeometry basic_geometry)
 {
-	basic_geometry->x = 0;
-	basic_geometry->y = 0;
+	position_init(&basic_geometry->position);
 	basic_geometry->w = 0;
 	basic_geometry->h = 0;
 }

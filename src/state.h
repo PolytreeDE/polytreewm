@@ -8,6 +8,7 @@
  * Pointer types *
  *****************/
 
+typedef struct Position        *Position;
 typedef struct BasicGeometry   *BasicGeometry;
 typedef struct ClientGeometry  *ClientGeometry;
 typedef struct ClientSizeHints *ClientSizeHints;
@@ -17,7 +18,14 @@ typedef struct ClientState     *ClientState;
  * Structures *
  **************/
 
-struct BasicGeometry { int x, y, w, h; };
+struct Position {
+	int x, y;
+};
+
+struct BasicGeometry {
+	struct Position position;
+	int w, h;
+};
 
 struct ClientGeometry {
 	struct BasicGeometry basic;
@@ -39,6 +47,7 @@ struct ClientState {
  * Functions *
  *************/
 
+void position_init(Position position);
 void basic_geometry_init(BasicGeometry basic_geometry);
 void client_geometry_init(ClientGeometry client_geometry);
 void client_size_hints_init(ClientSizeHints client_size_hints);

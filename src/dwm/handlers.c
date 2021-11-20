@@ -77,10 +77,12 @@ void on_configure_request(XEvent *e)
 		} else if (c->state.is_floating || !selmon->lt[selmon->sellt]->arrange) {
 			m = c->mon;
 			if (ev->value_mask & CWX) {
-				c->state.geometry.basic.x = m->screen_geometry.x + ev->x;
+				c->state.geometry.basic.position.x =
+					m->screen_geometry.position.x + ev->x;
 			}
 			if (ev->value_mask & CWY) {
-				c->state.geometry.basic.y = m->screen_geometry.y + ev->y;
+				c->state.geometry.basic.position.y =
+					m->screen_geometry.position.y + ev->y;
 			}
 			if (ev->value_mask & CWWidth) {
 				c->state.geometry.basic.w = ev->width;
@@ -89,15 +91,15 @@ void on_configure_request(XEvent *e)
 				c->state.geometry.basic.h = ev->height;
 			}
 			if (
-				(c->state.geometry.basic.x + c->state.geometry.basic.w)
+				(c->state.geometry.basic.position.x + c->state.geometry.basic.w)
 				>
-				m->screen_geometry.x + m->screen_geometry.w
+				m->screen_geometry.position.x + m->screen_geometry.w
 				&&
 				c->state.is_floating
 			) {
 				/* center in x direction */
-				c->state.geometry.basic.x =
-					m->screen_geometry.x
+				c->state.geometry.basic.position.x =
+					m->screen_geometry.position.x
 					+
 					(
 						m->screen_geometry.w / 2
@@ -106,15 +108,15 @@ void on_configure_request(XEvent *e)
 					);
 			}
 			if (
-				(c->state.geometry.basic.y + c->state.geometry.basic.h)
+				(c->state.geometry.basic.position.y + c->state.geometry.basic.h)
 				>
-				m->screen_geometry.y + m->screen_geometry.h
+				m->screen_geometry.position.y + m->screen_geometry.h
 				&&
 				c->state.is_floating
 			) {
 				/* center in y direction */
-				c->state.geometry.basic.y =
-					m->screen_geometry.y
+				c->state.geometry.basic.position.y =
+					m->screen_geometry.position.y
 					+
 					(
 						m->screen_geometry.h / 2
@@ -129,8 +131,8 @@ void on_configure_request(XEvent *e)
 				XMoveResizeWindow(
 					dpy,
 					c->win,
-					c->state.geometry.basic.x,
-					c->state.geometry.basic.y,
+					c->state.geometry.basic.position.x,
+					c->state.geometry.basic.position.y,
 					c->state.geometry.basic.w,
 					c->state.geometry.basic.h
 				);
