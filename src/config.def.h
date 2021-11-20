@@ -43,8 +43,7 @@ static const Layout layouts[] = {
 #define TAGKEYS(KEY,TAG) \
 	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
 	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
-	{ MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG} }, \
-	{ MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
+	{ MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG} },
 
 static Key keys[] = {
 	// WM
@@ -56,8 +55,6 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_bracketright, tagmon,         {.i = +1 } },
 	// Tag
 	{ MODKEY,                       XK_n,            nametag,        {0} },
-	{ MODKEY,                       XK_0,            view,           {.ui = ~0 } },
-	{ MODKEY|ShiftMask,             XK_0,            tag,            {.ui = ~0 } },
 	TAGKEYS(                        XK_1,                            0)
 	TAGKEYS(                        XK_2,                            1)
 	TAGKEYS(                        XK_3,                            2)

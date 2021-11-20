@@ -235,7 +235,6 @@ static void spawn_callback();
 static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
 static void togglefloating(const Arg *arg);
-static void toggletag(const Arg *arg);
 static void toggleview(const Arg *arg);
 static void unfocus(Client *c, int setfocus);
 static void unmanage(Client *c, int destroyed);
@@ -1784,21 +1783,6 @@ togglefloating(__attribute__((unused)) const Arg *arg)
 	}
 
 	arrange(selmon);
-}
-
-void
-toggletag(const Arg *arg)
-{
-	unsigned int newtags;
-
-	if (!selmon->sel)
-		return;
-	newtags = selmon->sel->tags ^ (arg->ui & TAGS_MASK);
-	if (newtags) {
-		selmon->sel->tags = newtags;
-		focus(NULL);
-		arrange(selmon);
-	}
 }
 
 void
