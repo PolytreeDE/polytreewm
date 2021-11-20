@@ -13,7 +13,7 @@ void basic_geometry_init(const BasicGeometry basic_geometry)
 void client_geometry_init(const ClientGeometry client_geometry)
 {
 	basic_geometry_init(&client_geometry->basic);
-	client_geometry->bw = 0;
+	client_geometry->border_width = 0;
 }
 
 void client_size_hints_init(const ClientSizeHints client_size_hints)

@@ -21,7 +21,7 @@ struct BasicGeometry { int x, y, w, h; };
 
 struct ClientGeometry {
 	struct BasicGeometry basic;
-	int bw;
+	int border_width;
 };
 
 struct ClientSizeHints {

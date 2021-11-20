@@ -38,8 +38,11 @@
 #define ISVISIBLE(C) (true)
 #define LENGTH(X)    (sizeof(X) / sizeof(X[0]))
 #define MOUSEMASK    (BUTTONMASK | PointerMotionMask)
-#define WIDTH(X)     ((X)->state.geometry.basic.w + 2 * (X)->state.geometry.bw)
-#define HEIGHT(X)    ((X)->state.geometry.basic.h + 2 * (X)->state.geometry.bw)
+
+#define WIDTH(X) \
+	((X)->state.geometry.basic.w + 2 * (X)->state.geometry.border_width)
+#define HEIGHT(X) \
+	((X)->state.geometry.basic.h + 2 * (X)->state.geometry.border_width)
 
 #define CLEANMASK(mask) (                            \
 	(mask) &                                         \
@@ -406,7 +409,7 @@ int applysizehints(
 		||
 		*h != c->state.geometry.basic.h
 		||
-		bw != c->state.geometry.bw
+		bw != c->state.geometry.border_width
 	);
 }
 
@@ -549,7 +552,7 @@ void configure(Client *c)
 		.y = c->state.geometry.basic.y,
 		.width = c->state.geometry.basic.w,
 		.height = c->state.geometry.basic.h,
-		.border_width = c->state.geometry.bw,
+		.border_width = c->state.geometry.border_width,
 		.above = None,
 		.override_redirect = False,
 	};
@@ -909,11 +912,11 @@ void manage(Window w, XWindowAttributes *wa)
 	c->state.geometry.basic.y =
 		MAX(c->state.geometry.basic.y, c->mon->screen_geometry.y);
 
-	c->state.geometry.bw = settings_get_border_width();
+	c->state.geometry.border_width = settings_get_border_width();
 
 	{
 		XWindowChanges wc;
-		wc.border_width = c->state.geometry.bw;
+		wc.border_width = c->state.geometry.border_width;
 		XConfigureWindow(dpy, w, CWBorderWidth, &wc);
 	}
 
@@ -1084,7 +1087,7 @@ void movemouse(__attribute__((unused)) const Arg *arg)
 					ny,
 					c->state.geometry.basic.w,
 					c->state.geometry.basic.h,
-					c->state.geometry.bw,
+					c->state.geometry.border_width,
 					1
 				);
 			}
@@ -1237,7 +1240,7 @@ void resizeclient(Client *c, int x, int y, int w, int h, int bw)
 	c->state.geometry.basic.y = wc.y = y;
 	c->state.geometry.basic.w = wc.width = w;
 	c->state.geometry.basic.h = wc.height = h;
-	c->state.geometry.bw = wc.border_width = bw;
+	c->state.geometry.border_width = wc.border_width = bw;
 
 	XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
 	configure(c);
@@ -1266,8 +1269,8 @@ void resizemouse(__attribute__((unused)) const Arg *arg)
 		0,
 		0,
 		0,
-		c->state.geometry.basic.w + c->state.geometry.bw - 1,
-		c->state.geometry.basic.h + c->state.geometry.bw - 1
+		c->state.geometry.basic.w + c->state.geometry.border_width - 1,
+		c->state.geometry.basic.h + c->state.geometry.border_width - 1
 	);
 
 	const unsigned int snap_distance = settings_get_snap_distance();
@@ -1296,10 +1299,14 @@ void resizemouse(__attribute__((unused)) const Arg *arg)
 
 			lasttime = ev.xmotion.time;
 
-			const int nw =
-				MAX(ev.xmotion.x - ocx - 2 * c->state.geometry.bw + 1, 1);
-			const int nh =
-				MAX(ev.xmotion.y - ocy - 2 * c->state.geometry.bw + 1, 1);
+			const int nw = MAX(
+				ev.xmotion.x - ocx - 2 * c->state.geometry.border_width + 1,
+				1
+			);
+			const int nh = MAX(
+				ev.xmotion.y - ocy - 2 * c->state.geometry.border_width + 1,
+				1
+			);
 
 			if (
 				(
@@ -1350,7 +1357,7 @@ void resizemouse(__attribute__((unused)) const Arg *arg)
 					c->state.geometry.basic.y,
 					nw,
 					nh,
-					c->state.geometry.bw,
+					c->state.geometry.border_width,
 					1
 				);
 			}
@@ -1367,8 +1374,8 @@ void resizemouse(__attribute__((unused)) const Arg *arg)
 		0,
 		0,
 		0,
-		c->state.geometry.basic.w + c->state.geometry.bw - 1,
-		c->state.geometry.basic.h + c->state.geometry.bw - 1
+		c->state.geometry.basic.w + c->state.geometry.border_width - 1,
+		c->state.geometry.basic.h + c->state.geometry.border_width - 1
 	);
 
 	XUngrabPointer(dpy, CurrentTime);
@@ -1695,7 +1702,7 @@ void showhide(Client *c)
 				c->state.geometry.basic.y,
 				c->state.geometry.basic.w,
 				c->state.geometry.basic.h,
-				c->state.geometry.bw,
+				c->state.geometry.border_width,
 				0
 			);
 		}
@@ -1750,9 +1757,9 @@ void togglefloating(__attribute__((unused)) const Arg *arg)
 			selmon->sel->state.geometry.basic.x,
 			selmon->sel->state.geometry.basic.y,
 			selmon->sel->state.geometry.basic.w -
-				2 * (border_width - selmon->sel->state.geometry.bw),
+				2 * (border_width - selmon->sel->state.geometry.border_width),
 			selmon->sel->state.geometry.basic.h -
-				2 * (border_width - selmon->sel->state.geometry.bw),
+				2 * (border_width - selmon->sel->state.geometry.border_width),
 			border_width,
 			0
 		);

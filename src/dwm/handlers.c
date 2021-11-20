@@ -73,7 +73,7 @@ void on_configure_request(XEvent *e)
 
 	if ((c = wintoclient(ev->window))) {
 		if (ev->value_mask & CWBorderWidth) {
-			c->state.geometry.bw = ev->border_width;
+			c->state.geometry.border_width = ev->border_width;
 		} else if (c->state.is_floating || !selmon->lt[selmon->sellt]->arrange) {
 			m = c->mon;
 			if (ev->value_mask & CWX) {

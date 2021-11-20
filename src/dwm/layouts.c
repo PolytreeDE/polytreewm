@@ -110,7 +110,7 @@ void floating(Monitor *m)
 	const int border_width = settings_get_border_width();
 
 	for (Client *c = m->clients; c; c = c->next) {
-		if (ISVISIBLE(c) && c->state.geometry.bw == 0) {
+		if (ISVISIBLE(c) && c->state.geometry.border_width == 0) {
 			resize(
 				c,
 				c->state.geometry.basic.x,
