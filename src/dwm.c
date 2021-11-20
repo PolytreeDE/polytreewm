@@ -119,19 +119,10 @@ struct Monitor {
 	const Layout *lt[2];
 };
 
-typedef struct {
-	const char *class;
-	const char *instance;
-	const char *title;
-	int isfloating;
-	int monitor;
-} Rule;
-
 /*************************
  * function declarations *
  *************************/
 
-static void applyrules(Client *c);
 static int applysizehints(Client *c, int *x, int *y, int *w, int *h, int bw, int interact);
 static void arrange(Monitor *m);
 static void arrangemon(Monitor *m);
@@ -287,38 +278,6 @@ int main(int argc, char *argv[])
 	XCloseDisplay(dpy);
 
 	return EXIT_SUCCESS;
-}
-
-void applyrules(Client *c)
-{
-	const char *class, *instance;
-	unsigned int i;
-	const Rule *r;
-	Monitor *m;
-	XClassHint ch = { NULL, NULL };
-
-	/* rule matching */
-	c->isfloating = 0;
-	XGetClassHint(dpy, c->win, &ch);
-	class    = ch.res_class ? ch.res_class : broken;
-	instance = ch.res_name  ? ch.res_name  : broken;
-
-	for (i = 0; i < LENGTH(rules); i++) {
-		r = &rules[i];
-		if ((!r->title || strstr(c->name, r->title))
-		&& (!r->class || strstr(class, r->class))
-		&& (!r->instance || strstr(instance, r->instance)))
-		{
-			c->isfloating = r->isfloating;
-			for (m = mons; m && m->num != r->monitor; m = m->next);
-			if (m)
-				c->mon = m;
-		}
-	}
-	if (ch.res_class)
-		XFree(ch.res_class);
-	if (ch.res_name)
-		XFree(ch.res_name);
 }
 
 int applysizehints(
@@ -827,6 +786,7 @@ void manage(Window w, XWindowAttributes *wa)
 	c->w = c->oldw = wa->width;
 	c->h = c->oldh = wa->height;
 	c->oldbw = wa->border_width;
+	c->isfloating = 0;
 
 	updatetitle(c);
 
@@ -839,7 +799,6 @@ void manage(Window w, XWindowAttributes *wa)
 			c->mon = t->mon;
 		} else {
 			c->mon = selmon;
-			applyrules(c);
 		}
 	}
 

@@ -16,16 +16,6 @@ static const char *colors[][3]      = {
 	[SchemeSel]  = { col_gray4, col_cyan,  "#d9b01c" },
 };
 
-static const Rule rules[] = {
-	/* xprop(1):
-	 *	WM_CLASS(STRING) = instance, class
-	 *	WM_NAME(STRING) = title
-	 */
-	/* class,      instance, title,          isfloating, monitor */
-	{ "alacritty", NULL,     NULL,           0,          -1      },
-	{ NULL,        NULL,     "Event Tester", 0,          -1      }, // xev
-};
-
 /* layout(s) */
 
 static const Layout layouts[] = {
