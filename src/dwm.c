@@ -459,20 +459,28 @@ void checkotherwm()
 void cleanup()
 {
 	Layout foo = { NULL, NULL };
-	Monitor *m;
-	size_t i;
-
 	selmon->lt[selmon->sellt] = &foo;
-	for (m = mons; m; m = m->next)
-		while (m->stack)
+
+	for (Monitor *m = mons; m; m = m->next) {
+		while (m->stack) {
 			unmanage(m->stack, 0);
+		}
+	}
+
 	XUngrabKey(dpy, AnyKey, AnyModifier, root);
-	while (mons)
+
+	while (mons) {
 		cleanupmon(mons);
-	for (i = 0; i < CurLast; i++)
+	}
+
+	for (size_t i = 0; i < CurLast; i++) {
 		drw_cur_free(drw, cursor[i]);
-	for (i = 0; i < LENGTH(colors); i++)
+	}
+
+	for (size_t i = 0; i < LENGTH(colors); i++) {
 		free(scheme[i]);
+	}
+
 	atoms_destroy(atoms);
 	XDestroyWindow(dpy, wmcheckwin);
 	drw_free(drw);
