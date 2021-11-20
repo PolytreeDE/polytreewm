@@ -83,12 +83,16 @@ struct ClientGeometry {
 	int bw, oldbw;
 };
 
-struct Client {
-	struct ClientGeometry geometry;
-
-	char name[256];
+struct ClientSizeHints {
 	float mina, maxa;
 	int basew, baseh, incw, inch, maxw, maxh, minw, minh;
+};
+
+struct Client {
+	struct ClientGeometry geometry;
+	struct ClientSizeHints size_hints;
+
+	char name[256];
 	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen;
 	Client *next;
 	Client *snext;
@@ -337,46 +341,49 @@ int applysizehints(
 		)
 	) {
 		/* see last two sentences in ICCCM 4.1.2.3 */
-		const int baseismin = c->basew == c->minw && c->baseh == c->minh;
+		const int baseismin =
+			c->size_hints.basew == c->size_hints.minw
+			&&
+			c->size_hints.baseh == c->size_hints.minh;
 
 		/* temporarily remove base dimensions */
 		if (!baseismin) {
-			*w -= c->basew;
-			*h -= c->baseh;
+			*w -= c->size_hints.basew;
+			*h -= c->size_hints.baseh;
 		}
 
 		/* adjust for aspect limits */
-		if (c->mina > 0 && c->maxa > 0) {
-			if (c->maxa < (float)*w / *h) {
-				*w = *h * c->maxa + 0.5;
-			} else if (c->mina < (float)*h / *w) {
-				*h = *w * c->mina + 0.5;
+		if (c->size_hints.mina > 0 && c->size_hints.maxa > 0) {
+			if (c->size_hints.maxa < (float)*w / *h) {
+				*w = *h * c->size_hints.maxa + 0.5;
+			} else if (c->size_hints.mina < (float)*h / *w) {
+				*h = *w * c->size_hints.mina + 0.5;
 			}
 		}
 
 		/* increment calculation requires this */
 		if (baseismin) {
-			*w -= c->basew;
-			*h -= c->baseh;
+			*w -= c->size_hints.basew;
+			*h -= c->size_hints.baseh;
 		}
 
 		/* adjust for increment value */
-		if (c->incw) {
-			*w -= *w % c->incw;
+		if (c->size_hints.incw) {
+			*w -= *w % c->size_hints.incw;
 		}
-		if (c->inch) {
-			*h -= *h % c->inch;
+		if (c->size_hints.inch) {
+			*h -= *h % c->size_hints.inch;
 		}
 
 		/* restore base dimensions */
-		*w = MAX(*w + c->basew, c->minw);
-		*h = MAX(*h + c->baseh, c->minh);
+		*w = MAX(*w + c->size_hints.basew, c->size_hints.minw);
+		*h = MAX(*h + c->size_hints.baseh, c->size_hints.minh);
 
-		if (c->maxw) {
-			*w = MIN(*w, c->maxw);
+		if (c->size_hints.maxw) {
+			*w = MIN(*w, c->size_hints.maxw);
 		}
-		if (c->maxh) {
-			*h = MIN(*h, c->maxh);
+		if (c->size_hints.maxh) {
+			*h = MIN(*h, c->size_hints.maxh);
 		}
 	}
 
@@ -1812,47 +1819,55 @@ void updatesizehints(Client *c)
 	}
 
 	if (size.flags & PBaseSize) {
-		c->basew = size.base_width;
-		c->baseh = size.base_height;
+		c->size_hints.basew = size.base_width;
+		c->size_hints.baseh = size.base_height;
 	} else if (size.flags & PMinSize) {
-		c->basew = size.min_width;
-		c->baseh = size.min_height;
+		c->size_hints.basew = size.min_width;
+		c->size_hints.baseh = size.min_height;
 	} else {
-		c->basew = c->baseh = 0;
+		c->size_hints.basew = c->size_hints.baseh = 0;
 	}
 
 	if (size.flags & PResizeInc) {
-		c->incw = size.width_inc;
-		c->inch = size.height_inc;
+		c->size_hints.incw = size.width_inc;
+		c->size_hints.inch = size.height_inc;
 	} else {
-		c->incw = c->inch = 0;
+		c->size_hints.incw = c->size_hints.inch = 0;
 	}
 
 	if (size.flags & PMaxSize) {
-		c->maxw = size.max_width;
-		c->maxh = size.max_height;
+		c->size_hints.maxw = size.max_width;
+		c->size_hints.maxh = size.max_height;
 	} else {
-		c->maxw = c->maxh = 0;
+		c->size_hints.maxw = c->size_hints.maxh = 0;
 	}
 
 	if (size.flags & PMinSize) {
-		c->minw = size.min_width;
-		c->minh = size.min_height;
+		c->size_hints.minw = size.min_width;
+		c->size_hints.minh = size.min_height;
 	} else if (size.flags & PBaseSize) {
-		c->minw = size.base_width;
-		c->minh = size.base_height;
+		c->size_hints.minw = size.base_width;
+		c->size_hints.minh = size.base_height;
 	} else {
-		c->minw = c->minh = 0;
+		c->size_hints.minw = c->size_hints.minh = 0;
 	}
 
 	if (size.flags & PAspect) {
-		c->mina = (float)size.min_aspect.y / size.min_aspect.x;
-		c->maxa = (float)size.max_aspect.x / size.max_aspect.y;
+		c->size_hints.mina = (float)size.min_aspect.y / size.min_aspect.x;
+		c->size_hints.maxa = (float)size.max_aspect.x / size.max_aspect.y;
 	} else {
-		c->maxa = c->mina = 0.0;
+		c->size_hints.maxa = c->size_hints.mina = 0.0;
 	}
 
-	c->isfixed = (c->maxw && c->maxh && c->maxw == c->minw && c->maxh == c->minh);
+	c->isfixed = (
+		c->size_hints.maxw
+		&&
+		c->size_hints.maxh
+		&&
+		c->size_hints.maxw == c->size_hints.minw
+		&&
+		c->size_hints.maxh == c->size_hints.minh
+	);
 }
 
 void updatetitle(Client *c)
