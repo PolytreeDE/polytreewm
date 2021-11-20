@@ -80,7 +80,6 @@ typedef struct {
 
 struct ClientGeometry {
 	int x, y, w, h;
-	int oldx, oldy, oldw, oldh;
 	int bw, oldbw;
 };
 
@@ -845,10 +844,10 @@ void manage(Window w, XWindowAttributes *wa)
 	Client *const c = ecalloc(1, sizeof(Client));
 
 	c->win = w;
-	c->geometry.x = c->geometry.oldx = wa->x;
-	c->geometry.y = c->geometry.oldy = wa->y;
-	c->geometry.w = c->geometry.oldw = wa->width;
-	c->geometry.h = c->geometry.oldh = wa->height;
+	c->geometry.x = wa->x;
+	c->geometry.y = wa->y;
+	c->geometry.w = wa->width;
+	c->geometry.h = wa->height;
 	c->geometry.oldbw = wa->border_width;
 	c->isfloating = 0;
 
@@ -1168,16 +1167,9 @@ void resizeclient(Client *c, int x, int y, int w, int h, int bw)
 {
 	XWindowChanges wc;
 
-	c->geometry.oldx = c->geometry.x;
 	c->geometry.x = wc.x = x;
-
-	c->geometry.oldy = c->geometry.y;
 	c->geometry.y = wc.y = y;
-
-	c->geometry.oldw = c->geometry.w;
 	c->geometry.w = wc.width = w;
-
-	c->geometry.oldh = c->geometry.h;
 	c->geometry.h = wc.height = h;
 
 	c->geometry.oldbw = c->geometry.bw;

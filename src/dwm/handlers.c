@@ -77,19 +77,15 @@ void on_configure_request(XEvent *e)
 		} else if (c->isfloating || !selmon->lt[selmon->sellt]->arrange) {
 			m = c->mon;
 			if (ev->value_mask & CWX) {
-				c->geometry.oldx = c->geometry.x;
 				c->geometry.x = m->mx + ev->x;
 			}
 			if (ev->value_mask & CWY) {
-				c->geometry.oldy = c->geometry.y;
 				c->geometry.y = m->my + ev->y;
 			}
 			if (ev->value_mask & CWWidth) {
-				c->geometry.oldw = c->geometry.w;
 				c->geometry.w = ev->width;
 			}
 			if (ev->value_mask & CWHeight) {
-				c->geometry.oldh = c->geometry.h;
 				c->geometry.h = ev->height;
 			}
 			if ((c->geometry.x + c->geometry.w) > m->mx + m->mw && c->isfloating) {
