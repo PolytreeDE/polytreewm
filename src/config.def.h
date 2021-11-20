@@ -70,7 +70,6 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_x,            killclient,     {0} },
 	{ MODKEY|ShiftMask,             XK_space,        togglefloating, {0} },
 	// Appearance
-	{ MODKEY,                       XK_b,            togglebar,      {0} },
 	{ MODKEY,                       XK_h,            setmfact,       {.f = -0.05} },
 	{ MODKEY,                       XK_l,            setmfact,       {.f = +0.05} },
 	{ MODKEY|Mod1Mask,              XK_b,            configborder,   {.i = -1 } },

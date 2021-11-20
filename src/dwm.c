@@ -104,15 +104,8 @@ typedef struct {
 	void (*arrange)(Monitor *);
 } Layout;
 
-typedef struct Bar {
-	int by;
-	int topbar;
-	int bh;
-} *Bar;
-
 struct Monitor {
 	Unit unit;
-	Bar bar;
 
 	int nmaster;
 	int num;
@@ -124,9 +117,6 @@ struct Monitor {
 	Client *stack;
 	Monitor *next;
 	const Layout *lt[2];
-
-	// actual state
-	bool show_bar;
 };
 
 typedef struct {
@@ -212,7 +202,6 @@ static Client *wintoclient(Window w);
 static Monitor *wintomon(Window w);
 static void zoom(const Arg *arg);
 
-#include "dwm/bar.h"
 #include "dwm/handlers.h"
 #include "dwm/layouts.h"
 #include "dwm/swallow.h"
@@ -262,7 +251,6 @@ static xcb_connection_t *xcon;
  * function implementations *
  ****************************/
 
-#include "dwm/bar.c"
 #include "dwm/handlers.c"
 #include "dwm/layouts.c"
 #include "dwm/swallow.c"
@@ -374,10 +362,6 @@ applysizehints(Client *c, int *x, int *y, int *w, int *h, int bw, int interact)
 		if (*y + *h + 2 * bw <= m->wy)
 			*y = m->wy;
 	}
-	if (*h < m->bar->bh)
-		*h = m->bar->bh;
-	if (*w < m->bar->bh)
-		*w = m->bar->bh;
 	if (
 		c->isfloating
 		||
@@ -545,7 +529,6 @@ cleanupmon(Monitor *mon)
 		m->next = mon->next;
 	}
 
-	free(mon->bar);
 	UNIT_DELETE(mon->unit);
 	free(mon);
 }
@@ -580,25 +563,12 @@ createmon(void)
 		goto fail_without_unit;
 	}
 
-	if (!(m->bar = malloc(sizeof(struct Bar)))) {
-		goto fail_without_bar;
-	}
-
-	memset(m->bar, 0, sizeof(struct Bar));
-	m->bar->bh = drw->fonts->h + 2;
-
 	m->nmaster = settings_get_default_clients_in_master();
-	m->bar->topbar = settings_get_bar_on_top_by_default();
 	m->lt[0] = &layouts[0];
 	m->lt[1] = &layouts[1 % LENGTH(layouts)];
 
-	// actual state
-	m->show_bar = unit_get_show_bar(m->unit);
-
 	return m;
 
-fail_without_bar:
-	UNIT_DELETE(m->unit);
 fail_without_unit:
 	free(m);
 fail_without_mon:
@@ -920,18 +890,7 @@ manage(Window w, XWindowAttributes *wa)
 	}
 
 	c->x = MAX(c->x, c->mon->mx);
-
-	/* only fix client y-offset, if the client center might cover the bar */
-	c->y = MAX(
-		c->y,
-		(
-			(c->mon->bar->by == c->mon->my) &&
-			(c->x + (c->w / 2) >= c->mon->wx) &&
-			(c->x + (c->w / 2) < c->mon->wx + c->mon->ww)
-		)
-			? c->mon->bar->bh
-			: c->mon->my
-	);
+	c->y = MAX(c->y, c->mon->my);
 
 	c->bw = settings_get_border_width();
 
@@ -1749,7 +1708,6 @@ updategeom(void)
 					m->my = m->wy = unique[i].y_org;
 					m->mw = m->ww = unique[i].width;
 					m->mh = m->wh = unique[i].height;
-					updatebarpos(m);
 				}
 		} else { /* less monitors available nn < n */
 			for (i = nn; i < n; i++) {
@@ -1777,7 +1735,6 @@ updategeom(void)
 			dirty = 1;
 			mons->mw = mons->ww = sw;
 			mons->mh = mons->wh = sh;
-			updatebarpos(mons);
 		}
 	}
 	if (dirty) {
