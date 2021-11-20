@@ -62,6 +62,11 @@ void client_state_init(ClientState client_state);
 int client_geometry_total_width(const struct ClientGeometry *client_geometry);
 int client_geometry_total_height(const struct ClientGeometry *client_geometry);
 
+void client_geometry_adjust_to_boundary(
+	ClientGeometry client_geometry,
+	const struct BasicGeometry *boundary_geometry
+);
+
 void client_size_hints_update(
 	ClientSizeHints size_hints,
 	const XSizeHints *size

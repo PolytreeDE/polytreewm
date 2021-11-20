@@ -915,46 +915,9 @@ void manage(Window w, XWindowAttributes *wa)
 		}
 	}
 
-	{
-		const int total_width = client_geometry_total_width(&c->state.geometry);
-
-		if (
-			c->state.geometry.basic.position.x + total_width
-			>
-			c->mon->screen_geometry.position.x + c->mon->screen_geometry.sizes.w
-		) {
-			c->state.geometry.basic.position.x =
-				c->mon->screen_geometry.position.x
-				+
-				c->mon->screen_geometry.sizes.w
-				-
-				total_width;
-		}
-
-		const int total_height =
-			client_geometry_total_height(&c->state.geometry);
-
-		if (
-			c->state.geometry.basic.position.y + total_height
-			>
-			c->mon->screen_geometry.position.y + c->mon->screen_geometry.sizes.h
-		) {
-			c->state.geometry.basic.position.y =
-				c->mon->screen_geometry.position.y
-				+
-				c->mon->screen_geometry.sizes.h
-				-
-				total_height;
-		}
-	}
-
-	c->state.geometry.basic.position.x = MAX(
-		c->state.geometry.basic.position.x,
-		c->mon->screen_geometry.position.x
-	);
-	c->state.geometry.basic.position.y = MAX(
-		c->state.geometry.basic.position.y,
-		c->mon->screen_geometry.position.y
+	client_geometry_adjust_to_boundary(
+		&c->state.geometry,
+		&c->mon->screen_geometry
 	);
 
 	c->state.geometry.border_width = settings_get_border_width();

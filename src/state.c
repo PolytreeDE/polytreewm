@@ -63,6 +63,48 @@ int client_geometry_total_height(
 	return client_geometry->basic.sizes.h + 2 * client_geometry->border_width;
 }
 
+void client_geometry_adjust_to_boundary(
+	const ClientGeometry client_geometry,
+	const struct BasicGeometry *const boundary_geometry
+) {
+	const int total_width  = client_geometry_total_width(client_geometry);
+	const int total_height = client_geometry_total_height(client_geometry);
+
+	if (
+		client_geometry->basic.position.x + total_width
+		>
+		boundary_geometry->position.x + boundary_geometry->sizes.w
+	) {
+		client_geometry->basic.position.x =
+			boundary_geometry->position.x
+			+
+			boundary_geometry->sizes.w
+			-
+			total_width;
+	}
+
+	if (
+		client_geometry->basic.position.y + total_height
+		>
+		boundary_geometry->position.y + boundary_geometry->sizes.h
+	) {
+		client_geometry->basic.position.y =
+			boundary_geometry->position.y
+			+
+			boundary_geometry->sizes.h
+			-
+			total_height;
+	}
+
+	if (client_geometry->basic.position.x < boundary_geometry->position.x) {
+		client_geometry->basic.position.x = boundary_geometry->position.x;
+	}
+
+	if (client_geometry->basic.position.y < boundary_geometry->position.y) {
+		client_geometry->basic.position.y = boundary_geometry->position.y;
+	}
+}
+
 void client_size_hints_update(
 	const ClientSizeHints size_hints,
 	const XSizeHints *const size
