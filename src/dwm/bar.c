@@ -38,31 +38,11 @@ createbars(void)
 void
 drawbar(Monitor *m)
 {
-	int x, w, tw = 0;
-	unsigned int i, occ = 0, urg = 0;
-	Client *c;
-
-	for (c = m->clients; c; c = c->next) {
-		occ |= c->tags == 255 ? 0 : c->tags;
-		if (c->isurgent)
-			urg |= c->tags;
-	}
-	x = 0;
-	for (i = 0; i < TAGS_COUNT; i++) {
-		/* do not draw vacant tags */
-		if (!(occ & 1 << i || m->tagset[m->seltags] & 1 << i || tags_get(i)->has_custom_name))
-		continue;
-
-		w = TEXTW(tags_get(i)->name.cstr);
-		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
-		drw_text(drw, x, 0, w, m->bar->bh, lrpad / 2, tags_get(i)->name.cstr, urg & 1 << i);
-		x += w;
-	}
-	w = TEXTW(m->ltsymbol);
+	int w = TEXTW(m->ltsymbol);
 	drw_setscheme(drw, scheme[SchemeNorm]);
-	x = drw_text(drw, x, 0, w, m->bar->bh, lrpad / 2, m->ltsymbol, 0);
+	const int x = drw_text(drw, 0, 0, w, m->bar->bh, lrpad / 2, m->ltsymbol, 0);
 
-	if ((w = m->ww - tw - x) > m->bar->bh) {
+	if ((w = m->ww - x) > m->bar->bh) {
 		drw_setscheme(drw, scheme[SchemeNorm]);
 		drw_rect(drw, x, 0, w, m->bar->bh, 1, 1);
 	}
