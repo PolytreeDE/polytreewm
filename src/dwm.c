@@ -493,11 +493,10 @@ void cleanup()
 
 void cleanupmon(Monitor *mon)
 {
-	Monitor *m;
-
-	if (mon == mons)
+	if (mon == mons) {
 		mons = mons->next;
-	else {
+	} else {
+		Monitor *m;
 		for (m = mons; m && m->next != mon; m = m->next);
 		m->next = mon->next;
 	}
