@@ -23,7 +23,6 @@ MODULES_SRC = \
 	src/drw.c \
 	src/helpers.c \
 	src/layouts.c \
-	src/menu.c \
 	src/settings.c \
 	src/spawn.c \
 	src/unit.c \

@@ -1,7 +1,6 @@
 #include "atoms.h"
 #include "helpers.h"
 #include "layouts.h"
-#include "menu.h"
 #include "settings.h"
 #include "spawn.h"
 #include "unit.h"
