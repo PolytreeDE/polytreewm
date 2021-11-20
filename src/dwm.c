@@ -1739,13 +1739,18 @@ Client *wintoclient(Window w)
 
 Monitor *wintomon(Window w)
 {
-	int x, y;
-	Client *c;
+	{
+		int x = 0, y = 0;
+		if (w == root && getrootptr(&x, &y)) {
+			return recttomon(x, y, 1, 1);
+		}
+	}
 
-	if (w == root && getrootptr(&x, &y))
-		return recttomon(x, y, 1, 1);
-	if ((c = wintoclient(w)))
-		return c->mon;
+	{
+		Client *c = wintoclient(w);
+		if (c) return c->mon;
+	}
+
 	return selmon;
 }
 
