@@ -108,7 +108,7 @@ struct Client {
 	struct ClientSizeHints size_hints;
 
 	char name[256];
-	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen;
+	int isfixed, isfloating, isurgent, neverfocus, isfullscreen;
 	Client *next;
 	Client *snext;
 	Monitor *mon;
@@ -949,7 +949,7 @@ void manage(Window w, XWindowAttributes *wa)
 	grabbuttons(c, 0);
 
 	if (!c->isfloating) {
-		c->isfloating = c->oldstate = trans != None || c->isfixed;
+		c->isfloating = trans != None || c->isfixed;
 	}
 
 	if (c->isfloating) {
