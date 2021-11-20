@@ -333,10 +333,20 @@ int applysizehints(
 		}
 	} else {
 		if (*x >= m->window_area_geometry.x + m->window_area_geometry.w) {
-			*x = m->window_area_geometry.x + m->window_area_geometry.w - WIDTH(c);
+			*x =
+				m->window_area_geometry.x
+				+
+				m->window_area_geometry.w
+				-
+				WIDTH(c);
 		}
 		if (*y >= m->window_area_geometry.y + m->window_area_geometry.h) {
-			*y = m->window_area_geometry.y + m->window_area_geometry.h - HEIGHT(c);
+			*y =
+				m->window_area_geometry.y
+				+
+				m->window_area_geometry.h
+				-
+				HEIGHT(c);
 		}
 		if (*x + *w + 2 * bw <= m->window_area_geometry.x) {
 			*x = m->window_area_geometry.x;
@@ -886,12 +896,22 @@ void manage(Window w, XWindowAttributes *wa)
 		}
 	}
 
-	if (c->geometry.basic.x + WIDTH(c) > c->mon->screen_geometry.x + c->mon->screen_geometry.w) {
-		c->geometry.basic.x = c->mon->screen_geometry.x + c->mon->screen_geometry.w - WIDTH(c);
+	if (
+		c->geometry.basic.x + WIDTH(c)
+		>
+		c->mon->screen_geometry.x + c->mon->screen_geometry.w
+	) {
+		c->geometry.basic.x =
+			c->mon->screen_geometry.x + c->mon->screen_geometry.w - WIDTH(c);
 	}
 
-	if (c->geometry.basic.y + HEIGHT(c) > c->mon->screen_geometry.y + c->mon->screen_geometry.h) {
-		c->geometry.basic.y = c->mon->screen_geometry.y + c->mon->screen_geometry.h - HEIGHT(c);
+	if (
+		c->geometry.basic.y + HEIGHT(c)
+		>
+		c->mon->screen_geometry.y + c->mon->screen_geometry.h
+	) {
+		c->geometry.basic.y =
+			c->mon->screen_geometry.y + c->mon->screen_geometry.h - HEIGHT(c);
 	}
 
 	c->geometry.basic.x = MAX(c->geometry.basic.x, c->mon->screen_geometry.x);
@@ -912,8 +932,10 @@ void manage(Window w, XWindowAttributes *wa)
 	updatesizehints(c);
 	updatewmhints(c);
 
-	c->geometry.basic.x = c->mon->screen_geometry.x + (c->mon->screen_geometry.w - WIDTH(c)) / 2;
-	c->geometry.basic.y = c->mon->screen_geometry.y + (c->mon->screen_geometry.h - HEIGHT(c)) / 2;
+	c->geometry.basic.x =
+		c->mon->screen_geometry.x + (c->mon->screen_geometry.w - WIDTH(c)) / 2;
+	c->geometry.basic.y =
+		c->mon->screen_geometry.y + (c->mon->screen_geometry.h - HEIGHT(c)) / 2;
 
 	XSelectInput(
 		dpy,
@@ -997,7 +1019,11 @@ void movemouse(__attribute__((unused)) const Arg *arg)
 	XEvent ev;
 
 	do {
-		XMaskEvent(dpy, MOUSEMASK | ExposureMask | SubstructureRedirectMask, &ev);
+		XMaskEvent(
+			dpy,
+			MOUSEMASK | ExposureMask | SubstructureRedirectMask,
+			&ev
+		);
 
 		switch (ev.type) {
 		case ConfigureRequest:
@@ -1015,14 +1041,41 @@ void movemouse(__attribute__((unused)) const Arg *arg)
 
 			if (abs(selmon->window_area_geometry.x - nx) < snap_distance) {
 				nx = selmon->window_area_geometry.x;
-			} else if (abs((selmon->window_area_geometry.x + selmon->window_area_geometry.w) - (nx + WIDTH(c))) < snap_distance) {
+			} else if (
+				abs(
+					(
+						selmon->window_area_geometry.x
+						+
+						selmon->window_area_geometry.w
+					)
+					-
+					(nx + WIDTH(c))
+				)
+				<
+				snap_distance
+			) {
 				nx = selmon->window_area_geometry.x + selmon->window_area_geometry.w - WIDTH(c);
 			}
 
 			if (abs(selmon->window_area_geometry.y - ny) < snap_distance) {
 				ny = selmon->window_area_geometry.y;
-			} else if (abs((selmon->window_area_geometry.y + selmon->window_area_geometry.h) - (ny + HEIGHT(c))) < snap_distance) {
-				ny = selmon->window_area_geometry.y + selmon->window_area_geometry.h - HEIGHT(c);
+			} else if (
+				abs(
+					(
+						selmon->window_area_geometry.y
+						+
+						selmon->window_area_geometry.h
+					) - (ny + HEIGHT(c))
+				)
+				<
+				snap_distance
+			) {
+				ny =
+					selmon->window_area_geometry.y
+					+
+					selmon->window_area_geometry.h
+					-
+					HEIGHT(c);
 			}
 
 			if (!c->isfloating &&
@@ -1234,7 +1287,11 @@ void resizemouse(__attribute__((unused)) const Arg *arg)
 	XEvent ev;
 
 	do {
-		XMaskEvent(dpy, MOUSEMASK | ExposureMask | SubstructureRedirectMask, &ev);
+		XMaskEvent(
+			dpy,
+			MOUSEMASK | ExposureMask | SubstructureRedirectMask,
+			&ev
+		);
 
 		switch (ev.type) {
 		case ConfigureRequest:
@@ -1250,11 +1307,39 @@ void resizemouse(__attribute__((unused)) const Arg *arg)
 			const int nw = MAX(ev.xmotion.x - ocx - 2 * c->geometry.bw + 1, 1);
 			const int nh = MAX(ev.xmotion.y - ocy - 2 * c->geometry.bw + 1, 1);
 
-			if (c->mon->window_area_geometry.x + nw >= selmon->window_area_geometry.x &&
-				c->mon->window_area_geometry.x + nw <= selmon->window_area_geometry.x + selmon->window_area_geometry.w &&
-				c->mon->window_area_geometry.y + nh >= selmon->window_area_geometry.y &&
-				c->mon->window_area_geometry.y + nh <= selmon->window_area_geometry.y + selmon->window_area_geometry.h)
-			{
+			if (
+				(
+					c->mon->window_area_geometry.x + nw
+					>=
+					selmon->window_area_geometry.x
+				)
+				&&
+				(
+					c->mon->window_area_geometry.x + nw
+					<=
+					(
+						selmon->window_area_geometry.x
+						+
+						selmon->window_area_geometry.w
+					)
+				)
+				&&
+				(
+					c->mon->window_area_geometry.y + nh
+					>=
+					selmon->window_area_geometry.y
+				)
+				&&
+				(
+					c->mon->window_area_geometry.y + nh
+					<=
+					(
+						selmon->window_area_geometry.y
+						+
+						selmon->window_area_geometry.h
+					)
+				)
+			) {
 				if (!c->isfloating &&
 					(selmon->lt[selmon->sellt]->arrange == NULL ||
 						abs(nw - c->geometry.basic.w) > snap_distance ||
@@ -1772,10 +1857,18 @@ int updategeom()
 				) {
 					dirty = 1;
 					m->num = i;
-					m->screen_geometry.x = m->window_area_geometry.x = unique[i].x_org;
-					m->screen_geometry.y = m->window_area_geometry.y = unique[i].y_org;
-					m->screen_geometry.w = m->window_area_geometry.w = unique[i].width;
-					m->screen_geometry.h = m->window_area_geometry.h = unique[i].height;
+					m->screen_geometry.x =
+						m->window_area_geometry.x =
+						unique[i].x_org;
+					m->screen_geometry.y =
+						m->window_area_geometry.y =
+						unique[i].y_org;
+					m->screen_geometry.w =
+						m->window_area_geometry.w =
+						unique[i].width;
+					m->screen_geometry.h =
+						m->window_area_geometry.h =
+						unique[i].height;
 				}
 		} else { /* less monitors available nn < n */
 			for (i = nn; i < n; i++) {

@@ -39,7 +39,8 @@ void centeredmaster(Monitor *m)
 		if (i < m->nmaster) {
 			// nmaster clients are stacked vertically,
 			// in the center of the screen
-			const unsigned int h = (m->window_area_geometry.h - my) / (MIN(n, m->nmaster) - i);
+			const unsigned int h =
+				(m->window_area_geometry.h - my) / (MIN(n, m->nmaster) - i);
 
 			const int left_gap   = (n <= m->nmaster + 1) ? gap_size : top_left_half_gap;
 			const int top_gap    = i == 0 ? gap_size : top_left_half_gap;
@@ -60,7 +61,8 @@ void centeredmaster(Monitor *m)
 		} else {
 			// stack clients are stacked vertically
 			if ((i - m->nmaster) % 2) {
-				const unsigned int h = (m->window_area_geometry.h - ety) / ((1 + n - i) / 2);
+				const unsigned int h =
+					(m->window_area_geometry.h - ety) / ((1 + n - i) / 2);
 
 				const int left_gap   = gap_size;
 				const int top_gap    = (i == m->nmaster + 1) ? gap_size : top_left_half_gap;
@@ -79,7 +81,8 @@ void centeredmaster(Monitor *m)
 
 				ety += HEIGHT(c) + top_gap + bottom_gap;
 			} else {
-				const unsigned int h = (m->window_area_geometry.h - oty) / ((1 + n - i) / 2);
+				const unsigned int h =
+					(m->window_area_geometry.h - oty) / ((1 + n - i) / 2);
 
 				const int left_gap   = (m->nmaster == 0 && n == 1) ? gap_size : top_left_half_gap;
 				const int top_gap    = i == m->nmaster ? gap_size : top_left_half_gap;
@@ -137,13 +140,19 @@ void horizontile(Monitor *m)
 	const int top_left_half_gap = gap_size / 2;
 	const int bottom_right_half_gap = gap_size - top_left_half_gap;
 
-	const unsigned int mh = n > m->nmaster ? (m->nmaster ? m->window_area_geometry.h * master_area_factor : 0) : m->window_area_geometry.h;
+	const unsigned int mh =
+		n > m->nmaster
+		?
+		(m->nmaster ? m->window_area_geometry.h * master_area_factor : 0)
+		:
+		m->window_area_geometry.h;
 
 	Client *c = nexttiled(m->clients);
 
 	for (unsigned int i = 0, mx = 0, tx = 0; c; c = nexttiled(c->next), ++i) {
 		if (i < m->nmaster) {
-			const unsigned int w = (m->window_area_geometry.w - mx) / (MIN(n, m->nmaster) - i);
+			const unsigned int w =
+				(m->window_area_geometry.w - mx) / (MIN(n, m->nmaster) - i);
 
 			const unsigned int left_gap   = i == 0 ? gap_size : top_left_half_gap;
 			const unsigned int top_gap    = gap_size;
@@ -231,13 +240,19 @@ void tile(Monitor *m)
 	const int top_left_half_gap = gap_size / 2;
 	const int bottom_right_half_gap = gap_size - top_left_half_gap;
 
-	const unsigned int mw = n > m->nmaster ? (m->nmaster ? m->window_area_geometry.w * master_area_factor : 0) : m->window_area_geometry.w;
+	const unsigned int mw =
+		n > m->nmaster
+		?
+		(m->nmaster ? m->window_area_geometry.w * master_area_factor : 0)
+		:
+		m->window_area_geometry.w;
 
 	Client *c = nexttiled(m->clients);
 
 	for (unsigned int i = 0, my = 0, ty = 0; c; c = nexttiled(c->next), ++i) {
 		if (i < m->nmaster) {
-			const unsigned int h = (m->window_area_geometry.h - my) / (MIN(n, m->nmaster) - i);
+			const unsigned int h =
+				(m->window_area_geometry.h - my) / (MIN(n, m->nmaster) - i);
 
 			const unsigned int left_gap   = gap_size;
 			const unsigned int top_gap    = i == 0 ? gap_size : top_left_half_gap;

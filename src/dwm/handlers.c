@@ -88,11 +88,27 @@ void on_configure_request(XEvent *e)
 			if (ev->value_mask & CWHeight) {
 				c->geometry.basic.h = ev->height;
 			}
-			if ((c->geometry.basic.x + c->geometry.basic.w) > m->screen_geometry.x + m->screen_geometry.w && c->isfloating) {
-				c->geometry.basic.x = m->screen_geometry.x + (m->screen_geometry.w / 2 - WIDTH(c) / 2); /* center in x direction */
+			if (
+				(c->geometry.basic.x + c->geometry.basic.w)
+				>
+				m->screen_geometry.x + m->screen_geometry.w && c->isfloating
+			) {
+				/* center in x direction */
+				c->geometry.basic.x =
+					m->screen_geometry.x
+					+
+					(m->screen_geometry.w / 2 - WIDTH(c) / 2);
 			}
-			if ((c->geometry.basic.y + c->geometry.basic.h) > m->screen_geometry.y + m->screen_geometry.h && c->isfloating) {
-				c->geometry.basic.y = m->screen_geometry.y + (m->screen_geometry.h / 2 - HEIGHT(c) / 2); /* center in y direction */
+			if (
+				(c->geometry.basic.y + c->geometry.basic.h)
+				>
+				m->screen_geometry.y + m->screen_geometry.h && c->isfloating
+			) {
+				/* center in y direction */
+				c->geometry.basic.y =
+					m->screen_geometry.y
+					+
+					(m->screen_geometry.h / 2 - HEIGHT(c) / 2);
 			}
 			if ((ev->value_mask & (CWX|CWY)) && !(ev->value_mask & (CWWidth|CWHeight))) {
 				configure(c);
