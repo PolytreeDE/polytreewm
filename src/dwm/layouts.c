@@ -110,10 +110,10 @@ void floating(Monitor *m)
 		if (ISVISIBLE(c) && c->geometry.bw == 0) {
 			resize(
 				c,
-				c->geometry.x,
-				c->geometry.y,
-				c->geometry.w - 2 * border_width,
-				c->geometry.h - 2 * border_width,
+				c->geometry.basic.x,
+				c->geometry.basic.y,
+				c->geometry.basic.w - 2 * border_width,
+				c->geometry.basic.h - 2 * border_width,
 				border_width,
 				0
 			);

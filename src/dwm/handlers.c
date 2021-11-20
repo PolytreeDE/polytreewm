@@ -77,22 +77,22 @@ void on_configure_request(XEvent *e)
 		} else if (c->isfloating || !selmon->lt[selmon->sellt]->arrange) {
 			m = c->mon;
 			if (ev->value_mask & CWX) {
-				c->geometry.x = m->mx + ev->x;
+				c->geometry.basic.x = m->mx + ev->x;
 			}
 			if (ev->value_mask & CWY) {
-				c->geometry.y = m->my + ev->y;
+				c->geometry.basic.y = m->my + ev->y;
 			}
 			if (ev->value_mask & CWWidth) {
-				c->geometry.w = ev->width;
+				c->geometry.basic.w = ev->width;
 			}
 			if (ev->value_mask & CWHeight) {
-				c->geometry.h = ev->height;
+				c->geometry.basic.h = ev->height;
 			}
-			if ((c->geometry.x + c->geometry.w) > m->mx + m->mw && c->isfloating) {
-				c->geometry.x = m->mx + (m->mw / 2 - WIDTH(c) / 2); /* center in x direction */
+			if ((c->geometry.basic.x + c->geometry.basic.w) > m->mx + m->mw && c->isfloating) {
+				c->geometry.basic.x = m->mx + (m->mw / 2 - WIDTH(c) / 2); /* center in x direction */
 			}
-			if ((c->geometry.y + c->geometry.h) > m->my + m->mh && c->isfloating) {
-				c->geometry.y = m->my + (m->mh / 2 - HEIGHT(c) / 2); /* center in y direction */
+			if ((c->geometry.basic.y + c->geometry.basic.h) > m->my + m->mh && c->isfloating) {
+				c->geometry.basic.y = m->my + (m->mh / 2 - HEIGHT(c) / 2); /* center in y direction */
 			}
 			if ((ev->value_mask & (CWX|CWY)) && !(ev->value_mask & (CWWidth|CWHeight))) {
 				configure(c);
@@ -101,10 +101,10 @@ void on_configure_request(XEvent *e)
 				XMoveResizeWindow(
 					dpy,
 					c->win,
-					c->geometry.x,
-					c->geometry.y,
-					c->geometry.w,
-					c->geometry.h
+					c->geometry.basic.x,
+					c->geometry.basic.y,
+					c->geometry.basic.w,
+					c->geometry.basic.h
 				);
 			}
 		} else
