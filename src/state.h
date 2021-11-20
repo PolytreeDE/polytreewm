@@ -8,10 +8,10 @@
  * Pointer types *
  *****************/
 
-typedef struct BasicGeometry *BasicGeometry;
-typedef struct ClientGeometry *ClientGeometry;
+typedef struct BasicGeometry   *BasicGeometry;
+typedef struct ClientGeometry  *ClientGeometry;
 typedef struct ClientSizeHints *ClientSizeHints;
-typedef struct ClientState *ClientState;
+typedef struct ClientState     *ClientState;
 
 /**************
  * Structures *
