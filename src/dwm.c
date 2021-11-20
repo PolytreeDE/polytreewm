@@ -39,11 +39,6 @@
 #define LENGTH(X)    (sizeof(X) / sizeof(X[0]))
 #define MOUSEMASK    (BUTTONMASK | PointerMotionMask)
 
-#define WIDTH(X) \
-	((X)->state.geometry.basic.w + 2 * (X)->state.geometry.border_width)
-#define HEIGHT(X) \
-	((X)->state.geometry.basic.h + 2 * (X)->state.geometry.border_width)
-
 #define CLEANMASK(mask) (                            \
 	(mask) &                                         \
 	~(numlockmask | LockMask) &                      \
@@ -308,10 +303,10 @@ int applysizehints(
 
 	if (interact) {
 		if (*x > sw) {
-			*x = sw - WIDTH(c);
+			*x = sw - client_geometry_total_width(&c->state.geometry);
 		}
 		if (*y > sh) {
-			*y = sh - HEIGHT(c);
+			*y = sh - client_geometry_total_height(&c->state.geometry);
 		}
 		if (*x + *w + 2 * bw < 0) {
 			*x = 0;
@@ -326,7 +321,7 @@ int applysizehints(
 				+
 				m->window_area_geometry.w
 				-
-				WIDTH(c);
+				client_geometry_total_width(&c->state.geometry);
 		}
 		if (*y >= m->window_area_geometry.y + m->window_area_geometry.h) {
 			*y =
@@ -334,7 +329,7 @@ int applysizehints(
 				+
 				m->window_area_geometry.h
 				-
-				HEIGHT(c);
+				client_geometry_total_height(&c->state.geometry);
 		}
 		if (*x + *w + 2 * bw <= m->window_area_geometry.x) {
 			*x = m->window_area_geometry.x;
@@ -889,22 +884,37 @@ void manage(Window w, XWindowAttributes *wa)
 		}
 	}
 
-	if (
-		c->state.geometry.basic.x + WIDTH(c)
-		>
-		c->mon->screen_geometry.x + c->mon->screen_geometry.w
-	) {
-		c->state.geometry.basic.x =
-			c->mon->screen_geometry.x + c->mon->screen_geometry.w - WIDTH(c);
-	}
+	{
+		const int total_width = client_geometry_total_width(&c->state.geometry);
 
-	if (
-		c->state.geometry.basic.y + HEIGHT(c)
-		>
-		c->mon->screen_geometry.y + c->mon->screen_geometry.h
-	) {
-		c->state.geometry.basic.y =
-			c->mon->screen_geometry.y + c->mon->screen_geometry.h - HEIGHT(c);
+		if (
+			c->state.geometry.basic.x + total_width
+			>
+			c->mon->screen_geometry.x + c->mon->screen_geometry.w
+		) {
+			c->state.geometry.basic.x =
+				c->mon->screen_geometry.x
+				+
+				c->mon->screen_geometry.w
+				-
+				total_width;
+		}
+
+		const int total_height =
+			client_geometry_total_height(&c->state.geometry);
+
+		if (
+			c->state.geometry.basic.y + total_height
+			>
+			c->mon->screen_geometry.y + c->mon->screen_geometry.h
+		) {
+			c->state.geometry.basic.y =
+				c->mon->screen_geometry.y
+				+
+				c->mon->screen_geometry.h
+				-
+				total_height;
+		}
 	}
 
 	c->state.geometry.basic.x =
@@ -927,10 +937,20 @@ void manage(Window w, XWindowAttributes *wa)
 	updatesizehints(c);
 	updatewmhints(c);
 
-	c->state.geometry.basic.x =
-		c->mon->screen_geometry.x + (c->mon->screen_geometry.w - WIDTH(c)) / 2;
-	c->state.geometry.basic.y =
-		c->mon->screen_geometry.y + (c->mon->screen_geometry.h - HEIGHT(c)) / 2;
+	{
+		const int total_width = client_geometry_total_width(&c->state.geometry);
+		const int total_height =
+			client_geometry_total_height(&c->state.geometry);
+
+		c->state.geometry.basic.x =
+			c->mon->screen_geometry.x
+			+
+			(c->mon->screen_geometry.w - total_width) / 2;
+		c->state.geometry.basic.y =
+			c->mon->screen_geometry.y
+			+
+			(c->mon->screen_geometry.h - total_height) / 2;
+	}
 
 	XSelectInput(
 		dpy,
@@ -1044,12 +1064,17 @@ void movemouse(__attribute__((unused)) const Arg *arg)
 						selmon->window_area_geometry.w
 					)
 					-
-					(nx + WIDTH(c))
+					(nx + client_geometry_total_width(&c->state.geometry))
 				)
 				<
 				snap_distance
 			) {
-				nx = selmon->window_area_geometry.x + selmon->window_area_geometry.w - WIDTH(c);
+				nx =
+					selmon->window_area_geometry.x
+					+
+					selmon->window_area_geometry.w
+					-
+					client_geometry_total_width(&c->state.geometry);
 			}
 
 			if (abs(selmon->window_area_geometry.y - ny) < snap_distance) {
@@ -1060,7 +1085,7 @@ void movemouse(__attribute__((unused)) const Arg *arg)
 						selmon->window_area_geometry.y
 						+
 						selmon->window_area_geometry.h
-					) - (ny + HEIGHT(c))
+					) - (ny + client_geometry_total_height(&c->state.geometry))
 				)
 				<
 				snap_distance
@@ -1070,7 +1095,7 @@ void movemouse(__attribute__((unused)) const Arg *arg)
 					+
 					selmon->window_area_geometry.h
 					-
-					HEIGHT(c);
+					client_geometry_total_height(&c->state.geometry);
 			}
 
 			if (!c->state.is_floating &&
@@ -1710,7 +1735,12 @@ void showhide(Client *c)
 	} else {
 		/* hide clients bottom up */
 		showhide(c->snext);
-		XMoveWindow(dpy, c->win, WIDTH(c) * -2, c->state.geometry.basic.y);
+		XMoveWindow(
+			dpy,
+			c->win,
+			client_geometry_total_width(&c->state.geometry) * -2,
+			c->state.geometry.basic.y
+		);
 	}
 }
 

@@ -99,7 +99,11 @@ void on_configure_request(XEvent *e)
 				c->state.geometry.basic.x =
 					m->screen_geometry.x
 					+
-					(m->screen_geometry.w / 2 - WIDTH(c) / 2);
+					(
+						m->screen_geometry.w / 2
+						-
+						client_geometry_total_width(&c->state.geometry) / 2
+					);
 			}
 			if (
 				(c->state.geometry.basic.y + c->state.geometry.basic.h)
@@ -112,7 +116,11 @@ void on_configure_request(XEvent *e)
 				c->state.geometry.basic.y =
 					m->screen_geometry.y
 					+
-					(m->screen_geometry.h / 2 - HEIGHT(c) / 2);
+					(
+						m->screen_geometry.h / 2
+						-
+						client_geometry_total_height(&c->state.geometry) / 2
+					);
 			}
 			if ((ev->value_mask & (CWX|CWY)) && !(ev->value_mask & (CWWidth|CWHeight))) {
 				configure(c);

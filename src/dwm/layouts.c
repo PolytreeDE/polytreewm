@@ -57,7 +57,10 @@ void centeredmaster(Monitor *m)
 				0
 			);
 
-			my += HEIGHT(c) + top_gap + bottom_gap;
+			const int total_height =
+				client_geometry_total_height(&c->state.geometry);
+
+			my += total_height + top_gap + bottom_gap;
 		} else {
 			// stack clients are stacked vertically
 			if ((i - m->nmaster) % 2) {
@@ -79,7 +82,10 @@ void centeredmaster(Monitor *m)
 					0
 				);
 
-				ety += HEIGHT(c) + top_gap + bottom_gap;
+				const int total_height =
+					client_geometry_total_height(&c->state.geometry);
+
+				ety += total_height + top_gap + bottom_gap;
 			} else {
 				const unsigned int h =
 					(m->window_area_geometry.h - oty) / ((1 + n - i) / 2);
@@ -99,7 +105,10 @@ void centeredmaster(Monitor *m)
 					0
 				);
 
-				oty += HEIGHT(c) + top_gap + bottom_gap;
+				const int total_height =
+					client_geometry_total_height(&c->state.geometry);
+
+				oty += total_height + top_gap + bottom_gap;
 			}
 		}
 	}
@@ -169,9 +178,12 @@ void horizontile(Monitor *m)
 				0
 			);
 
+			const int total_width =
+				client_geometry_total_width(&c->state.geometry);
+
 			// FIXME: maybe need + left_gap + right_gap
-			if (mx + WIDTH(c) < m->window_area_geometry.w) {
-				mx += WIDTH(c) + left_gap + right_gap;
+			if (mx + total_width < m->window_area_geometry.w) {
+				mx += total_width + left_gap + right_gap;
 			}
 		} else {
 			const unsigned int w = (m->window_area_geometry.w - tx) / (n - i);
@@ -191,9 +203,12 @@ void horizontile(Monitor *m)
 				0
 			);
 
+			const int total_width =
+				client_geometry_total_width(&c->state.geometry);
+
 			// FIXME: maybe need + left_gap + right_gap
-			if (tx + WIDTH(c) < m->window_area_geometry.w) {
-				tx += WIDTH(c) + left_gap + right_gap;
+			if (tx + total_width < m->window_area_geometry.w) {
+				tx += total_width + left_gap + right_gap;
 			}
 		}
 	}
@@ -269,9 +284,12 @@ void tile(Monitor *m)
 				0
 			);
 
+			const int total_height =
+				client_geometry_total_height(&c->state.geometry);
+
 			// FIXME: maybe need + top_gap + bottom_gap
-			if (my + HEIGHT(c) < m->window_area_geometry.h) {
-				my += HEIGHT(c) + top_gap + bottom_gap;
+			if (my + total_height < m->window_area_geometry.h) {
+				my += total_height + top_gap + bottom_gap;
 			}
 		} else {
 			const unsigned int h = (m->window_area_geometry.h - ty) / (n - i);
@@ -291,9 +309,12 @@ void tile(Monitor *m)
 				0
 			);
 
+			const int total_height =
+				client_geometry_total_height(&c->state.geometry);
+
 			// FIXME: maybe need + top_gap + bottom_gap
-			if (ty + HEIGHT(c) < m->window_area_geometry.h) {
-				ty += HEIGHT(c) + top_gap + bottom_gap;
+			if (ty + total_height < m->window_area_geometry.h) {
+				ty += total_height + top_gap + bottom_gap;
 			}
 		}
 	}

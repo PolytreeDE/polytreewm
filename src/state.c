@@ -41,6 +41,18 @@ void client_state_init(const ClientState client_state)
 	client_state->is_fullscreen = false;
 }
 
+int client_geometry_total_width(
+	const struct ClientGeometry *const client_geometry
+) {
+	return client_geometry->basic.w + 2 * client_geometry->border_width;
+}
+
+int client_geometry_total_height(
+	const struct ClientGeometry *const client_geometry
+) {
+	return client_geometry->basic.h + 2 * client_geometry->border_width;
+}
+
 void client_size_hints_update(
 	const ClientSizeHints size_hints,
 	const XSizeHints *const size
