@@ -47,9 +47,20 @@
 		Mod3Mask | Mod4Mask | Mod5Mask)              \
 )
 
-#define INTERSECT(x,y,w,h,m) (                                      \
-	MAX(0, MIN((x) + (w), (m)->wx + (m)->ww) - MAX((x), (m)->wx)) * \
-	MAX(0, MIN((y) + (h), (m)->wy + (m)->wh) - MAX((y), (m)->wy))   \
+#define INTERSECT(x,y,w,h,m) (                                                    \
+	MAX(                                                                          \
+		0,                                                                        \
+		MIN((x) + (w), (m)->window_area_geometry.x + (m)->window_area_geometry.w) \
+		-                                                                         \
+		MAX((x), (m)->window_area_geometry.x)                                     \
+	)                                                                             \
+	*                                                                             \
+	MAX(                                                                          \
+		0,                                                                        \
+		MIN((y) + (h), (m)->window_area_geometry.y + (m)->window_area_geometry.h) \
+		-                                                                         \
+		MAX((y), (m)->window_area_geometry.y)                                     \
+	)                                                                             \
 )
 
 /*********
@@ -117,12 +128,12 @@ typedef struct {
 } Layout;
 
 struct Monitor {
+	struct BasicGeometry screen_geometry;
+	struct BasicGeometry window_area_geometry;
 	Unit unit;
 
 	int nmaster;
 	int num;
-	int mx, my, mw, mh;   /* screen size */
-	int wx, wy, ww, wh;   /* window area  */
 	unsigned int sellt;
 	Client *clients;
 	Client *sel;
@@ -321,17 +332,17 @@ int applysizehints(
 			*y = 0;
 		}
 	} else {
-		if (*x >= m->wx + m->ww) {
-			*x = m->wx + m->ww - WIDTH(c);
+		if (*x >= m->window_area_geometry.x + m->window_area_geometry.w) {
+			*x = m->window_area_geometry.x + m->window_area_geometry.w - WIDTH(c);
 		}
-		if (*y >= m->wy + m->wh) {
-			*y = m->wy + m->wh - HEIGHT(c);
+		if (*y >= m->window_area_geometry.y + m->window_area_geometry.h) {
+			*y = m->window_area_geometry.y + m->window_area_geometry.h - HEIGHT(c);
 		}
-		if (*x + *w + 2 * bw <= m->wx) {
-			*x = m->wx;
+		if (*x + *w + 2 * bw <= m->window_area_geometry.x) {
+			*x = m->window_area_geometry.x;
 		}
-		if (*y + *h + 2 * bw <= m->wy) {
-			*y = m->wy;
+		if (*y + *h + 2 * bw <= m->window_area_geometry.y) {
+			*y = m->window_area_geometry.y;
 		}
 	}
 
@@ -875,16 +886,16 @@ void manage(Window w, XWindowAttributes *wa)
 		}
 	}
 
-	if (c->geometry.basic.x + WIDTH(c) > c->mon->mx + c->mon->mw) {
-		c->geometry.basic.x = c->mon->mx + c->mon->mw - WIDTH(c);
+	if (c->geometry.basic.x + WIDTH(c) > c->mon->screen_geometry.x + c->mon->screen_geometry.w) {
+		c->geometry.basic.x = c->mon->screen_geometry.x + c->mon->screen_geometry.w - WIDTH(c);
 	}
 
-	if (c->geometry.basic.y + HEIGHT(c) > c->mon->my + c->mon->mh) {
-		c->geometry.basic.y = c->mon->my + c->mon->mh - HEIGHT(c);
+	if (c->geometry.basic.y + HEIGHT(c) > c->mon->screen_geometry.y + c->mon->screen_geometry.h) {
+		c->geometry.basic.y = c->mon->screen_geometry.y + c->mon->screen_geometry.h - HEIGHT(c);
 	}
 
-	c->geometry.basic.x = MAX(c->geometry.basic.x, c->mon->mx);
-	c->geometry.basic.y = MAX(c->geometry.basic.y, c->mon->my);
+	c->geometry.basic.x = MAX(c->geometry.basic.x, c->mon->screen_geometry.x);
+	c->geometry.basic.y = MAX(c->geometry.basic.y, c->mon->screen_geometry.y);
 
 	c->geometry.bw = settings_get_border_width();
 
@@ -901,8 +912,8 @@ void manage(Window w, XWindowAttributes *wa)
 	updatesizehints(c);
 	updatewmhints(c);
 
-	c->geometry.basic.x = c->mon->mx + (c->mon->mw - WIDTH(c)) / 2;
-	c->geometry.basic.y = c->mon->my + (c->mon->mh - HEIGHT(c)) / 2;
+	c->geometry.basic.x = c->mon->screen_geometry.x + (c->mon->screen_geometry.w - WIDTH(c)) / 2;
+	c->geometry.basic.y = c->mon->screen_geometry.y + (c->mon->screen_geometry.h - HEIGHT(c)) / 2;
 
 	XSelectInput(
 		dpy,
@@ -1002,16 +1013,16 @@ void movemouse(__attribute__((unused)) const Arg *arg)
 			int nx = ocx + (ev.xmotion.x - x);
 			int ny = ocy + (ev.xmotion.y - y);
 
-			if (abs(selmon->wx - nx) < snap_distance) {
-				nx = selmon->wx;
-			} else if (abs((selmon->wx + selmon->ww) - (nx + WIDTH(c))) < snap_distance) {
-				nx = selmon->wx + selmon->ww - WIDTH(c);
+			if (abs(selmon->window_area_geometry.x - nx) < snap_distance) {
+				nx = selmon->window_area_geometry.x;
+			} else if (abs((selmon->window_area_geometry.x + selmon->window_area_geometry.w) - (nx + WIDTH(c))) < snap_distance) {
+				nx = selmon->window_area_geometry.x + selmon->window_area_geometry.w - WIDTH(c);
 			}
 
-			if (abs(selmon->wy - ny) < snap_distance) {
-				ny = selmon->wy;
-			} else if (abs((selmon->wy + selmon->wh) - (ny + HEIGHT(c))) < snap_distance) {
-				ny = selmon->wy + selmon->wh - HEIGHT(c);
+			if (abs(selmon->window_area_geometry.y - ny) < snap_distance) {
+				ny = selmon->window_area_geometry.y;
+			} else if (abs((selmon->window_area_geometry.y + selmon->window_area_geometry.h) - (ny + HEIGHT(c))) < snap_distance) {
+				ny = selmon->window_area_geometry.y + selmon->window_area_geometry.h - HEIGHT(c);
 			}
 
 			if (!c->isfloating &&
@@ -1239,10 +1250,10 @@ void resizemouse(__attribute__((unused)) const Arg *arg)
 			const int nw = MAX(ev.xmotion.x - ocx - 2 * c->geometry.bw + 1, 1);
 			const int nh = MAX(ev.xmotion.y - ocy - 2 * c->geometry.bw + 1, 1);
 
-			if (c->mon->wx + nw >= selmon->wx &&
-				c->mon->wx + nw <= selmon->wx + selmon->ww &&
-				c->mon->wy + nh >= selmon->wy &&
-				c->mon->wy + nh <= selmon->wy + selmon->wh)
+			if (c->mon->window_area_geometry.x + nw >= selmon->window_area_geometry.x &&
+				c->mon->window_area_geometry.x + nw <= selmon->window_area_geometry.x + selmon->window_area_geometry.w &&
+				c->mon->window_area_geometry.y + nh >= selmon->window_area_geometry.y &&
+				c->mon->window_area_geometry.y + nh <= selmon->window_area_geometry.y + selmon->window_area_geometry.h)
 			{
 				if (!c->isfloating &&
 					(selmon->lt[selmon->sellt]->arrange == NULL ||
@@ -1748,16 +1759,23 @@ int updategeom()
 					mons = createmon();
 			}
 			for (i = 0, m = mons; i < nn && m; m = m->next, i++)
-				if (i >= n
-				|| unique[i].x_org != m->mx || unique[i].y_org != m->my
-				|| unique[i].width != m->mw || unique[i].height != m->mh)
-				{
+				if (
+					i >= n
+					||
+					unique[i].x_org != m->screen_geometry.x
+					||
+					unique[i].y_org != m->screen_geometry.y
+					||
+					unique[i].width != m->screen_geometry.w
+					||
+					unique[i].height != m->screen_geometry.h
+				) {
 					dirty = 1;
 					m->num = i;
-					m->mx = m->wx = unique[i].x_org;
-					m->my = m->wy = unique[i].y_org;
-					m->mw = m->ww = unique[i].width;
-					m->mh = m->wh = unique[i].height;
+					m->screen_geometry.x = m->window_area_geometry.x = unique[i].x_org;
+					m->screen_geometry.y = m->window_area_geometry.y = unique[i].y_org;
+					m->screen_geometry.w = m->window_area_geometry.w = unique[i].width;
+					m->screen_geometry.h = m->window_area_geometry.h = unique[i].height;
 				}
 		} else { /* less monitors available nn < n */
 			for (i = nn; i < n; i++) {
@@ -1781,10 +1799,10 @@ int updategeom()
 	{ /* default monitor setup */
 		if (!mons)
 			mons = createmon();
-		if (mons->mw != sw || mons->mh != sh) {
+		if (mons->screen_geometry.w != sw || mons->screen_geometry.h != sh) {
 			dirty = 1;
-			mons->mw = mons->ww = sw;
-			mons->mh = mons->wh = sh;
+			mons->screen_geometry.w = mons->window_area_geometry.w = sw;
+			mons->screen_geometry.h = mons->window_area_geometry.h = sh;
 		}
 	}
 	if (dirty) {

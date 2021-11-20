@@ -77,10 +77,10 @@ void on_configure_request(XEvent *e)
 		} else if (c->isfloating || !selmon->lt[selmon->sellt]->arrange) {
 			m = c->mon;
 			if (ev->value_mask & CWX) {
-				c->geometry.basic.x = m->mx + ev->x;
+				c->geometry.basic.x = m->screen_geometry.x + ev->x;
 			}
 			if (ev->value_mask & CWY) {
-				c->geometry.basic.y = m->my + ev->y;
+				c->geometry.basic.y = m->screen_geometry.y + ev->y;
 			}
 			if (ev->value_mask & CWWidth) {
 				c->geometry.basic.w = ev->width;
@@ -88,11 +88,11 @@ void on_configure_request(XEvent *e)
 			if (ev->value_mask & CWHeight) {
 				c->geometry.basic.h = ev->height;
 			}
-			if ((c->geometry.basic.x + c->geometry.basic.w) > m->mx + m->mw && c->isfloating) {
-				c->geometry.basic.x = m->mx + (m->mw / 2 - WIDTH(c) / 2); /* center in x direction */
+			if ((c->geometry.basic.x + c->geometry.basic.w) > m->screen_geometry.x + m->screen_geometry.w && c->isfloating) {
+				c->geometry.basic.x = m->screen_geometry.x + (m->screen_geometry.w / 2 - WIDTH(c) / 2); /* center in x direction */
 			}
-			if ((c->geometry.basic.y + c->geometry.basic.h) > m->my + m->mh && c->isfloating) {
-				c->geometry.basic.y = m->my + (m->mh / 2 - HEIGHT(c) / 2); /* center in y direction */
+			if ((c->geometry.basic.y + c->geometry.basic.h) > m->screen_geometry.y + m->screen_geometry.h && c->isfloating) {
+				c->geometry.basic.y = m->screen_geometry.y + (m->screen_geometry.h / 2 - HEIGHT(c) / 2); /* center in y direction */
 			}
 			if ((ev->value_mask & (CWX|CWY)) && !(ev->value_mask & (CWWidth|CWHeight))) {
 				configure(c);
