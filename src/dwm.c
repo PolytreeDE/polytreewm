@@ -1727,13 +1727,14 @@ void updatewmhints(Client *c)
 
 Client *wintoclient(Window w)
 {
-	Client *c;
-	Monitor *m;
-
-	for (m = mons; m; m = m->next)
-		for (c = m->clients; c; c = c->next)
-			if (c->win == w)
+	for (Monitor *m = mons; m; m = m->next) {
+		for (Client *c = m->clients; c; c = c->next) {
+			if (c->win == w) {
 				return c;
+			}
+		}
+	}
+
 	return NULL;
 }
 
