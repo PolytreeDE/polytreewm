@@ -6,7 +6,6 @@ static void on_client_message(XEvent *e);
 static void on_configure_notify(XEvent *e);
 static void on_configure_request(XEvent *e);
 static void on_destroy_notify(XEvent *e);
-static void on_expose(XEvent *e);
 static void on_focus_in(XEvent *e);
 static void on_key_press(XEvent *e);
 static void on_mapping_notify(XEvent *e);

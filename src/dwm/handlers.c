@@ -121,7 +121,6 @@ on_configure_request(XEvent *e)
 void
 on_configure_notify(XEvent *e)
 {
-	Monitor *m;
 	XConfigureEvent *ev = &e->xconfigure;
 	int dirty;
 
@@ -131,11 +130,6 @@ on_configure_notify(XEvent *e)
 		sw = ev->width;
 		sh = ev->height;
 		if (updategeom() || dirty) {
-			createbars();
-			for (m = mons; m; m = m->next) {
-				drw_resize(drw, sw, m->bar->bh);
-				XMoveResizeWindow(dpy, m->bar->barwin, m->wx, m->bar->by, m->ww, m->bar->bh);
-			}
 			focus(NULL);
 			arrange(NULL);
 		}
@@ -153,17 +147,6 @@ on_destroy_notify(XEvent *e)
 		unmanage(c, 1);
 	} else if ((c = swallowingclient(ev->window))) {
 		unmanage(c->swallowing, 1);
-	}
-}
-
-void
-on_expose(XEvent *e)
-{
-	Monitor *m;
-	XExposeEvent *ev = &e->xexpose;
-
-	if (ev->count == 0 && (m = wintomon(ev->window))) {
-		drawbar(m);
 	}
 }
 
@@ -239,13 +222,10 @@ on_property_notify(XEvent *e)
 			break;
 		case XA_WM_HINTS:
 			updatewmhints(c);
-			drawbars();
 			break;
 		}
 		if (ev->atom == XA_WM_NAME || ev->atom == atoms->netatom[NetWMName]) {
 			updatetitle(c);
-			if (c == c->mon->sel)
-				drawbar(c->mon);
 		}
 		if (ev->atom == atoms->netatom[NetWMWindowType])
 			updatewindowtype(c);
