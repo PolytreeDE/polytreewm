@@ -42,4 +42,3 @@ different now. It also includes the following dwm patches:
 * [nmaxmaster](https://dwm.suckless.org/patches/nmaxmaster)
 * [resetnmaster](https://dwm.suckless.org/patches/resetnmaster)
 * [smartborders](https://dwm.suckless.org/patches/smartborders)
-* [swallow](https://dwm.suckless.org/patches/swallow)

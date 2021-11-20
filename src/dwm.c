@@ -21,17 +21,10 @@
 #include <X11/Xproto.h>
 #include <X11/Xutil.h>
 #include <X11/Xft/Xft.h>
-#include <X11/Xlib-xcb.h>
-#include <xcb/res.h>
 
 #ifdef ENABLE_XINERAMA
 #include <X11/extensions/Xinerama.h>
 #endif // ENABLE_XINERAMA
-
-#ifdef __OpenBSD__
-#include <sys/sysctl.h>
-#include <kvm.h>
-#endif // __OpenBSD
 
 // TODO: Include necessary headers in this header.
 #include "drw.h"
@@ -92,11 +85,9 @@ struct Client {
 	int oldx, oldy, oldw, oldh;
 	int basew, baseh, incw, inch, maxw, maxh, minw, minh;
 	int bw, oldbw;
-	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen, isterminal, noswallow;
-	pid_t pid;
+	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen;
 	Client *next;
 	Client *snext;
-	Client *swallowing;
 	Monitor *mon;
 	Window win;
 };
@@ -133,8 +124,6 @@ typedef struct {
 	const char *instance;
 	const char *title;
 	int isfloating;
-	int isterminal;
-	int noswallow;
 	int monitor;
 } Rule;
 
@@ -214,7 +203,6 @@ static void zoom(const Arg *arg);
 
 #include "dwm/handlers.h"
 #include "dwm/layouts.h"
-#include "dwm/swallow.h"
 #include "dwm/xerror.h"
 
 /*************
@@ -249,8 +237,6 @@ static Drw *drw;
 static Monitor *mons, *selmon;
 static Window root, wmcheckwin;
 
-static xcb_connection_t *xcon;
-
 /***************************************************************
  * configuration, allows nested code to access above variables *
  ***************************************************************/
@@ -263,7 +249,6 @@ static xcb_connection_t *xcon;
 
 #include "dwm/handlers.c"
 #include "dwm/layouts.c"
-#include "dwm/swallow.c"
 #include "dwm/xerror.c"
 
 int main(int argc, char *argv[])
@@ -284,10 +269,6 @@ int main(int argc, char *argv[])
 		die("polytreewm: cannot open display");
 	}
 
-	if (!(xcon = XGetXCBConnection(dpy))) {
-		die("polytreewm: cannot get xcb connection");
-	}
-
 	checkotherwm();
 
 	if (!setup()) {
@@ -295,7 +276,7 @@ int main(int argc, char *argv[])
 	}
 
 #ifdef __OpenBSD__
-	if (pledge("stdio rpath proc exec ps", NULL) == -1) {
+	if (pledge("stdio rpath proc exec", NULL) == -1) {
 		die("pledge");
 	}
 #endif /* __OpenBSD__ */
@@ -328,8 +309,6 @@ void applyrules(Client *c)
 		&& (!r->class || strstr(class, r->class))
 		&& (!r->instance || strstr(instance, r->instance)))
 		{
-			c->isterminal = r->isterminal;
-			c->noswallow  = r->noswallow;
 			c->isfloating = r->isfloating;
 			for (m = mons; m && m->num != r->monitor; m = m->next);
 			if (m)
@@ -843,7 +822,6 @@ void manage(Window w, XWindowAttributes *wa)
 	Client *const c = ecalloc(1, sizeof(Client));
 
 	c->win = w;
-	c->pid = winpid(w);
 	c->x = c->oldx = wa->x;
 	c->y = c->oldy = wa->y;
 	c->w = c->oldw = wa->width;
@@ -853,7 +831,6 @@ void manage(Window w, XWindowAttributes *wa)
 	updatetitle(c);
 
 	Window trans = None;
-	Client *term = NULL;
 
 	{
 		Client *t = NULL;
@@ -863,7 +840,6 @@ void manage(Window w, XWindowAttributes *wa)
 		} else {
 			c->mon = selmon;
 			applyrules(c);
-			term = termforwin(c);
 		}
 	}
 
@@ -941,11 +917,7 @@ void manage(Window w, XWindowAttributes *wa)
 	c->mon->sel = c;
 
 	arrange(c->mon);
-
 	XMapWindow(dpy, c->win);
-
-	if (term) swallow(term, c);
-
 	focus(NULL);
 }
 
@@ -1574,20 +1546,6 @@ void unmanage(Client *c, int destroyed)
 	Monitor *m = c->mon;
 	XWindowChanges wc;
 
-	if (c->swallowing) {
-		unswallow(c);
-		return;
-	}
-
-	Client *s = swallowingclient(c->win);
-	if (s) {
-		free(s->swallowing);
-		s->swallowing = NULL;
-		arrange(m);
-		focus(NULL);
-		return;
-	}
-
 	detach(c);
 	detachstack(c);
 	if (!destroyed) {
@@ -1602,12 +1560,9 @@ void unmanage(Client *c, int destroyed)
 		XUngrabServer(dpy);
 	}
 	free(c);
-
-	if (!s) {
-		arrange(m);
-		focus(NULL);
-		updateclientlist();
-	}
+	focus(NULL);
+	updateclientlist();
+	arrange(m);
 }
 
 void updateclientlist()

@@ -31,7 +31,6 @@ MODULES_SRC = \
 DWM_SRC = \
 	src/dwm/handlers.c \
 	src/dwm/layouts.c \
-	src/dwm/swallow.c \
 	src/dwm/xerror.c
 
 MODULES_HDR = $(MODULES_SRC:.c=.h)

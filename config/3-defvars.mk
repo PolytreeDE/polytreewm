@@ -1,7 +1,7 @@
 CC = cc
 PKGCONFIG = pkg-config
 
-PKGS += fontconfig freetype2 x11 x11-xcb xcb xcb-res xft
+PKGS += fontconfig freetype2 x11 xft
 
 CFLAGS  += `$(PKGCONFIG) --cflags $(PKGS)`
 LDFLAGS += `$(PKGCONFIG) --libs   $(PKGS)`
