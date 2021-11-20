@@ -56,7 +56,10 @@
 #include "unit.h"
 #include "util.h"
 
-/* macros */
+/**********
+ * macros *
+ **********/
+
 #define BUTTONMASK              (ButtonPressMask|ButtonReleaseMask)
 #define CLEANMASK(mask)         (mask & ~(numlockmask|LockMask) & (ShiftMask|ControlMask|Mod1Mask|Mod2Mask|Mod3Mask|Mod4Mask|Mod5Mask))
 #define INTERSECT(x,y,w,h,m)    (MAX(0, MIN((x)+(w),(m)->wx+(m)->ww) - MAX((x),(m)->wx)) \
@@ -66,7 +69,6 @@
 #define MOUSEMASK               (BUTTONMASK|PointerMotionMask)
 #define WIDTH(X)                ((X)->w + 2 * (X)->bw)
 #define HEIGHT(X)               ((X)->h + 2 * (X)->bw)
-#define TEXTW(X)                (drw_fontset_getwidth(drw, (X)) + lrpad)
 
 /*********
  * types *
@@ -136,7 +138,6 @@ struct Monitor {
 	Bar bar;
 
 	Pertag *pertag;
-	char ltsymbol[16];
 	int nmaster;
 	int num;
 	int mx, my, mw, mh;   /* screen size */
@@ -266,7 +267,6 @@ static Unit global_unit = NULL;
 static const char broken[] = "broken";
 static int screen;
 static int sw, sh;           /* X display screen geometry width, height */
-static int lrpad;            /* sum of left and right padding for text */
 static int (*xerrorxlib)(Display *, XErrorEvent *);
 static unsigned int numlockmask = 0;
 static void (*handler[LASTEvent]) (XEvent *) = {
@@ -487,14 +487,6 @@ arrangemon(Monitor *m)
 		if (ISVISIBLE(client)) ++visible_clients;
 	}
 
-	layouts_symbol_func(
-		m->lt[m->sellt]->symbol_func,
-		m->ltsymbol,
-		sizeof(m->ltsymbol),
-		m->nmaster,
-		visible_clients
-	);
-
 	if (m->lt[m->sellt]->arrange)
 		m->lt[m->sellt]->arrange(m);
 	else {
@@ -655,14 +647,6 @@ createmon(void)
 	m->bar->topbar = settings_get_bar_on_top_by_default();
 	m->lt[0] = &layouts[0];
 	m->lt[1] = &layouts[1 % LENGTH(layouts)];
-
-	layouts_symbol_func(
-		layouts[0].symbol_func,
-		m->ltsymbol,
-		sizeof(m->ltsymbol),
-		m->nmaster,
-		0
-	);
 
 	if (!(m->pertag = ecalloc(1, sizeof(Pertag)))) goto fail_without_pertag;
 
@@ -1564,14 +1548,6 @@ setlayout(const Arg *arg)
 		if (ISVISIBLE(client)) ++visible_clients;
 	}
 
-	layouts_symbol_func(
-		selmon->lt[selmon->sellt]->symbol_func,
-		selmon->ltsymbol,
-		sizeof(selmon->ltsymbol),
-		selmon->nmaster,
-		visible_clients
-	);
-
 	if (selmon->sel) {
 		arrange(selmon);
 	} else {
@@ -1612,7 +1588,6 @@ setup(void)
 	drw = drw_create(dpy, screen, root, sw, sh);
 	if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
 		die("no fonts could be loaded.");
-	lrpad = drw->fonts->h;
 	updategeom();
 	/* init atoms */
 	atoms = atoms_create(dpy);

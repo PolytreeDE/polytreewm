@@ -38,14 +38,8 @@ createbars(void)
 void
 drawbar(Monitor *m)
 {
-	int w = TEXTW(m->ltsymbol);
 	drw_setscheme(drw, scheme[SchemeNorm]);
-	const int x = drw_text(drw, 0, 0, w, m->bar->bh, lrpad / 2, m->ltsymbol, 0);
-
-	if ((w = m->ww - x) > m->bar->bh) {
-		drw_setscheme(drw, scheme[SchemeNorm]);
-		drw_rect(drw, x, 0, w, m->bar->bh, 1, 1);
-	}
+	drw_rect(drw, 0, 0, m->ww, m->bar->bh, 1, 1);
 
 	drw_map(drw, m->bar->barwin, 0, 0, m->ww, m->bar->bh);
 }
