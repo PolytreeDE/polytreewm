@@ -58,7 +58,7 @@ void on_client_message(XEvent *e)
 			);
 		}
 	} else if (cme->message_type == atoms->netatom[NetActiveWindow]) {
-		if (c != selmon->sel && !c->isurgent) {
+		if (c != selmon->sel && !c->state.isurgent) {
 			seturgent(c, 1);
 		}
 	}
@@ -74,7 +74,7 @@ void on_configure_request(XEvent *e)
 	if ((c = wintoclient(ev->window))) {
 		if (ev->value_mask & CWBorderWidth) {
 			c->geometry.bw = ev->border_width;
-		} else if (c->isfloating || !selmon->lt[selmon->sellt]->arrange) {
+		} else if (c->state.isfloating || !selmon->lt[selmon->sellt]->arrange) {
 			m = c->mon;
 			if (ev->value_mask & CWX) {
 				c->geometry.basic.x = m->screen_geometry.x + ev->x;
@@ -91,7 +91,7 @@ void on_configure_request(XEvent *e)
 			if (
 				(c->geometry.basic.x + c->geometry.basic.w)
 				>
-				m->screen_geometry.x + m->screen_geometry.w && c->isfloating
+				m->screen_geometry.x + m->screen_geometry.w && c->state.isfloating
 			) {
 				/* center in x direction */
 				c->geometry.basic.x =
@@ -102,7 +102,7 @@ void on_configure_request(XEvent *e)
 			if (
 				(c->geometry.basic.y + c->geometry.basic.h)
 				>
-				m->screen_geometry.y + m->screen_geometry.h && c->isfloating
+				m->screen_geometry.y + m->screen_geometry.h && c->state.isfloating
 			) {
 				/* center in y direction */
 				c->geometry.basic.y =
@@ -224,8 +224,8 @@ void on_property_notify(XEvent *e)
 		switch(ev->atom) {
 		default: break;
 		case XA_WM_TRANSIENT_FOR:
-			if (!c->isfloating && (XGetTransientForHint(dpy, c->win, &trans)) &&
-				(c->isfloating = (wintoclient(trans)) != NULL))
+			if (!c->state.isfloating && (XGetTransientForHint(dpy, c->win, &trans)) &&
+				(c->state.isfloating = (wintoclient(trans)) != NULL))
 				arrange(c->mon);
 			break;
 		case XA_WM_NORMAL_HINTS:
