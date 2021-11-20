@@ -4,25 +4,40 @@
 #include <stdbool.h>
 #include <X11/Xutil.h>
 
-typedef struct BasicGeometry {
-	int x, y, w, h;
-} *BasicGeometry;
+/*****************
+ * Pointer types *
+ *****************/
 
-typedef struct ClientGeometry {
+typedef struct BasicGeometry *BasicGeometry;
+typedef struct ClientGeometry *ClientGeometry;
+typedef struct ClientSizeHints *ClientSizeHints;
+typedef struct ClientState *ClientState;
+
+/**************
+ * Structures *
+ **************/
+
+struct BasicGeometry { int x, y, w, h; };
+
+struct ClientGeometry {
 	struct BasicGeometry basic;
 	int bw;
-} *ClientGeometry;
+};
 
-typedef struct ClientSizeHints {
+struct ClientSizeHints {
 	float mina, maxa;
 	int basew, baseh, incw, inch, maxw, maxh, minw, minh;
-} *ClientSizeHints;
+};
 
-typedef struct ClientState {
+struct ClientState {
 	char name[256];
 	struct ClientGeometry geometry;
 	bool is_fixed, is_floating, is_urgent, never_focus, is_fullscreen;
-} *ClientState;
+};
+
+/*************
+ * Functions *
+ *************/
 
 void basic_geometry_init(BasicGeometry basic_geometry);
 void client_geometry_init(ClientGeometry client_geometry);
