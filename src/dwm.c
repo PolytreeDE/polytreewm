@@ -1925,46 +1925,7 @@ void updatesizehints(Client *c)
 		size.flags = PSize;
 	}
 
-	if (size.flags & PBaseSize) {
-		c->size_hints.basew = size.base_width;
-		c->size_hints.baseh = size.base_height;
-	} else if (size.flags & PMinSize) {
-		c->size_hints.basew = size.min_width;
-		c->size_hints.baseh = size.min_height;
-	} else {
-		c->size_hints.basew = c->size_hints.baseh = 0;
-	}
-
-	if (size.flags & PResizeInc) {
-		c->size_hints.incw = size.width_inc;
-		c->size_hints.inch = size.height_inc;
-	} else {
-		c->size_hints.incw = c->size_hints.inch = 0;
-	}
-
-	if (size.flags & PMaxSize) {
-		c->size_hints.maxw = size.max_width;
-		c->size_hints.maxh = size.max_height;
-	} else {
-		c->size_hints.maxw = c->size_hints.maxh = 0;
-	}
-
-	if (size.flags & PMinSize) {
-		c->size_hints.minw = size.min_width;
-		c->size_hints.minh = size.min_height;
-	} else if (size.flags & PBaseSize) {
-		c->size_hints.minw = size.base_width;
-		c->size_hints.minh = size.base_height;
-	} else {
-		c->size_hints.minw = c->size_hints.minh = 0;
-	}
-
-	if (size.flags & PAspect) {
-		c->size_hints.mina = (float)size.min_aspect.y / size.min_aspect.x;
-		c->size_hints.maxa = (float)size.max_aspect.x / size.max_aspect.y;
-	} else {
-		c->size_hints.maxa = c->size_hints.mina = 0.0;
-	}
+	client_size_hints_update(&c->size_hints, &size);
 
 	c->state.isfixed = (
 		c->size_hints.maxw
