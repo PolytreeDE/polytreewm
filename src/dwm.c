@@ -578,12 +578,11 @@ void focus(Client *c)
 
 void focusmon(const Arg *arg)
 {
-	Monitor *m;
+	if (!mons->next) return;
 
-	if (!mons->next)
-		return;
-	if ((m = dirtomon(arg->i)) == selmon)
-		return;
+	Monitor *m;
+	if ((m = dirtomon(arg->i)) == selmon) return;
+
 	unfocus(selmon->sel, 0);
 	selmon = m;
 	focus(NULL);
