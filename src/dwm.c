@@ -639,16 +639,33 @@ void focusstack(const Arg *arg)
 
 Atom getatomprop(Client *c, Atom prop)
 {
-	int di;
-	unsigned long dl;
-	unsigned char *p = NULL;
-	Atom da, atom = None;
+	Atom atom = None;
 
-	if (XGetWindowProperty(dpy, c->win, prop, 0L, sizeof atom, False, XA_ATOM,
-		&da, &di, &dl, &dl, &p) == Success && p) {
-		atom = *(Atom *)p;
+	Atom da = None;
+	int di = 0;
+	unsigned long dl = 0;
+	unsigned char *p = NULL;
+
+	if (
+		XGetWindowProperty(
+			dpy,
+			c->win,
+			prop,
+			0L,
+			sizeof(atom),
+			False,
+			XA_ATOM,
+			&da,
+			&di,
+			&dl,
+			&dl,
+			&p
+		) == Success && p
+	) {
+		atom = *(Atom*)p;
 		XFree(p);
 	}
+
 	return atom;
 }
 
