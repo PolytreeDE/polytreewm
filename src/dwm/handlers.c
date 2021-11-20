@@ -73,39 +73,39 @@ void on_configure_request(XEvent *e)
 
 	if ((c = wintoclient(ev->window))) {
 		if (ev->value_mask & CWBorderWidth) {
-			c->geometry.bw = ev->border_width;
+			c->state.geometry.bw = ev->border_width;
 		} else if (c->state.isfloating || !selmon->lt[selmon->sellt]->arrange) {
 			m = c->mon;
 			if (ev->value_mask & CWX) {
-				c->geometry.basic.x = m->screen_geometry.x + ev->x;
+				c->state.geometry.basic.x = m->screen_geometry.x + ev->x;
 			}
 			if (ev->value_mask & CWY) {
-				c->geometry.basic.y = m->screen_geometry.y + ev->y;
+				c->state.geometry.basic.y = m->screen_geometry.y + ev->y;
 			}
 			if (ev->value_mask & CWWidth) {
-				c->geometry.basic.w = ev->width;
+				c->state.geometry.basic.w = ev->width;
 			}
 			if (ev->value_mask & CWHeight) {
-				c->geometry.basic.h = ev->height;
+				c->state.geometry.basic.h = ev->height;
 			}
 			if (
-				(c->geometry.basic.x + c->geometry.basic.w)
+				(c->state.geometry.basic.x + c->state.geometry.basic.w)
 				>
 				m->screen_geometry.x + m->screen_geometry.w && c->state.isfloating
 			) {
 				/* center in x direction */
-				c->geometry.basic.x =
+				c->state.geometry.basic.x =
 					m->screen_geometry.x
 					+
 					(m->screen_geometry.w / 2 - WIDTH(c) / 2);
 			}
 			if (
-				(c->geometry.basic.y + c->geometry.basic.h)
+				(c->state.geometry.basic.y + c->state.geometry.basic.h)
 				>
 				m->screen_geometry.y + m->screen_geometry.h && c->state.isfloating
 			) {
 				/* center in y direction */
-				c->geometry.basic.y =
+				c->state.geometry.basic.y =
 					m->screen_geometry.y
 					+
 					(m->screen_geometry.h / 2 - HEIGHT(c) / 2);
@@ -117,10 +117,10 @@ void on_configure_request(XEvent *e)
 				XMoveResizeWindow(
 					dpy,
 					c->win,
-					c->geometry.basic.x,
-					c->geometry.basic.y,
-					c->geometry.basic.w,
-					c->geometry.basic.h
+					c->state.geometry.basic.x,
+					c->state.geometry.basic.y,
+					c->state.geometry.basic.w,
+					c->state.geometry.basic.h
 				);
 			}
 		} else
