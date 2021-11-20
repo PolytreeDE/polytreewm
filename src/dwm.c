@@ -80,7 +80,7 @@ typedef struct {
 
 struct ClientGeometry {
 	int x, y, w, h;
-	int bw, oldbw;
+	int bw;
 };
 
 struct ClientSizeHints {
@@ -855,7 +855,6 @@ void manage(Window w, XWindowAttributes *wa)
 	c->geometry.y = wa->y;
 	c->geometry.w = wa->width;
 	c->geometry.h = wa->height;
-	c->geometry.oldbw = wa->border_width;
 	c->isfloating = 0;
 
 	updatetitle(c);
@@ -1178,8 +1177,6 @@ void resizeclient(Client *c, int x, int y, int w, int h, int bw)
 	c->geometry.y = wc.y = y;
 	c->geometry.w = wc.width = w;
 	c->geometry.h = wc.height = h;
-
-	c->geometry.oldbw = c->geometry.bw;
 	c->geometry.bw = wc.border_width = bw;
 
 	XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
@@ -1682,10 +1679,10 @@ void unmanage(Client *c, int destroyed)
 	detach(c);
 	detachstack(c);
 	if (!destroyed) {
-		wc.border_width = c->geometry.oldbw;
+		wc.border_width = 0;
 		XGrabServer(dpy); /* avoid race conditions */
 		XSetErrorHandler(xerrordummy);
-		XConfigureWindow(dpy, c->win, CWBorderWidth, &wc); /* restore border */
+		XConfigureWindow(dpy, c->win, CWBorderWidth, &wc); /* remove border */
 		XUngrabButton(dpy, AnyButton, AnyModifier, c->win);
 		setclientstate(c, WithdrawnState);
 		XSync(dpy, False);
