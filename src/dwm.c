@@ -46,20 +46,32 @@
 		Mod3Mask | Mod4Mask | Mod5Mask)              \
 )
 
-#define INTERSECT(x,y,w,h,m) (                                                    \
-	MAX(                                                                          \
-		0,                                                                        \
-		MIN((x) + (w), (m)->window_area_geometry.x + (m)->window_area_geometry.w) \
-		-                                                                         \
-		MAX((x), (m)->window_area_geometry.x)                                     \
-	)                                                                             \
-	*                                                                             \
-	MAX(                                                                          \
-		0,                                                                        \
-		MIN((y) + (h), (m)->window_area_geometry.y + (m)->window_area_geometry.h) \
-		-                                                                         \
-		MAX((y), (m)->window_area_geometry.y)                                     \
-	)                                                                             \
+#define INTERSECT(x,y,w,h,m) (                                        \
+	MAX(                                                              \
+		0,                                                            \
+		MIN(                                                          \
+			(x) + (w),                                                \
+			(m)->window_area_geometry.x + (m)->window_area_geometry.w \
+		)                                                             \
+		-                                                             \
+		MAX(                                                          \
+			(x),                                                      \
+			(m)->window_area_geometry.x                               \
+		)                                                             \
+	)                                                                 \
+	*                                                                 \
+	MAX(                                                              \
+		0,                                                            \
+		MIN(                                                          \
+			(y) + (h),                                                \
+			(m)->window_area_geometry.y + (m)->window_area_geometry.h \
+		)                                                             \
+		-                                                             \
+		MAX(                                                          \
+			(y),                                                      \
+			(m)->window_area_geometry.y                               \
+		)                                                             \
+	)                                                                 \
 )
 
 /*********
