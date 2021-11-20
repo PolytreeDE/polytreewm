@@ -32,27 +32,14 @@ environment variable is set correctly, e.g.:
 Credits
 -------
 
-PolytreeWM is a fork of [dwm](https://dwm.suckless.org).
+PolytreeWM is originally a fork of [dwm](https://dwm.suckless.org), but it is
+very different now. It also includes the following dwm patches:
 
-Applied patches
----------------
-
-* alwayscenter
-* fakefullscreen
-* focusonclick
-* movestack
-* nmaxmaster
-* resetnmaster
-* smartborders
-* swallow
-
-Interesting patches (not applied)
----------------------------------
-
-* attachdirection
-* current_desktop
-* ewmhtags
-* focusmaster
-* focusmonmouse
-* rotatestack
-* stacker
+* [alwayscenter](https://dwm.suckless.org/patches/alwayscenter)
+* [fakefullscreen](https://dwm.suckless.org/patches/fakefullscreen)
+* [focusonclick](https://dwm.suckless.org/patches/focusonclick)
+* [movestack](https://dwm.suckless.org/patches/movestack)
+* [nmaxmaster](https://dwm.suckless.org/patches/nmaxmaster)
+* [resetnmaster](https://dwm.suckless.org/patches/resetnmaster)
+* [smartborders](https://dwm.suckless.org/patches/smartborders)
+* [swallow](https://dwm.suckless.org/patches/swallow)
