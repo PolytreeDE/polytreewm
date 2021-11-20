@@ -24,7 +24,7 @@ void centeredmaster(Monitor *m)
 		}
 	}
 
-	const bool is_fullscreen = m->sel == NULL ? false : m->sel->state.isfullscreen;
+	const bool is_fullscreen = m->sel == NULL ? false : m->sel->state.is_fullscreen;
 
 	const int gap_size = helpers_gap_size(n, is_fullscreen, is_fullscreen);
 	const int border_width = helpers_border_width(n, is_fullscreen, is_fullscreen);
@@ -132,7 +132,7 @@ void horizontile(Monitor *m)
 
 	const float master_area_factor = unit_get_master_area_factor(m->unit);
 
-	const bool is_fullscreen = m->sel == NULL ? false : m->sel->state.isfullscreen;
+	const bool is_fullscreen = m->sel == NULL ? false : m->sel->state.is_fullscreen;
 
 	const int gap_size = helpers_gap_size(n, is_fullscreen, is_fullscreen);
 	const int border_width = helpers_border_width(n, is_fullscreen, is_fullscreen);
@@ -203,10 +203,10 @@ void monocle(Monitor *m)
 {
 	bool any_is_fullscreen = false;
 	for (Client *c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
-		any_is_fullscreen = any_is_fullscreen || c->state.isfullscreen;
+		any_is_fullscreen = any_is_fullscreen || c->state.is_fullscreen;
 	}
 
-	const bool is_fullscreen = m->sel == NULL ? false : m->sel->state.isfullscreen;
+	const bool is_fullscreen = m->sel == NULL ? false : m->sel->state.is_fullscreen;
 
 	const int gap_size = helpers_gap_size(1, is_fullscreen, any_is_fullscreen);
 	const int border_width = helpers_border_width(1, is_fullscreen, any_is_fullscreen);
@@ -232,7 +232,7 @@ void tile(Monitor *m)
 
 	const float master_area_factor = unit_get_master_area_factor(m->unit);
 
-	const bool is_fullscreen = m->sel == NULL ? false : m->sel->state.isfullscreen;
+	const bool is_fullscreen = m->sel == NULL ? false : m->sel->state.is_fullscreen;
 
 	const int gap_size = helpers_gap_size(n, is_fullscreen, is_fullscreen);
 	const int border_width = helpers_border_width(n, is_fullscreen, is_fullscreen);

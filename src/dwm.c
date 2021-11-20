@@ -342,7 +342,7 @@ int applysizehints(
 	}
 
 	if (
-		c->state.isfloating
+		c->state.is_floating
 		||
 		(
 			settings_get_respect_resize_hints_in_floating_layout()
@@ -623,7 +623,7 @@ void focus(Client *c)
 	if (c) {
 		if (c->mon != selmon)
 			selmon = c->mon;
-		if (c->state.isurgent)
+		if (c->state.is_urgent)
 			seturgent(c, 0);
 		detachstack(c);
 		attachstack(c);
@@ -865,7 +865,7 @@ void manage(Window w, XWindowAttributes *wa)
 	c->state.geometry.basic.y = wa->y;
 	c->state.geometry.basic.w = wa->width;
 	c->state.geometry.basic.h = wa->height;
-	c->state.isfloating = 0;
+	c->state.is_floating = 0;
 
 	updatetitle(c);
 
@@ -935,11 +935,11 @@ void manage(Window w, XWindowAttributes *wa)
 
 	grabbuttons(c, 0);
 
-	if (!c->state.isfloating) {
-		c->state.isfloating = trans != None || c->state.isfixed;
+	if (!c->state.is_floating) {
+		c->state.is_floating = trans != None || c->state.is_fixed;
 	}
 
-	if (c->state.isfloating) {
+	if (c->state.is_floating) {
 		XRaiseWindow(dpy, c->win);
 	}
 
@@ -1065,14 +1065,14 @@ void movemouse(__attribute__((unused)) const Arg *arg)
 					HEIGHT(c);
 			}
 
-			if (!c->state.isfloating &&
+			if (!c->state.is_floating &&
 				(abs(nx - c->state.geometry.basic.x) > snap_distance ||
 					abs(ny - c->state.geometry.basic.y) > snap_distance))
 			{
 				togglefloating(NULL);
 			}
 
-			if (!selmon->lt[selmon->sellt]->arrange || c->state.isfloating) {
+			if (!selmon->lt[selmon->sellt]->arrange || c->state.is_floating) {
 				resize(
 					c,
 					nx,
@@ -1112,28 +1112,28 @@ void movestack(const Arg *arg)
 		/* find the client after selmon->sel */
 		for (
 			c = selmon->sel->next;
-			c && (!ISVISIBLE(c) || c->state.isfloating);
+			c && (!ISVISIBLE(c) || c->state.is_floating);
 			c = c->next
 		);
 
 		if(!c) {
 			for(
 				c = selmon->clients;
-				c && (!ISVISIBLE(c) || c->state.isfloating);
+				c && (!ISVISIBLE(c) || c->state.is_floating);
 				c = c->next
 			);
 		}
 	} else {
 		/* find the client before selmon->sel */
 		for (i = selmon->clients; i != selmon->sel; i = i->next) {
-			if (ISVISIBLE(i) && !i->state.isfloating) {
+			if (ISVISIBLE(i) && !i->state.is_floating) {
 				c = i;
 			}
 		}
 
 		if (!c) {
 			for (; i; i = i->next) {
-				if (ISVISIBLE(i) && !i->state.isfloating) {
+				if (ISVISIBLE(i) && !i->state.is_floating) {
 					c = i;
 				}
 			}
@@ -1175,7 +1175,7 @@ void movestack(const Arg *arg)
 
 Client *nexttiled(Client *c)
 {
-	for (; c && (c->state.isfloating || !ISVISIBLE(c)); c = c->next);
+	for (; c && (c->state.is_floating || !ISVISIBLE(c)); c = c->next);
 	return c;
 }
 
@@ -1329,7 +1329,7 @@ void resizemouse(__attribute__((unused)) const Arg *arg)
 					)
 				)
 			) {
-				if (!c->state.isfloating &&
+				if (!c->state.is_floating &&
 					(selmon->lt[selmon->sellt]->arrange == NULL ||
 						abs(nw - c->state.geometry.basic.w) > snap_distance ||
 						abs(nh - c->state.geometry.basic.h) > snap_distance))
@@ -1338,7 +1338,7 @@ void resizemouse(__attribute__((unused)) const Arg *arg)
 				}
 			}
 
-			if (!selmon->lt[selmon->sellt]->arrange || c->state.isfloating) {
+			if (!selmon->lt[selmon->sellt]->arrange || c->state.is_floating) {
 				resize(
 					c,
 					c->state.geometry.basic.x,
@@ -1392,7 +1392,7 @@ void restack(Monitor *m)
 
 	if (!m->sel)
 		return;
-	if (m->sel->state.isfloating || !m->lt[m->sellt]->arrange)
+	if (m->sel->state.is_floating || !m->lt[m->sellt]->arrange)
 		XRaiseWindow(dpy, m->sel->win);
 	if (m->lt[m->sellt]->arrange) {
 		wc.stack_mode = Below;
@@ -1400,7 +1400,7 @@ void restack(Monitor *m)
 		// is the following line responsible for.
 		// wc.sibling = m->bar->barwin;
 		for (c = m->stack; c; c = c->snext)
-			if (!c->state.isfloating && ISVISIBLE(c)) {
+			if (!c->state.is_floating && ISVISIBLE(c)) {
 				XConfigureWindow(dpy, c->win, CWSibling|CWStackMode, &wc);
 				wc.sibling = c->win;
 			}
@@ -1501,7 +1501,7 @@ int sendevent(Client *c, Atom proto)
 
 void setfocus(Client *c)
 {
-	if (!c->state.neverfocus) {
+	if (!c->state.never_focus) {
 		XSetInputFocus(dpy, c->win, RevertToPointerRoot, CurrentTime);
 		XChangeProperty(
 			dpy,
@@ -1520,16 +1520,16 @@ void setfocus(Client *c)
 
 void setfullscreen(Client *c, int fullscreen)
 {
-	if (fullscreen && !c->state.isfullscreen) {
+	if (fullscreen && !c->state.is_fullscreen) {
 		XChangeProperty(dpy, c->win, atoms->netatom[NetWMState], XA_ATOM, 32,
 			PropModeReplace, (unsigned char*)&atoms->netatom[NetWMFullscreen], 1);
-		c->state.isfullscreen = 1;
+		c->state.is_fullscreen = 1;
 		// We have to rearrange because borders and gaps may have changed.
 		arrange(c->mon);
-	} else if (!fullscreen && c->state.isfullscreen){
+	} else if (!fullscreen && c->state.is_fullscreen){
 		XChangeProperty(dpy, c->win, atoms->netatom[NetWMState], XA_ATOM, 32,
 			PropModeReplace, (unsigned char*)0, 0);
-		c->state.isfullscreen = 0;
+		c->state.is_fullscreen = 0;
 		// We have to rearrange because borders and gaps may have changed.
 		arrange(c->mon);
 	}
@@ -1661,7 +1661,7 @@ void seturgent(Client *c, int urg)
 {
 	XWMHints *wmh;
 
-	c->state.isurgent = urg;
+	c->state.is_urgent = urg;
 	if (!(wmh = XGetWMHints(dpy, c->win)))
 		return;
 	wmh->flags = urg ? (wmh->flags | XUrgencyHint) : (wmh->flags & ~XUrgencyHint);
@@ -1682,7 +1682,7 @@ void showhide(Client *c)
 			c->state.geometry.basic.y
 		);
 
-		if (!c->mon->lt[c->mon->sellt]->arrange || c->state.isfloating) {
+		if (!c->mon->lt[c->mon->sellt]->arrange || c->state.is_floating) {
 			resize(
 				c,
 				c->state.geometry.basic.x,
@@ -1733,11 +1733,12 @@ void togglefloating(__attribute__((unused)) const Arg *arg)
 {
 	if (!selmon->sel) return;
 
-	selmon->sel->state.isfloating = !selmon->sel->state.isfloating || selmon->sel->state.isfixed;
+	selmon->sel->state.is_floating =
+		!selmon->sel->state.is_floating || selmon->sel->state.is_fixed;
 
 	const int border_width = settings_get_border_width();
 
-	if (selmon->sel->state.isfloating) {
+	if (selmon->sel->state.is_floating) {
 		resize(
 			selmon->sel,
 			selmon->sel->state.geometry.basic.x,
@@ -1927,7 +1928,7 @@ void updatesizehints(Client *c)
 
 	client_size_hints_update(&c->size_hints, &size);
 
-	c->state.isfixed = (
+	c->state.is_fixed = (
 		c->size_hints.maxw
 		&&
 		c->size_hints.maxh
@@ -1954,7 +1955,7 @@ void updatewindowtype(Client *c)
 	if (state == atoms->netatom[NetWMFullscreen])
 		setfullscreen(c, 1);
 	if (wtype == atoms->netatom[NetWMWindowTypeDialog])
-		c->state.isfloating = 1;
+		c->state.is_floating = 1;
 }
 
 void updatewmhints(Client *c)
@@ -1966,13 +1967,13 @@ void updatewmhints(Client *c)
 		wmh->flags &= ~XUrgencyHint;
 		XSetWMHints(dpy, c->win, wmh);
 	} else {
-		c->state.isurgent = (wmh->flags & XUrgencyHint) ? 1 : 0;
+		c->state.is_urgent = (wmh->flags & XUrgencyHint) ? 1 : 0;
 	}
 
 	if (wmh->flags & InputHint) {
-		c->state.neverfocus = !wmh->input;
+		c->state.never_focus = !wmh->input;
 	} else {
-		c->state.neverfocus = 0;
+		c->state.never_focus = 0;
 	}
 
 	XFree(wmh);
@@ -2013,7 +2014,7 @@ void zoom(__attribute__((unused)) const Arg *arg)
 	Client *c = selmon->sel;
 
 	if (!selmon->lt[selmon->sellt]->arrange
-	|| (selmon->sel && selmon->sel->state.isfloating))
+	|| (selmon->sel && selmon->sel->state.is_floating))
 		return;
 	if (c == nexttiled(selmon->clients))
 		if (!c || !(c = nexttiled(c->next)))

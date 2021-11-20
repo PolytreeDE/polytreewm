@@ -19,8 +19,8 @@ typedef struct ClientSizeHints {
 
 struct ClientState {
 	char name[256];
-	int isfixed, isfloating, isurgent, neverfocus, isfullscreen;
 	struct ClientGeometry geometry;
+	int is_fixed, is_floating, is_urgent, never_focus, is_fullscreen;
 };
 
 void client_size_hints_update(
