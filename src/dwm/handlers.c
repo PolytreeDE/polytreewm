@@ -72,34 +72,45 @@ void on_configure_request(XEvent *e)
 	XWindowChanges wc;
 
 	if ((c = wintoclient(ev->window))) {
-		if (ev->value_mask & CWBorderWidth)
-			c->bw = ev->border_width;
-		else if (c->isfloating || !selmon->lt[selmon->sellt]->arrange) {
+		if (ev->value_mask & CWBorderWidth) {
+			c->geometry.bw = ev->border_width;
+		} else if (c->isfloating || !selmon->lt[selmon->sellt]->arrange) {
 			m = c->mon;
 			if (ev->value_mask & CWX) {
-				c->oldx = c->x;
-				c->x = m->mx + ev->x;
+				c->geometry.oldx = c->geometry.x;
+				c->geometry.x = m->mx + ev->x;
 			}
 			if (ev->value_mask & CWY) {
-				c->oldy = c->y;
-				c->y = m->my + ev->y;
+				c->geometry.oldy = c->geometry.y;
+				c->geometry.y = m->my + ev->y;
 			}
 			if (ev->value_mask & CWWidth) {
-				c->oldw = c->w;
-				c->w = ev->width;
+				c->geometry.oldw = c->geometry.w;
+				c->geometry.w = ev->width;
 			}
 			if (ev->value_mask & CWHeight) {
-				c->oldh = c->h;
-				c->h = ev->height;
+				c->geometry.oldh = c->geometry.h;
+				c->geometry.h = ev->height;
 			}
-			if ((c->x + c->w) > m->mx + m->mw && c->isfloating)
-				c->x = m->mx + (m->mw / 2 - WIDTH(c) / 2); /* center in x direction */
-			if ((c->y + c->h) > m->my + m->mh && c->isfloating)
-				c->y = m->my + (m->mh / 2 - HEIGHT(c) / 2); /* center in y direction */
-			if ((ev->value_mask & (CWX|CWY)) && !(ev->value_mask & (CWWidth|CWHeight)))
+			if ((c->geometry.x + c->geometry.w) > m->mx + m->mw && c->isfloating) {
+				c->geometry.x = m->mx + (m->mw / 2 - WIDTH(c) / 2); /* center in x direction */
+			}
+			if ((c->geometry.y + c->geometry.h) > m->my + m->mh && c->isfloating) {
+				c->geometry.y = m->my + (m->mh / 2 - HEIGHT(c) / 2); /* center in y direction */
+			}
+			if ((ev->value_mask & (CWX|CWY)) && !(ev->value_mask & (CWWidth|CWHeight))) {
 				configure(c);
-			if (ISVISIBLE(c))
-				XMoveResizeWindow(dpy, c->win, c->x, c->y, c->w, c->h);
+			}
+			if (ISVISIBLE(c)) {
+				XMoveResizeWindow(
+					dpy,
+					c->win,
+					c->geometry.x,
+					c->geometry.y,
+					c->geometry.w,
+					c->geometry.h
+				);
+			}
 		} else
 			configure(c);
 	} else {

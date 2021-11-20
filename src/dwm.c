@@ -37,8 +37,8 @@
 #define ISVISIBLE(C) (true)
 #define LENGTH(X)    (sizeof(X) / sizeof(X[0]))
 #define MOUSEMASK    (BUTTONMASK | PointerMotionMask)
-#define WIDTH(X)     ((X)->w + 2 * (X)->bw)
-#define HEIGHT(X)    ((X)->h + 2 * (X)->bw)
+#define WIDTH(X)     ((X)->geometry.w + 2 * (X)->geometry.bw)
+#define HEIGHT(X)    ((X)->geometry.h + 2 * (X)->geometry.bw)
 
 #define CLEANMASK(mask) (                            \
 	(mask) &                                         \
@@ -78,13 +78,18 @@ typedef struct {
 	const Arg arg;
 } Button;
 
-struct Client {
-	char name[256];
-	float mina, maxa;
+struct ClientGeometry {
 	int x, y, w, h;
 	int oldx, oldy, oldw, oldh;
-	int basew, baseh, incw, inch, maxw, maxh, minw, minh;
 	int bw, oldbw;
+};
+
+struct Client {
+	struct ClientGeometry geometry;
+
+	char name[256];
+	float mina, maxa;
+	int basew, baseh, incw, inch, maxw, maxh, minw, minh;
 	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen;
 	Client *next;
 	Client *snext;
@@ -376,7 +381,17 @@ int applysizehints(
 		}
 	}
 
-	return *x != c->x || *y != c->y || *w != c->w || *h != c->h || bw != c->bw;
+	return (
+		*x != c->geometry.x
+		||
+		*y != c->geometry.y
+		||
+		*w != c->geometry.w
+		||
+		*h != c->geometry.h
+		||
+		bw != c->geometry.bw
+	);
 }
 
 void arrange(Monitor *m)
@@ -514,11 +529,11 @@ void configure(Client *c)
 		.display = dpy,
 		.event = c->win,
 		.window = c->win,
-		.x = c->x,
-		.y = c->y,
-		.width = c->w,
-		.height = c->h,
-		.border_width = c->bw,
+		.x = c->geometry.x,
+		.y = c->geometry.y,
+		.width = c->geometry.w,
+		.height = c->geometry.h,
+		.border_width = c->geometry.bw,
 		.above = None,
 		.override_redirect = False,
 	};
@@ -830,11 +845,11 @@ void manage(Window w, XWindowAttributes *wa)
 	Client *const c = ecalloc(1, sizeof(Client));
 
 	c->win = w;
-	c->x = c->oldx = wa->x;
-	c->y = c->oldy = wa->y;
-	c->w = c->oldw = wa->width;
-	c->h = c->oldh = wa->height;
-	c->oldbw = wa->border_width;
+	c->geometry.x = c->geometry.oldx = wa->x;
+	c->geometry.y = c->geometry.oldy = wa->y;
+	c->geometry.w = c->geometry.oldw = wa->width;
+	c->geometry.h = c->geometry.oldh = wa->height;
+	c->geometry.oldbw = wa->border_width;
 	c->isfloating = 0;
 
 	updatetitle(c);
@@ -851,22 +866,22 @@ void manage(Window w, XWindowAttributes *wa)
 		}
 	}
 
-	if (c->x + WIDTH(c) > c->mon->mx + c->mon->mw) {
-		c->x = c->mon->mx + c->mon->mw - WIDTH(c);
+	if (c->geometry.x + WIDTH(c) > c->mon->mx + c->mon->mw) {
+		c->geometry.x = c->mon->mx + c->mon->mw - WIDTH(c);
 	}
 
-	if (c->y + HEIGHT(c) > c->mon->my + c->mon->mh) {
-		c->y = c->mon->my + c->mon->mh - HEIGHT(c);
+	if (c->geometry.y + HEIGHT(c) > c->mon->my + c->mon->mh) {
+		c->geometry.y = c->mon->my + c->mon->mh - HEIGHT(c);
 	}
 
-	c->x = MAX(c->x, c->mon->mx);
-	c->y = MAX(c->y, c->mon->my);
+	c->geometry.x = MAX(c->geometry.x, c->mon->mx);
+	c->geometry.y = MAX(c->geometry.y, c->mon->my);
 
-	c->bw = settings_get_border_width();
+	c->geometry.bw = settings_get_border_width();
 
 	{
 		XWindowChanges wc;
-		wc.border_width = c->bw;
+		wc.border_width = c->geometry.bw;
 		XConfigureWindow(dpy, w, CWBorderWidth, &wc);
 	}
 
@@ -877,8 +892,8 @@ void manage(Window w, XWindowAttributes *wa)
 	updatesizehints(c);
 	updatewmhints(c);
 
-	c->x = c->mon->mx + (c->mon->mw - WIDTH(c)) / 2;
-	c->y = c->mon->my + (c->mon->mh - HEIGHT(c)) / 2;
+	c->geometry.x = c->mon->mx + (c->mon->mw - WIDTH(c)) / 2;
+	c->geometry.y = c->mon->my + (c->mon->mh - HEIGHT(c)) / 2;
 
 	XSelectInput(
 		dpy,
@@ -914,7 +929,14 @@ void manage(Window w, XWindowAttributes *wa)
 	);
 
 	/* some windows require this */
-	XMoveResizeWindow(dpy, c->win, c->x + 2 * sw, c->y, c->w, c->h);
+	XMoveResizeWindow(
+		dpy,
+		c->win,
+		c->geometry.x + 2 * sw,
+		c->geometry.y,
+		c->geometry.w,
+		c->geometry.h
+	);
 
 	setclientstate(c, NormalState);
 
@@ -947,8 +969,8 @@ void movemouse(__attribute__((unused)) const Arg *arg)
 	if (!getrootptr(&x, &y)) return;
 
 	const unsigned int snap_distance = settings_get_snap_distance();
-	const int ocx = c->x;
-	const int ocy = c->y;
+	const int ocx = c->geometry.x;
+	const int ocy = c->geometry.y;
 
 	Time lasttime = 0;
 
@@ -984,14 +1006,22 @@ void movemouse(__attribute__((unused)) const Arg *arg)
 			}
 
 			if (!c->isfloating &&
-				(abs(nx - c->x) > snap_distance ||
-					abs(ny - c->y) > snap_distance))
+				(abs(nx - c->geometry.x) > snap_distance ||
+					abs(ny - c->geometry.y) > snap_distance))
 			{
 				togglefloating(NULL);
 			}
 
 			if (!selmon->lt[selmon->sellt]->arrange || c->isfloating) {
-				resize(c, nx, ny, c->w, c->h, c->bw, 1);
+				resize(
+					c,
+					nx,
+					ny,
+					c->geometry.w,
+					c->geometry.h,
+					c->geometry.bw,
+					1
+				);
 			}
 
 			break;
@@ -1000,7 +1030,12 @@ void movemouse(__attribute__((unused)) const Arg *arg)
 
 	XUngrabPointer(dpy, CurrentTime);
 
-	Monitor *const m = recttomon(c->x, c->y, c->w, c->h);
+	Monitor *const m = recttomon(
+		c->geometry.x,
+		c->geometry.y,
+		c->geometry.w,
+		c->geometry.h
+	);
 
 	if (m != selmon) {
 		sendmon(c, m);
@@ -1133,11 +1168,21 @@ void resizeclient(Client *c, int x, int y, int w, int h, int bw)
 {
 	XWindowChanges wc;
 
-	c->oldx = c->x; c->x = wc.x = x;
-	c->oldy = c->y; c->y = wc.y = y;
-	c->oldw = c->w; c->w = wc.width = w;
-	c->oldh = c->h; c->h = wc.height = h;
-	c->oldbw = c->bw; c->bw = wc.border_width = bw;
+	c->geometry.oldx = c->geometry.x;
+	c->geometry.x = wc.x = x;
+
+	c->geometry.oldy = c->geometry.y;
+	c->geometry.y = wc.y = y;
+
+	c->geometry.oldw = c->geometry.w;
+	c->geometry.w = wc.width = w;
+
+	c->geometry.oldh = c->geometry.h;
+	c->geometry.h = wc.height = h;
+
+	c->geometry.oldbw = c->geometry.bw;
+	c->geometry.bw = wc.border_width = bw;
+
 	XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
 	configure(c);
 	XSync(dpy, False);
@@ -1157,11 +1202,21 @@ void resizemouse(__attribute__((unused)) const Arg *arg)
 		return;
 	}
 
-	XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, c->w + c->bw - 1, c->h + c->bw - 1);
+	XWarpPointer(
+		dpy,
+		None,
+		c->win,
+		0,
+		0,
+		0,
+		0,
+		c->geometry.w + c->geometry.bw - 1,
+		c->geometry.h + c->geometry.bw - 1
+	);
 
 	const unsigned int snap_distance = settings_get_snap_distance();
-	const int ocx = c->x;
-	const int ocy = c->y;
+	const int ocx = c->geometry.x;
+	const int ocy = c->geometry.y;
 
 	Time lasttime = 0;
 
@@ -1181,8 +1236,8 @@ void resizemouse(__attribute__((unused)) const Arg *arg)
 
 			lasttime = ev.xmotion.time;
 
-			const int nw = MAX(ev.xmotion.x - ocx - 2 * c->bw + 1, 1);
-			const int nh = MAX(ev.xmotion.y - ocy - 2 * c->bw + 1, 1);
+			const int nw = MAX(ev.xmotion.x - ocx - 2 * c->geometry.bw + 1, 1);
+			const int nh = MAX(ev.xmotion.y - ocy - 2 * c->geometry.bw + 1, 1);
 
 			if (c->mon->wx + nw >= selmon->wx &&
 				c->mon->wx + nw <= selmon->wx + selmon->ww &&
@@ -1191,27 +1246,51 @@ void resizemouse(__attribute__((unused)) const Arg *arg)
 			{
 				if (!c->isfloating &&
 					(selmon->lt[selmon->sellt]->arrange == NULL ||
-						abs(nw - c->w) > snap_distance ||
-						abs(nh - c->h) > snap_distance))
+						abs(nw - c->geometry.w) > snap_distance ||
+						abs(nh - c->geometry.h) > snap_distance))
 				{
 					togglefloating(NULL);
 				}
 			}
 
 			if (!selmon->lt[selmon->sellt]->arrange || c->isfloating) {
-				resize(c, c->x, c->y, nw, nh, c->bw, 1);
+				resize(
+					c,
+					c->geometry.x,
+					c->geometry.y,
+					nw,
+					nh,
+					c->geometry.bw,
+					1
+				);
 			}
 
 			break;
 		}
 	} while (ev.type != ButtonRelease);
 
-	XWarpPointer(dpy, None, c->win, 0, 0, 0, 0, c->w + c->bw - 1, c->h + c->bw - 1);
+	XWarpPointer(
+		dpy,
+		None,
+		c->win,
+		0,
+		0,
+		0,
+		0,
+		c->geometry.w + c->geometry.bw - 1,
+		c->geometry.h + c->geometry.bw - 1
+	);
+
 	XUngrabPointer(dpy, CurrentTime);
 
 	while (XCheckMaskEvent(dpy, EnterWindowMask, &ev));
 
-	Monitor *const m = recttomon(c->x, c->y, c->w, c->h);
+	Monitor *const m = recttomon(
+		c->geometry.x,
+		c->geometry.y,
+		c->geometry.w,
+		c->geometry.h
+	);
 
 	if (m != selmon) {
 		sendmon(c, m);
@@ -1511,14 +1590,23 @@ void showhide(Client *c)
 		return;
 	if (ISVISIBLE(c)) {
 		/* show clients top down */
-		XMoveWindow(dpy, c->win, c->x, c->y);
-		if (!c->mon->lt[c->mon->sellt]->arrange || c->isfloating)
-			resize(c, c->x, c->y, c->w, c->h, c->bw, 0);
+		XMoveWindow(dpy, c->win, c->geometry.x, c->geometry.y);
+		if (!c->mon->lt[c->mon->sellt]->arrange || c->isfloating) {
+			resize(
+				c,
+				c->geometry.x,
+				c->geometry.y,
+				c->geometry.w,
+				c->geometry.h,
+				c->geometry.bw,
+				0
+			);
+		}
 		showhide(c->snext);
 	} else {
 		/* hide clients bottom up */
 		showhide(c->snext);
-		XMoveWindow(dpy, c->win, WIDTH(c) * -2, c->y);
+		XMoveWindow(dpy, c->win, WIDTH(c) * -2, c->geometry.y);
 	}
 }
 
@@ -1561,10 +1649,12 @@ void togglefloating(__attribute__((unused)) const Arg *arg)
 	if (selmon->sel->isfloating) {
 		resize(
 			selmon->sel,
-			selmon->sel->x,
-			selmon->sel->y,
-			selmon->sel->w - 2 * (border_width - selmon->sel->bw),
-			selmon->sel->h - 2 * (border_width - selmon->sel->bw),
+			selmon->sel->geometry.x,
+			selmon->sel->geometry.y,
+			selmon->sel->geometry.w -
+				2 * (border_width - selmon->sel->geometry.bw),
+			selmon->sel->geometry.h -
+				2 * (border_width - selmon->sel->geometry.bw),
 			border_width,
 			0
 		);
@@ -1593,7 +1683,7 @@ void unmanage(Client *c, int destroyed)
 	detach(c);
 	detachstack(c);
 	if (!destroyed) {
-		wc.border_width = c->oldbw;
+		wc.border_width = c->geometry.oldbw;
 		XGrabServer(dpy); /* avoid race conditions */
 		XSetErrorHandler(xerrordummy);
 		XConfigureWindow(dpy, c->win, CWBorderWidth, &wc); /* restore border */
