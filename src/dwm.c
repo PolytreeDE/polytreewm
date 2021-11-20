@@ -12,16 +12,18 @@
 #include <X11/Xlib.h>
 #include <X11/Xproto.h>
 #include <X11/Xutil.h>
-#ifdef ENABLE_XINERAMA
-#include <X11/extensions/Xinerama.h>
-#endif /* ENABLE_XINERAMA */
 #include <X11/Xft/Xft.h>
 #include <X11/Xlib-xcb.h>
 #include <xcb/res.h>
+
+#ifdef ENABLE_XINERAMA
+#include <X11/extensions/Xinerama.h>
+#endif // ENABLE_XINERAMA
+
 #ifdef __OpenBSD__
 #include <sys/sysctl.h>
 #include <kvm.h>
-#endif /* __OpenBSD */
+#endif // __OpenBSD
 
 #include "atoms.h"
 #include "drw.h"
@@ -34,7 +36,9 @@
 #include "unit.h"
 #include "util.h"
 
-/* macros */
+/**********
+ * macros *
+ **********/
 #define BUTTONMASK              (ButtonPressMask|ButtonReleaseMask)
 #define CLEANMASK(mask)         (mask & ~(numlockmask|LockMask) & (ShiftMask|ControlMask|Mod1Mask|Mod2Mask|Mod3Mask|Mod4Mask|Mod5Mask))
 #define INTERSECT(x,y,w,h,m)    (MAX(0, MIN((x)+(w),(m)->wx+(m)->ww) - MAX((x),(m)->wx)) \
