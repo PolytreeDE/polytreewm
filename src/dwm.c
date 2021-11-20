@@ -1249,8 +1249,16 @@ void setclientstate(Client *c, long state)
 {
 	long data[] = { state, None };
 
-	XChangeProperty(dpy, c->win, atoms->wmatom[WMState], atoms->wmatom[WMState], 32,
-		PropModeReplace, (unsigned char *)data, 2);
+	XChangeProperty(
+		dpy,
+		c->win,
+		atoms->wmatom[WMState],
+		atoms->wmatom[WMState],
+		32,
+		PropModeReplace,
+		(unsigned char*)data,
+		2
+	);
 }
 
 int sendevent(Client *c, Atom proto)
@@ -1281,10 +1289,18 @@ void setfocus(Client *c)
 {
 	if (!c->neverfocus) {
 		XSetInputFocus(dpy, c->win, RevertToPointerRoot, CurrentTime);
-		XChangeProperty(dpy, root, atoms->netatom[NetActiveWindow],
-			XA_WINDOW, 32, PropModeReplace,
-			(unsigned char *) &(c->win), 1);
+		XChangeProperty(
+			dpy,
+			root,
+			atoms->netatom[NetActiveWindow],
+			XA_WINDOW,
+			32,
+			PropModeReplace,
+			(unsigned char*)&(c->win),
+			1
+		);
 	}
+
 	sendevent(c, atoms->wmatom[WMTakeFocus]);
 }
 
