@@ -407,42 +407,39 @@ applysizehints(Client *c, int *x, int *y, int *w, int *h, int bw, int interact)
 void
 arrange(Monitor *m)
 {
-	if (m)
+	if (m) {
 		showhide(m->stack);
-	else for (m = mons; m; m = m->next)
-		showhide(m->stack);
+	} else {
+		for (m = mons; m; m = m->next) {
+			showhide(m->stack);
+		}
+	}
+
 	if (m) {
 		arrangemon(m);
 		restack(m);
-	} else for (m = mons; m; m = m->next)
-		arrangemon(m);
+	} else {
+		for (m = mons; m; m = m->next) {
+			arrangemon(m);
+		}
+	}
 }
 
 void
 arrangemon(Monitor *m)
 {
 	unsigned int visible_clients = 0;
+
 	for (const Client *client = m->clients; client; client = client->next) {
-		if (ISVISIBLE(client)) ++visible_clients;
+		if (ISVISIBLE(client)) {
+			++visible_clients;
+		}
 	}
 
-	if (m->lt[m->sellt]->arrange)
+	if (m->lt[m->sellt]->arrange) {
 		m->lt[m->sellt]->arrange(m);
-	else {
-		const int border_width = settings_get_border_width();
-
-		/* <>< case; rather than providing an arrange function and upsetting other logic that tests for its presence, simply add borders here */
-		for (Client *c = selmon->clients; c; c = c->next)
-			if (ISVISIBLE(c) && c->bw == 0)
-				resize(
-					c,
-					c->x,
-					c->y,
-					c->w - 2 * border_width,
-					c->h - 2 * border_width,
-					border_width,
-					0
-				);
+	} else {
+		floating(selmon);
 	}
 }
 

@@ -1,8 +1,7 @@
 #ifndef _DWM_LAYOUTS_C
 #define _DWM_LAYOUTS_C
 
-void
-centeredmaster(Monitor *m)
+void centeredmaster(Monitor *m)
 {
 	unsigned int n = 0;
 	for (Client *c = nexttiled(m->clients); c; c = nexttiled(c->next), ++n);
@@ -103,8 +102,26 @@ centeredmaster(Monitor *m)
 	}
 }
 
-void
-horizontile(Monitor *m)
+void floating(Monitor *m)
+{
+	const int border_width = settings_get_border_width();
+
+	for (Client *c = m->clients; c; c = c->next) {
+		if (ISVISIBLE(c) && c->bw == 0) {
+			resize(
+				c,
+				c->x,
+				c->y,
+				c->w - 2 * border_width,
+				c->h - 2 * border_width,
+				border_width,
+				0
+			);
+		}
+	}
+}
+
+void horizontile(Monitor *m)
 {
 	unsigned int n = 0;
 	for (Client *c = nexttiled(m->clients); c; c = nexttiled(c->next), ++n);
@@ -173,8 +190,7 @@ horizontile(Monitor *m)
 	}
 }
 
-void
-monocle(Monitor *m)
+void monocle(Monitor *m)
 {
 	bool any_is_fullscreen = false;
 	for (Client *c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
@@ -199,8 +215,7 @@ monocle(Monitor *m)
 	}
 }
 
-void
-tile(Monitor *m)
+void tile(Monitor *m)
 {
 	unsigned int n = 0;
 	for (Client *c = nexttiled(m->clients); c; c = nexttiled(c->next), ++n);
