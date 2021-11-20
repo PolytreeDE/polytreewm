@@ -1,3 +1,13 @@
+#include "atoms.h"
+#include "helpers.h"
+#include "layouts.h"
+#include "menu.h"
+#include "settings.h"
+#include "spawn.h"
+#include "tags.h"
+#include "unit.h"
+#include "util.h"
+
 #include <locale.h>
 #include <signal.h>
 #include <stdarg.h>
@@ -25,16 +35,8 @@
 #include <kvm.h>
 #endif // __OpenBSD
 
-#include "atoms.h"
+// TODO: Include necessary headers in this header.
 #include "drw.h"
-#include "helpers.h"
-#include "layouts.h"
-#include "menu.h"
-#include "settings.h"
-#include "spawn.h"
-#include "tags.h"
-#include "unit.h"
-#include "util.h"
 
 /**********
  * macros *
