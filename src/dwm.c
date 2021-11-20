@@ -1545,15 +1545,22 @@ void unmanage(Client *c, int destroyed)
 
 void updateclientlist()
 {
-	Client *c;
-	Monitor *m;
-
 	XDeleteProperty(dpy, root, atoms->netatom[NetClientList]);
-	for (m = mons; m; m = m->next)
-		for (c = m->clients; c; c = c->next)
-			XChangeProperty(dpy, root, atoms->netatom[NetClientList],
-				XA_WINDOW, 32, PropModeAppend,
-				(unsigned char *) &(c->win), 1);
+
+	for (Monitor *m = mons; m; m = m->next) {
+		for (Client *c = m->clients; c; c = c->next) {
+			XChangeProperty(
+				dpy,
+				root,
+				atoms->netatom[NetClientList],
+				XA_WINDOW,
+				32,
+				PropModeAppend,
+				(unsigned char*)&(c->win),
+				1
+			);
+		}
+	}
 }
 
 int updategeom()
