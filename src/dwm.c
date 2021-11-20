@@ -129,7 +129,6 @@ typedef struct {
 typedef struct Bar {
 	int by;
 	int topbar;
-	Window barwin;
 	int bh;
 } *Bar;
 
@@ -275,7 +274,6 @@ static void (*handler[LASTEvent]) (XEvent *) = {
 	[ConfigureRequest] = on_configure_request,
 	[ConfigureNotify] = on_configure_notify,
 	[DestroyNotify] = on_destroy_notify,
-	[Expose] = on_expose,
 	[FocusIn] = on_focus_in,
 	[KeyPress] = on_key_press,
 	[MappingNotify] = on_mapping_notify,
@@ -596,11 +594,7 @@ cleanupmon(Monitor *mon)
 		UNIT_DELETE(mon->pertag->units[i]);
 	}
 	free(mon->pertag);
-	{
-		XUnmapWindow(dpy, mon->bar->barwin);
-		XDestroyWindow(dpy, mon->bar->barwin);
-		free(mon->bar);
-	}
+	free(mon->bar);
 	UNIT_DELETE(mon->unit);
 	free(mon);
 }
@@ -750,7 +744,6 @@ focus(Client *c)
 		XDeleteProperty(dpy, root, atoms->netatom[NetActiveWindow]);
 	}
 	selmon->sel = c;
-	drawbars();
 }
 
 void
@@ -1184,8 +1177,6 @@ nametag(__attribute__((unused)) const Arg *arg) {
 			tags_rename(i, name);
 		}
 	}
-
-	drawbars();
 }
 
 void
@@ -1394,14 +1385,15 @@ restack(Monitor *m)
 	XEvent ev;
 	XWindowChanges wc;
 
-	drawbar(m);
 	if (!m->sel)
 		return;
 	if (m->sel->isfloating || !m->lt[m->sellt]->arrange)
 		XRaiseWindow(dpy, m->sel->win);
 	if (m->lt[m->sellt]->arrange) {
 		wc.stack_mode = Below;
-		wc.sibling = m->bar->barwin;
+		// TODO: Learn what is sibling and what
+		// is the following line responsible for.
+		// wc.sibling = m->bar->barwin;
 		for (c = m->stack; c; c = c->snext)
 			if (!c->isfloating && ISVISIBLE(c)) {
 				XConfigureWindow(dpy, c->win, CWSibling|CWStackMode, &wc);
@@ -1550,8 +1542,6 @@ setlayout(const Arg *arg)
 
 	if (selmon->sel) {
 		arrange(selmon);
-	} else {
-		drawbar(selmon);
 	}
 }
 
@@ -1600,8 +1590,6 @@ setup(void)
 	scheme = ecalloc(LENGTH(colors), sizeof(Clr *));
 	for (unsigned int i = 0; i < LENGTH(colors); i++)
 		scheme[i] = drw_scm_create(drw, colors[i], 3);
-	/* init bars */
-	createbars();
 
 	/* supporting window for NetWMCheck */
 	wmcheckwin = XCreateSimpleWindow(dpy, root, 0, 0, 1, 1, 0, 0, 0);
@@ -2164,13 +2152,9 @@ wintomon(Window w)
 {
 	int x, y;
 	Client *c;
-	Monitor *m;
 
 	if (w == root && getrootptr(&x, &y))
 		return recttomon(x, y, 1, 1);
-	for (m = mons; m; m = m->next)
-		if (w == m->bar->barwin)
-			return m;
 	if ((c = wintoclient(w)))
 		return c->mon;
 	return selmon;
