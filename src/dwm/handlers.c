@@ -1,8 +1,7 @@
 #ifndef _DWM_HANDLERS_C
 #define _DWM_HANDLERS_C
 
-void
-on_button_press(XEvent *e)
+void on_button_press(XEvent *e)
 {
 	unsigned int i, click;
 	Client *c;
@@ -36,8 +35,7 @@ on_button_press(XEvent *e)
 			buttons[i].func(&buttons[i].arg);
 }
 
-void
-on_client_message(XEvent *e)
+void on_client_message(XEvent *e)
 {
 	XClientMessageEvent *cme = &e->xclient;
 	Client *c = wintoclient(cme->window);
@@ -66,8 +64,7 @@ on_client_message(XEvent *e)
 	}
 }
 
-void
-on_configure_request(XEvent *e)
+void on_configure_request(XEvent *e)
 {
 	Client *c;
 	Monitor *m;
@@ -118,8 +115,7 @@ on_configure_request(XEvent *e)
 	XSync(dpy, False);
 }
 
-void
-on_configure_notify(XEvent *e)
+void on_configure_notify(XEvent *e)
 {
 	XConfigureEvent *ev = &e->xconfigure;
 	int dirty;
@@ -136,8 +132,7 @@ on_configure_notify(XEvent *e)
 	}
 }
 
-void
-on_destroy_notify(XEvent *e)
+void on_destroy_notify(XEvent *e)
 {
 	XDestroyWindowEvent *const ev = &e->xdestroywindow;
 
@@ -151,8 +146,7 @@ on_destroy_notify(XEvent *e)
 }
 
 /* there are some broken focus acquiring clients needing extra handling */
-void
-on_focus_in(XEvent *e)
+void on_focus_in(XEvent *e)
 {
 	XFocusChangeEvent *ev = &e->xfocus;
 
@@ -160,8 +154,7 @@ on_focus_in(XEvent *e)
 		setfocus(selmon->sel);
 }
 
-void
-on_key_press(XEvent *e)
+void on_key_press(XEvent *e)
 {
 	unsigned int i;
 	KeySym keysym;
@@ -176,8 +169,7 @@ on_key_press(XEvent *e)
 			keys[i].func(&(keys[i].arg));
 }
 
-void
-on_mapping_notify(XEvent *e)
+void on_mapping_notify(XEvent *e)
 {
 	XMappingEvent *ev = &e->xmapping;
 
@@ -186,8 +178,7 @@ on_mapping_notify(XEvent *e)
 		grabkeys();
 }
 
-void
-on_map_request(XEvent *e)
+void on_map_request(XEvent *e)
 {
 	static XWindowAttributes wa;
 	XMapRequestEvent *ev = &e->xmaprequest;
@@ -200,8 +191,7 @@ on_map_request(XEvent *e)
 		manage(ev->window, &wa);
 }
 
-void
-on_property_notify(XEvent *e)
+void on_property_notify(XEvent *e)
 {
 	Client *c;
 	Window trans;
@@ -232,8 +222,7 @@ on_property_notify(XEvent *e)
 	}
 }
 
-void
-on_unmap_notify(XEvent *e)
+void on_unmap_notify(XEvent *e)
 {
 	Client *c;
 	XUnmapEvent *ev = &e->xunmap;

@@ -1,8 +1,7 @@
 #ifndef _DWM_SWALLOW_C
 #define _DWM_SWALLOW_C
 
-pid_t
-getparentprocess(pid_t p)
+pid_t getparentprocess(pid_t p)
 {
 	unsigned int v = 0;
 
@@ -34,8 +33,7 @@ getparentprocess(pid_t p)
 	return (pid_t)v;
 }
 
-int
-isdescprocess(pid_t p, pid_t c)
+int isdescprocess(pid_t p, pid_t c)
 {
 	while (p != c && c != 0)
 		c = getparentprocess(c);
@@ -43,8 +41,7 @@ isdescprocess(pid_t p, pid_t c)
 	return (int)c;
 }
 
-void
-swallow(Client *p, Client *c)
+void swallow(Client *p, Client *c)
 {
 	if (!settings_get_enable_swallowing()) return;
 	if (c->noswallow || c->isterminal) return;
@@ -69,8 +66,7 @@ swallow(Client *p, Client *c)
 	updateclientlist();
 }
 
-Client *
-swallowingclient(Window w)
+Client *swallowingclient(Window w)
 {
 	Client *c;
 	Monitor *m;
@@ -85,8 +81,7 @@ swallowingclient(Window w)
 	return NULL;
 }
 
-Client *
-termforwin(const Client *w)
+Client *termforwin(const Client *w)
 {
 	Client *c;
 	Monitor *m;
@@ -104,8 +99,7 @@ termforwin(const Client *w)
 	return NULL;
 }
 
-void
-unswallow(Client *c)
+void unswallow(Client *c)
 {
 	c->win = c->swallowing->win;
 
@@ -123,8 +117,7 @@ unswallow(Client *c)
 	arrange(c->mon);
 }
 
-pid_t
-winpid(Window w)
+pid_t winpid(Window w)
 {
 
 	pid_t result = 0;
