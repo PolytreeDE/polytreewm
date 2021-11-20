@@ -167,9 +167,9 @@ void on_configure_notify(XEvent *e)
 
 	/* TODO: updategeom handling sucks, needs to be simplified */
 	if (ev->window == root) {
-		dirty = (sw != ev->width || sh != ev->height);
-		sw = ev->width;
-		sh = ev->height;
+		dirty = (screen_sizes.w != ev->width || screen_sizes.h != ev->height);
+		screen_sizes.w = ev->width;
+		screen_sizes.h = ev->height;
 		if (updategeom() || dirty) {
 			focus(NULL);
 			arrange(NULL);

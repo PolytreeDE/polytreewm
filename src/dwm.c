@@ -222,10 +222,11 @@ static void zoom(const Arg *arg);
  * variables *
  *************/
 
+static struct Sizes screen_sizes = { 0, 0 };
 static Unit global_unit = NULL;
+
 static const char broken[] = "broken";
 static int screen;
-static int sw, sh;           /* X display screen geometry width, height */
 static int (*xerrorxlib)(Display *, XErrorEvent *);
 static unsigned int numlockmask = 0;
 static void (*handler[LASTEvent]) (XEvent *) = {
@@ -318,11 +319,17 @@ int applysizehints(
 	*h = MAX(1, *h);
 
 	if (interact) {
-		if (*x > sw) {
-			*x = sw - client_geometry_total_width(&c->state.geometry);
+		if (*x > screen_sizes.w) {
+			*x =
+				screen_sizes.w
+				-
+				client_geometry_total_width(&c->state.geometry);
 		}
-		if (*y > sh) {
-			*y = sh - client_geometry_total_height(&c->state.geometry);
+		if (*y > screen_sizes.h) {
+			*y =
+				screen_sizes.h
+				-
+				client_geometry_total_height(&c->state.geometry);
 		}
 		if (*x + *w + 2 * bw < 0) {
 			*x = 0;
@@ -1017,7 +1024,7 @@ void manage(Window w, XWindowAttributes *wa)
 	XMoveResizeWindow(
 		dpy,
 		c->win,
-		c->state.geometry.basic.position.x + 2 * sw,
+		c->state.geometry.basic.position.x + 2 * screen_sizes.w,
 		c->state.geometry.basic.position.y,
 		c->state.geometry.basic.sizes.w,
 		c->state.geometry.basic.sizes.h
@@ -1661,10 +1668,10 @@ bool setup()
 
 	/* init screen */
 	screen = DefaultScreen(dpy);
-	sw = DisplayWidth(dpy, screen);
-	sh = DisplayHeight(dpy, screen);
+	screen_sizes.w = DisplayWidth(dpy, screen);
+	screen_sizes.h = DisplayHeight(dpy, screen);
 	root = RootWindow(dpy, screen);
-	drw = drw_create(dpy, screen, root, sw, sh);
+	drw = drw_create(dpy, screen, root, screen_sizes.w, screen_sizes.h);
 	if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
 		die("no fonts could be loaded.");
 	updategeom();
@@ -1978,17 +1985,17 @@ int updategeom()
 		if (!mons)
 			mons = createmon();
 		if (
-			mons->screen_geometry.sizes.w != sw
+			mons->screen_geometry.sizes.w != screen_sizes.w
 			||
-			mons->screen_geometry.sizes.h != sh
+			mons->screen_geometry.sizes.h != screen_sizes.h
 		) {
 			dirty = 1;
 			mons->screen_geometry.sizes.w =
 				mons->window_area_geometry.sizes.w =
-				sw;
+				screen_sizes.w;
 			mons->screen_geometry.sizes.h =
 				mons->window_area_geometry.sizes.h =
-				sh;
+				screen_sizes.h;
 		}
 	}
 	if (dirty) {
