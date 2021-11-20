@@ -25,6 +25,7 @@ MODULES_SRC = \
 	src/layouts.c \
 	src/settings.c \
 	src/spawn.c \
+	src/state.c \
 	src/unit.c \
 	src/util.c
 

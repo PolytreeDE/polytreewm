@@ -3,6 +3,7 @@
 #include "layouts.h"
 #include "settings.h"
 #include "spawn.h"
+#include "state.h"
 #include "unit.h"
 #include "util.h"
 
@@ -88,26 +89,6 @@ typedef struct {
 	void (*func)(const Arg *arg);
 	const Arg arg;
 } Button;
-
-struct BasicGeometry {
-	int x, y, w, h;
-};
-
-struct ClientGeometry {
-	struct BasicGeometry basic;
-	int bw;
-};
-
-struct ClientSizeHints {
-	float mina, maxa;
-	int basew, baseh, incw, inch, maxw, maxh, minw, minh;
-};
-
-struct ClientState {
-	char name[256];
-	int isfixed, isfloating, isurgent, neverfocus, isfullscreen;
-	struct ClientGeometry geometry;
-};
 
 struct Client {
 	struct ClientState state;
