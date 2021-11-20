@@ -1709,20 +1709,23 @@ void updatewindowtype(Client *c)
 
 void updatewmhints(Client *c)
 {
-	XWMHints *wmh;
+	XWMHints *wmh = XGetWMHints(dpy, c->win);
+	if (!wmh) return;
 
-	if ((wmh = XGetWMHints(dpy, c->win))) {
-		if (c == selmon->sel && wmh->flags & XUrgencyHint) {
-			wmh->flags &= ~XUrgencyHint;
-			XSetWMHints(dpy, c->win, wmh);
-		} else
-			c->isurgent = (wmh->flags & XUrgencyHint) ? 1 : 0;
-		if (wmh->flags & InputHint)
-			c->neverfocus = !wmh->input;
-		else
-			c->neverfocus = 0;
-		XFree(wmh);
+	if (c == selmon->sel && wmh->flags & XUrgencyHint) {
+		wmh->flags &= ~XUrgencyHint;
+		XSetWMHints(dpy, c->win, wmh);
+	} else {
+		c->isurgent = (wmh->flags & XUrgencyHint) ? 1 : 0;
 	}
+
+	if (wmh->flags & InputHint) {
+		c->neverfocus = !wmh->input;
+	} else {
+		c->neverfocus = 0;
+	}
+
+	XFree(wmh);
 }
 
 Client *wintoclient(Window w)
