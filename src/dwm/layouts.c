@@ -8,7 +8,7 @@ centeredmaster(Monitor *m)
 	for (Client *c = nexttiled(m->clients); c; c = nexttiled(c->next), ++n);
 	if (n == 0) return;
 
-	const bool master_area_factor =
+	const float master_area_factor =
 		unit_get_master_area_factor(m->pertag->units[m->pertag->curtag]);
 
 	unsigned int mx = 0;
@@ -111,7 +111,7 @@ horizontile(Monitor *m)
 	for (Client *c = nexttiled(m->clients); c; c = nexttiled(c->next), ++n);
 	if (n == 0) return;
 
-	const bool master_area_factor =
+	const float master_area_factor =
 		unit_get_master_area_factor(m->pertag->units[m->pertag->curtag]);
 
 	const bool is_fullscreen = m->sel == NULL ? false : m->sel->isfullscreen;
@@ -208,7 +208,7 @@ tile(Monitor *m)
 	for (Client *c = nexttiled(m->clients); c; c = nexttiled(c->next), ++n);
 	if (n == 0) return;
 
-	const bool master_area_factor =
+	const float master_area_factor =
 		unit_get_master_area_factor(m->pertag->units[m->pertag->curtag]);
 
 	const bool is_fullscreen = m->sel == NULL ? false : m->sel->isfullscreen;
