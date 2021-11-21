@@ -3,6 +3,7 @@
 #include "atoms.h"
 #include "helpers.h"
 #include "layouts.h"
+#include "main.h"
 #include "settings.h"
 #include "spawn.h"
 #include "state.h"
