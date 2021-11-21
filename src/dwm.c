@@ -46,36 +46,36 @@
 		Mod3Mask | Mod4Mask | Mod5Mask)              \
 )
 
-#define INTERSECT(x,y,w,h,window_area_geometry) ( \
-	MAX(                                          \
-		0,                                        \
-		MIN(                                      \
-			(x) + (w),                            \
-			window_area_geometry.position.x       \
-			+                                     \
-			window_area_geometry.sizes.w          \
-		)                                         \
-		-                                         \
-		MAX(                                      \
-			(x),                                  \
-			window_area_geometry.position.x       \
-		)                                         \
-	)                                             \
-	*                                             \
-	MAX(                                          \
-		0,                                        \
-		MIN(                                      \
-			(y) + (h),                            \
-			window_area_geometry.position.y       \
-			+                                     \
-			window_area_geometry.sizes.h          \
-		)                                         \
-		-                                         \
-		MAX(                                      \
-			(y),                                  \
-			window_area_geometry.position.y       \
-		)                                         \
-	)                                             \
+#define INTERSECT(x,y,w,h,basic_geometry) ( \
+	MAX(                                    \
+		0,                                  \
+		MIN(                                \
+			(x) + (w),                      \
+			basic_geometry.position.x       \
+			+                               \
+			basic_geometry.sizes.w          \
+		)                                   \
+		-                                   \
+		MAX(                                \
+			(x),                            \
+			basic_geometry.position.x       \
+		)                                   \
+	)                                       \
+	*                                       \
+	MAX(                                    \
+		0,                                  \
+		MIN(                                \
+			(y) + (h),                      \
+			basic_geometry.position.y       \
+			+                               \
+			basic_geometry.sizes.h          \
+		)                                   \
+		-                                   \
+		MAX(                                \
+			(y),                            \
+			basic_geometry.position.y       \
+		)                                   \
+	)                                       \
 )
 
 /*********
