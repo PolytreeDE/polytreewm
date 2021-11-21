@@ -1269,7 +1269,7 @@ void resizeclient(Client *c, const struct ClientGeometry client_geometry)
 	c->state.geometry = client_geometry;
 
 	XWindowChanges wc = { 0 };
-	client_geometry_to_x_window_changes(&client_geometry, &wc);
+	client_geometry_convert_to_x_window_changes(&client_geometry, &wc);
 
 	XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
 	configure(c);
