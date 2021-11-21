@@ -237,7 +237,16 @@ static Unit global_unit = NULL;
 static const char broken[] = "broken";
 static int (*xerrorxlib)(Display *, XErrorEvent *);
 static unsigned int numlockmask = 0;
-static void (*handler[LASTEvent]) (XEvent *) = {
+static Atoms atoms = NULL;
+static int running = 1;
+static Cur *cursor[CurLast];
+static Clr **scheme;
+static Display *dpy;
+static Drw *drw;
+static Monitor *mons, *selmon;
+static Window root, wmcheckwin;
+
+static void (*handler[LASTEvent])(XEvent*) = {
 	[ButtonPress] = on_button_press,
 	[ClientMessage] = on_client_message,
 	[ConfigureRequest] = on_configure_request,
@@ -250,14 +259,6 @@ static void (*handler[LASTEvent]) (XEvent *) = {
 	[PropertyNotify] = on_property_notify,
 	[UnmapNotify] = on_unmap_notify
 };
-static Atoms atoms = NULL;
-static int running = 1;
-static Cur *cursor[CurLast];
-static Clr **scheme;
-static Display *dpy;
-static Drw *drw;
-static Monitor *mons, *selmon;
-static Window root, wmcheckwin;
 
 /***************************************************************
  * configuration, allows nested code to access above variables *
