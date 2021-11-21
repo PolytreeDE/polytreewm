@@ -4,6 +4,7 @@
 
 #include <locale.h>
 #include <stdarg.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -26,6 +27,12 @@ int main(int argc, char *argv[])
 	if (!setlocale(LC_CTYPE, "") || !dwm_has_locale_support()) {
 		warning("no locale support");
 	}
+
+#ifdef __OpenBSD__
+	if (pledge("stdio rpath proc exec", NULL) == -1) {
+		fatal("pledge");
+	}
+#endif // __OpenBSD__
 
 	return dwm_main(argc, argv);
 }

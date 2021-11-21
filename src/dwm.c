@@ -291,12 +291,6 @@ int dwm_main()
 		fatal("cannot setup");
 	}
 
-#ifdef __OpenBSD__
-	if (pledge("stdio rpath proc exec", NULL) == -1) {
-		fatal("pledge");
-	}
-#endif /* __OpenBSD__ */
-
 	scan();
 	run();
 	cleanup();
