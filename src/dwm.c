@@ -292,11 +292,23 @@ int dwm_main(const char *const new_program_title)
 		warning("no locale support in X");
 	}
 
+	// Resource allocations start here.
+
 	if (!(dpy = XOpenDisplay(NULL))) {
 		fatal("cannot open display");
 	}
 
 	checkotherwm();
+
+	if (!(atoms = atoms_create(dpy))) {
+		fatal("cannot create atoms");
+	}
+
+	if (!(global_unit = unit_new(UNIT_GLOBAL, NULL))) {
+		fatal("cannot create atoms");
+	}
+
+	// Old code.
 
 	if (!setup()) {
 		fatal("cannot setup");
@@ -304,7 +316,13 @@ int dwm_main(const char *const new_program_title)
 
 	scan();
 	run();
+
 	cleanup();
+
+	// Resource cleanups.
+
+	UNIT_DELETE(global_unit);
+	ATOMS_DELETE(atoms);
 	XCloseDisplay(dpy);
 
 	return EXIT_SUCCESS;
@@ -553,13 +571,10 @@ void cleanup()
 	scheme_destroy();
 
 	wmcheckwin_destroy();
-	ATOMS_DELETE(atoms);
 	drw_free(drw);
 	XSync(dpy, False);
 	XSetInputFocus(dpy, PointerRoot, RevertToPointerRoot, CurrentTime);
 	XDeleteProperty(dpy, root, atoms->netatom[NetActiveWindow]);
-
-	if (global_unit) UNIT_DELETE(global_unit);
 }
 
 void configure(Client *c)
@@ -1776,8 +1791,6 @@ bool setup()
 {
 	XSetWindowAttributes wa;
 
-	if (!(global_unit = unit_new(UNIT_GLOBAL, NULL))) return false;
-
 	/* init screen */
 	screen.x_screen = DefaultScreen(dpy);
 	screen.sizes.w = DisplayWidth(dpy, screen.x_screen);
@@ -1787,9 +1800,6 @@ bool setup()
 	if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
 		fatal("no fonts could be loaded.");
 	updategeom();
-	/* init atoms */
-	atoms = atoms_create(dpy);
-	if (atoms == NULL) fatal("cannot allocate atoms");
 	/* init cursors */
 	cursor[CurNormal] = drw_cur_create(drw, XC_left_ptr);
 	cursor[CurResize] = drw_cur_create(drw, XC_sizing);
