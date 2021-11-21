@@ -226,7 +226,7 @@ static struct Sizes screen_sizes = { 0, 0 };
 static Unit global_unit = NULL;
 
 static const char broken[] = "broken";
-static int screen;
+static int x_screen;
 static int (*xerrorxlib)(Display *, XErrorEvent *);
 static unsigned int numlockmask = 0;
 static void (*handler[LASTEvent]) (XEvent *) = {
@@ -1624,11 +1624,11 @@ bool setup()
 	if (!(global_unit = unit_new(UNIT_GLOBAL, NULL))) return false;
 
 	/* init screen */
-	screen = DefaultScreen(dpy);
-	screen_sizes.w = DisplayWidth(dpy, screen);
-	screen_sizes.h = DisplayHeight(dpy, screen);
-	root = RootWindow(dpy, screen);
-	drw = drw_create(dpy, screen, root, screen_sizes.w, screen_sizes.h);
+	x_screen = DefaultScreen(dpy);
+	screen_sizes.w = DisplayWidth(dpy, x_screen);
+	screen_sizes.h = DisplayHeight(dpy, x_screen);
+	root = RootWindow(dpy, x_screen);
+	drw = drw_create(dpy, x_screen, root, screen_sizes.w, screen_sizes.h);
 	if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
 		die("no fonts could be loaded.");
 	updategeom();
