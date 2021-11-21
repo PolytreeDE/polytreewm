@@ -10,11 +10,9 @@
 #include "unit.h"
 #include "util.h"
 
-#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/wait.h>
 #include <unistd.h>
 #include <X11/cursorfont.h>
 #include <X11/keysym.h>
@@ -202,7 +200,6 @@ static void setmfact(const Arg *arg);
 static bool setup();
 static void seturgent(Client *c, bool is_urgent);
 static void showhide(Client *c);
-static void sigchld(int unused);
 static void spawn(const Arg *arg);
 static void spawn_callback();
 static void tagmon(const Arg *arg);
@@ -1623,9 +1620,6 @@ bool setup()
 {
 	XSetWindowAttributes wa;
 
-	/* clean up any zombies immediately */
-	sigchld(0);
-
 	if (!(global_unit = unit_new(UNIT_GLOBAL, NULL))) return false;
 
 	/* init screen */
@@ -1749,13 +1743,6 @@ void showhide(Client *c)
 			c->state.geometry.basic.position.y
 		);
 	}
-}
-
-void sigchld(__attribute__((unused)) int unused)
-{
-	if (signal(SIGCHLD, sigchld) == SIG_ERR)
-		fatal_perror("can't install SIGCHLD handler");
-	while (0 < waitpid(-1, NULL, WNOHANG));
 }
 
 void spawn(const Arg *arg)

@@ -3,13 +3,17 @@
 #include "dwm.h"
 
 #include <locale.h>
+#include <signal.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/wait.h>
 
 #define PROGRAM_NAME "polytreewm"
+
+static void signal_callback(int signo);
 
 static void logger(const char *level, const char *fmt, ...);
 static void logger_perror(const char *level, const char *fmt, ...);
@@ -36,7 +40,24 @@ int main(int argc, char *argv[])
 	}
 #endif // __OpenBSD__
 
+	{
+		struct sigaction action;
+		memset(&action, 0, sizeof(action));
+		action.sa_handler = signal_callback;
+		if (sigaction(SIGCHLD, &action, NULL) != 0) {
+			fatal_perror("can't install SIGCHLD handler");
+		}
+	}
+
 	exit(dwm_main(argc, argv));
+}
+
+void signal_callback(const int signo)
+{
+	if (signo != SIGCHLD) return;
+
+	// Clean up any zombies immediately.
+	while (waitpid(-1, NULL, WNOHANG) > 0);
 }
 
 void logger(const char *const level, const char *const fmt, ...)
