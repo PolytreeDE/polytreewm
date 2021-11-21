@@ -9,18 +9,20 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define PROGRAM_NAME "polytreewm"
+
 static void logger(const char *level, const char *fmt, ...);
 static void logger_perror(const char *level, const char *fmt, ...);
 
 int main(int argc, char *argv[])
 {
 	if (argc == 2 && strcmp(argv[1], "-v") == 0) {
-		fputs("polytreewm-"VERSION"\n", stderr);
+		fputs(PROGRAM_NAME"-"VERSION"\n", stderr);
 		exit(EXIT_SUCCESS);
 	}
 
 	if (argc != 1) {
-		fprintf(stderr, "usage: polytreewm [-v]\n");
+		fputs("usage: "PROGRAM_NAME" [-v]\n", stderr);
 		exit(EXIT_FAILURE);
 	}
 
@@ -34,12 +36,12 @@ int main(int argc, char *argv[])
 	}
 #endif // __OpenBSD__
 
-	return dwm_main(argc, argv);
+	exit(dwm_main(argc, argv));
 }
 
 void logger(const char *const level, const char *const fmt, ...)
 {
-	fprintf(stderr, "%s: ", level);
+	fprintf(stderr, PROGRAM_NAME": %s: ", level);
 
 	va_list ap;
 	va_start(ap, fmt);
@@ -51,7 +53,7 @@ void logger(const char *const level, const char *const fmt, ...)
 
 void logger_perror(const char *const level, const char *const fmt, ...)
 {
-	fprintf(stderr, "%s: ", level);
+	fprintf(stderr, PROGRAM_NAME": %s: ", level);
 
 	va_list ap;
 	va_start(ap, fmt);
