@@ -191,6 +191,7 @@ static void resizemouse(const Arg *arg);
 static void restack(Monitor *m);
 static void run();
 static void scan();
+static void scheme_destroy();
 static int sendevent(Client *c, Atom proto);
 static void sendmon(Client *c, Monitor *m);
 static void setclientstate(Client *c, long state);
@@ -543,9 +544,7 @@ void cleanup()
 		drw_cur_free(drw, cursor[i]);
 	}
 
-	for (size_t i = 0; i < LENGTH(colors); i++) {
-		free(scheme[i]);
-	}
+	scheme_destroy();
 
 	wmcheckwin_destroy();
 	ATOMS_DELETE(atoms);
@@ -1610,6 +1609,22 @@ void scan()
 	}
 }
 
+void scheme_create()
+{
+	scheme = ecalloc(LENGTH(colors), sizeof(Clr*));
+
+	for (unsigned int i = 0; i < LENGTH(colors); ++i) {
+		scheme[i] = drw_scm_create(drw, colors[i], 3);
+	}
+}
+
+void scheme_destroy()
+{
+	for (size_t i = 0; i < LENGTH(colors); ++i) {
+		free(scheme[i]);
+	}
+}
+
 void sendmon(Client *c, Monitor *m)
 {
 	if (c->mon == m)
@@ -1774,9 +1789,7 @@ bool setup()
 	cursor[CurResize] = drw_cur_create(drw, XC_sizing);
 	cursor[CurMove] = drw_cur_create(drw, XC_fleur);
 	/* init appearance */
-	scheme = ecalloc(LENGTH(colors), sizeof(Clr *));
-	for (unsigned int i = 0; i < LENGTH(colors); i++)
-		scheme[i] = drw_scm_create(drw, colors[i], 3);
+	scheme_create();
 
 	/* supporting window for NetWMCheck */
 	wmcheckwin_create();
