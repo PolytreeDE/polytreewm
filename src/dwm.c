@@ -788,11 +788,29 @@ long getstate(Window w)
 	unsigned long n, extra;
 	Atom real;
 
-	if (XGetWindowProperty(dpy, w, atoms->wmatom[WMState], 0L, 2L, False, atoms->wmatom[WMState],
-		&real, &format, &n, &extra, (unsigned char **)&p) != Success)
+	if (
+		XGetWindowProperty(
+			dpy,
+			w,
+			atoms->wmatom[WMState],
+			0L,
+			2L,
+			False,
+			atoms->wmatom[WMState],
+			&real,
+			&format,
+			&n,
+			&extra,
+			(unsigned char **)&p
+		) != Success
+	) {
 		return -1;
-	if (n != 0)
+	}
+
+	if (n != 0) {
 		result = *p;
+	}
+
 	XFree(p);
 	return result;
 }
@@ -803,15 +821,26 @@ int gettextprop(Window w, Atom atom, char *text, unsigned int size)
 	int n;
 	XTextProperty name;
 
-	if (!text || size == 0)
+	if (!text || size == 0) {
 		return 0;
+	}
+
 	text[0] = '\0';
-	if (!XGetTextProperty(dpy, w, &name, atom) || !name.nitems)
+
+	if (!XGetTextProperty(dpy, w, &name, atom) || !name.nitems) {
 		return 0;
-	if (name.encoding == XA_STRING)
+	}
+
+	if (name.encoding == XA_STRING) {
 		strncpy(text, (char *)name.value, size - 1);
-	else {
-		if (XmbTextPropertyToTextList(dpy, &name, &list, &n) >= Success && n > 0 && *list) {
+	} else {
+		if (
+			XmbTextPropertyToTextList(dpy, &name, &list, &n) >= Success
+			&&
+			n > 0
+			&&
+			*list
+		) {
 			strncpy(text, *list, size - 1);
 			XFreeStringList(list);
 		}
@@ -828,16 +857,40 @@ void grabbuttons(Client *c, int focused)
 		unsigned int i, j;
 		unsigned int modifiers[] = { 0, LockMask, numlockmask, numlockmask|LockMask };
 		XUngrabButton(dpy, AnyButton, AnyModifier, c->x_window);
-		if (!focused)
-			XGrabButton(dpy, AnyButton, AnyModifier, c->x_window, False,
-				BUTTONMASK, GrabModeSync, GrabModeSync, None, None);
-		for (i = 0; i < LENGTH(buttons); i++)
-			if (buttons[i].click == ClkClientWin)
-				for (j = 0; j < LENGTH(modifiers); j++)
-					XGrabButton(dpy, buttons[i].button,
+
+		if (!focused) {
+			XGrabButton(
+				dpy,
+				AnyButton,
+				AnyModifier,
+				c->x_window,
+				False,
+				BUTTONMASK,
+				GrabModeSync,
+				GrabModeSync,
+				None,
+				None
+			);
+		}
+
+		for (i = 0; i < LENGTH(buttons); i++) {
+			if (buttons[i].click == ClkClientWin) {
+				for (j = 0; j < LENGTH(modifiers); j++) {
+					XGrabButton(
+						dpy,
+						buttons[i].button,
 						buttons[i].mask | modifiers[j],
-						c->x_window, False, BUTTONMASK,
-						GrabModeAsync, GrabModeSync, None, None);
+						c->x_window,
+						False,
+						BUTTONMASK,
+						GrabModeAsync,
+						GrabModeSync,
+						None,
+						None
+					);
+				}
+			}
+		}
 	}
 }
 
@@ -850,11 +903,22 @@ void grabkeys()
 		KeyCode code;
 
 		XUngrabKey(dpy, AnyKey, AnyModifier, root);
-		for (i = 0; i < LENGTH(keys); i++)
-			if ((code = XKeysymToKeycode(dpy, keys[i].keysym)))
-				for (j = 0; j < LENGTH(modifiers); j++)
-					XGrabKey(dpy, code, keys[i].mod | modifiers[j], root,
-						True, GrabModeAsync, GrabModeAsync);
+
+		for (i = 0; i < LENGTH(keys); i++) {
+			if ((code = XKeysymToKeycode(dpy, keys[i].keysym))) {
+				for (j = 0; j < LENGTH(modifiers); j++) {
+					XGrabKey(
+						dpy,
+						code,
+						keys[i].mod | modifiers[j],
+						root,
+						True,
+						GrabModeAsync,
+						GrabModeAsync
+					);
+				}
+			}
+		}
 	}
 }
 
@@ -1022,10 +1086,19 @@ void movemouse(__attribute__((unused)) const Arg *arg)
 
 	restack(selmon);
 
-	if (XGrabPointer(dpy, root, False, MOUSEMASK, GrabModeAsync, GrabModeAsync,
-						None, cursor[CurMove]->cursor, CurrentTime)
-			!= GrabSuccess)
-	{
+	if (
+		XGrabPointer(
+			dpy,
+			root,
+			False,
+			MOUSEMASK,
+			GrabModeAsync,
+			GrabModeAsync,
+			None,
+			cursor[CurMove]->cursor,
+			CurrentTime
+		) != GrabSuccess
+	) {
 		return;
 	}
 
@@ -1296,10 +1369,19 @@ void resizemouse(__attribute__((unused)) const Arg *arg)
 
 	restack(selmon);
 
-	if (XGrabPointer(dpy, root, False, MOUSEMASK, GrabModeAsync, GrabModeAsync,
-						None, cursor[CurResize]->cursor, CurrentTime)
-			!= GrabSuccess)
-	{
+	if (
+		XGrabPointer(
+			dpy,
+			root,
+			False,
+			MOUSEMASK,
+			GrabModeAsync,
+			GrabModeAsync,
+			None,
+			cursor[CurResize]->cursor,
+			CurrentTime
+		) != GrabSuccess
+	) {
 		return;
 	}
 
@@ -1444,20 +1526,28 @@ void restack(Monitor *m)
 	XEvent ev;
 	XWindowChanges wc;
 
-	if (!m->sel)
-		return;
-	if (m->sel->state.is_floating || !m->lt[m->sellt]->arrange)
+	if (!m->sel) return;
+
+	if (m->sel->state.is_floating || !m->lt[m->sellt]->arrange) {
 		XRaiseWindow(dpy, m->sel->x_window);
+	}
+
 	if (m->lt[m->sellt]->arrange) {
 		wc.stack_mode = Below;
 		// TODO: Learn what is sibling and what
 		// is the following line responsible for.
 		// wc.sibling = m->bar->barwin;
-		for (c = m->stack; c; c = c->snext)
+		for (c = m->stack; c; c = c->snext) {
 			if (!c->state.is_floating && ISVISIBLE(c)) {
-				XConfigureWindow(dpy, c->x_window, CWSibling|CWStackMode, &wc);
+				XConfigureWindow(
+					dpy,
+					c->x_window,
+					CWSibling | CWStackMode,
+					&wc
+				);
 				wc.sibling = c->x_window;
 			}
+		}
 	}
 	XSync(dpy, False);
 	while (XCheckMaskEvent(dpy, EnterWindowMask, &ev));
@@ -1468,9 +1558,11 @@ void run()
 	XEvent ev;
 	/* main event loop */
 	XSync(dpy, False);
-	while (running && !XNextEvent(dpy, &ev))
-		if (handler[ev.type])
+	while (running && !XNextEvent(dpy, &ev)) {
+		if (handler[ev.type]) {
 			handler[ev.type](&ev); /* call handler */
+		}
+	}
 }
 
 void scan()
@@ -1481,18 +1573,35 @@ void scan()
 
 	if (XQueryTree(dpy, root, &d1, &d2, &wins, &num)) {
 		for (i = 0; i < num; i++) {
-			if (!XGetWindowAttributes(dpy, wins[i], &wa)
-			|| wa.override_redirect || XGetTransientForHint(dpy, wins[i], &d1))
+			if (
+				!XGetWindowAttributes(dpy, wins[i], &wa)
+				||
+				wa.override_redirect
+				||
+				XGetTransientForHint(dpy, wins[i], &d1)
+			) {
 				continue;
-			if (wa.map_state == IsViewable || getstate(wins[i]) == IconicState)
+			}
+
+			if (
+				wa.map_state == IsViewable
+				||
+				getstate(wins[i]) == IconicState
+			) {
 				manage(wins[i], &wa);
+			}
 		}
 		for (i = 0; i < num; i++) { /* now the transients */
-			if (!XGetWindowAttributes(dpy, wins[i], &wa))
+			if (!XGetWindowAttributes(dpy, wins[i], &wa)) {
 				continue;
-			if (XGetTransientForHint(dpy, wins[i], &d1)
-			&& (wa.map_state == IsViewable || getstate(wins[i]) == IconicState))
+			}
+			if (
+				XGetTransientForHint(dpy, wins[i], &d1)
+				&&
+				(wa.map_state == IsViewable || getstate(wins[i]) == IconicState)
+			) {
 				manage(wins[i], &wa);
+			}
 		}
 		if (wins)
 			XFree(wins);
@@ -1537,10 +1646,12 @@ int sendevent(Client *c, Atom proto)
 	XEvent ev;
 
 	if (XGetWMProtocols(dpy, c->x_window, &protocols, &n)) {
-		while (!exists && n--)
+		while (!exists && n--) {
 			exists = protocols[n] == proto;
+		}
 		XFree(protocols);
 	}
+
 	if (exists) {
 		ev.type = ClientMessage;
 		ev.xclient.window = c->x_window;
@@ -1550,6 +1661,7 @@ int sendevent(Client *c, Atom proto)
 		ev.xclient.data.l[1] = CurrentTime;
 		XSendEvent(dpy, c->x_window, False, NoEventMask, &ev);
 	}
+
 	return exists;
 }
 
@@ -1575,14 +1687,30 @@ void setfocus(Client *c)
 void setfullscreen(Client *c, int fullscreen)
 {
 	if (fullscreen && !c->state.is_fullscreen) {
-		XChangeProperty(dpy, c->x_window, atoms->netatom[NetWMState], XA_ATOM, 32,
-			PropModeReplace, (unsigned char*)&atoms->netatom[NetWMFullscreen], 1);
+		XChangeProperty(
+			dpy,
+			c->x_window,
+			atoms->netatom[NetWMState],
+			XA_ATOM,
+			32,
+			PropModeReplace,
+			(unsigned char*)&atoms->netatom[NetWMFullscreen],
+			1
+		);
 		c->state.is_fullscreen = true;
 		// We have to rearrange because borders and gaps may have changed.
 		arrange(c->mon);
 	} else if (!fullscreen && c->state.is_fullscreen){
-		XChangeProperty(dpy, c->x_window, atoms->netatom[NetWMState], XA_ATOM, 32,
-			PropModeReplace, (unsigned char*)0, 0);
+		XChangeProperty(
+			dpy,
+			c->x_window,
+			atoms->netatom[NetWMState],
+			XA_ATOM,
+			32,
+			PropModeReplace,
+			(unsigned char*)0,
+			0
+		);
 		c->state.is_fullscreen = false;
 		// We have to rearrange because borders and gaps may have changed.
 		arrange(c->mon);
@@ -1697,9 +1825,10 @@ bool setup()
 
 	/* select events */
 	wa.cursor = cursor[CurNormal]->cursor;
-	wa.event_mask = SubstructureRedirectMask|SubstructureNotifyMask
-		|ButtonPressMask|PointerMotionMask|EnterWindowMask
-		|LeaveWindowMask|StructureNotifyMask|PropertyChangeMask;
+	wa.event_mask =
+		SubstructureRedirectMask | SubstructureNotifyMask | ButtonPressMask |
+		PointerMotionMask | EnterWindowMask | LeaveWindowMask |
+		StructureNotifyMask | PropertyChangeMask;
 	XChangeWindowAttributes(dpy, root, CWEventMask|CWCursor, &wa);
 	XSelectInput(dpy, root, wa.event_mask);
 	grabkeys();
@@ -1713,8 +1842,8 @@ void seturgent(Client *c, bool is_urgent)
 	XWMHints *wmh;
 
 	c->state.is_urgent = is_urgent;
-	if (!(wmh = XGetWMHints(dpy, c->x_window)))
-		return;
+	if (!(wmh = XGetWMHints(dpy, c->x_window))) return;
+
 	wmh->flags =
 		is_urgent ? (wmh->flags | XUrgencyHint) : (wmh->flags & ~XUrgencyHint);
 	XSetWMHints(dpy, c->x_window, wmh);
@@ -1953,11 +2082,17 @@ void updatenumlockmask()
 
 	numlockmask = 0;
 	modmap = XGetModifierMapping(dpy);
-	for (i = 0; i < 8; i++)
-		for (int j = 0; j < modmap->max_keypermod; j++)
-			if (modmap->modifiermap[i * modmap->max_keypermod + j]
-				== XKeysymToKeycode(dpy, XK_Num_Lock))
+	for (i = 0; i < 8; i++) {
+		for (int j = 0; j < modmap->max_keypermod; j++) {
+			if (
+				modmap->modifiermap[i * modmap->max_keypermod + j]
+				==
+				XKeysymToKeycode(dpy, XK_Num_Lock)
+			) {
 				numlockmask = (1 << i);
+			}
+		}
+	}
 	XFreeModifiermap(modmap);
 }
 
