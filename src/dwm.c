@@ -11,7 +11,6 @@
 
 #include <locale.h>
 #include <signal.h>
-#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -276,16 +275,8 @@ static void (*handler[LASTEvent])(XEvent*) = {
 #include "dwm/layouts.c"
 #include "dwm/xerror.c"
 
-int dwm_main(int argc, char *argv[])
+int dwm_main()
 {
-	if (argc == 2 && !strcmp("-v", argv[1])) {
-		die("polytreewm-"VERSION);
-	}
-
-	if (argc != 1) {
-		die("usage: polytreewm [-v]");
-	}
-
 	if (!setlocale(LC_CTYPE, "") || !XSupportsLocale()) {
 		fputs("warning: no locale support\n", stderr);
 	}
