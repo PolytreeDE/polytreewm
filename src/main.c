@@ -10,7 +10,8 @@
 int main(int argc, char *argv[])
 {
 	if (argc == 2 && strcmp(argv[1], "-v") == 0) {
-		die("polytreewm-"VERSION);
+		fputs("polytreewm-"VERSION"\n", stderr);
+		exit(EXIT_SUCCESS);
 	}
 
 	if (argc != 1) {
