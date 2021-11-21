@@ -158,9 +158,7 @@ static void configborder(const Arg *arg);
 static void configgap(const Arg *arg);
 static void checkotherwm();
 static void cleanup();
-static void cleanupmon(Monitor *mon);
 static void configure(Client *c);
-static Monitor *createmon();
 static void detach(Client *c);
 static void detachstack(Client *c);
 static Monitor *dirtomon(int dir);
@@ -178,6 +176,8 @@ static void incnmaster(const Arg *arg);
 static int isuniquegeom(XineramaScreenInfo *unique, size_t n, XineramaScreenInfo *info);
 static void killclient(const Arg *arg);
 static void manage(Window w, XWindowAttributes *wa);
+static Monitor *monitor_create();
+static void monitor_destroy(Monitor *mon);
 static void movemouse(const Arg *arg);
 static void movestack(const Arg *arg);
 static Client *nexttiled(Client *c);
@@ -537,7 +537,7 @@ void cleanup()
 	XUngrabKey(dpy, AnyKey, AnyModifier, root);
 
 	while (mons) {
-		cleanupmon(mons);
+		monitor_destroy(mons);
 	}
 
 	for (size_t i = 0; i < CurLast; i++) {
@@ -554,20 +554,6 @@ void cleanup()
 	XDeleteProperty(dpy, root, atoms->netatom[NetActiveWindow]);
 
 	if (global_unit) UNIT_DELETE(global_unit);
-}
-
-void cleanupmon(Monitor *mon)
-{
-	if (mon == mons) {
-		mons = mons->next;
-	} else {
-		Monitor *m;
-		for (m = mons; m && m->next != mon; m = m->next);
-		m->next = mon->next;
-	}
-
-	UNIT_DELETE(mon->unit);
-	free(mon);
 }
 
 void configure(Client *c)
@@ -589,31 +575,6 @@ void configure(Client *c)
 	};
 
 	XSendEvent(dpy, c->x_window, False, StructureNotifyMask, (XEvent*)&ce);
-}
-
-Monitor *createmon()
-{
-	Monitor *const m = ecalloc(1, sizeof(Monitor));
-
-	m->screen_geometry      = basic_geometry_create();
-	m->window_area_geometry = basic_geometry_create();
-
-	if (!m) goto fail_without_mon;
-
-	if (!(m->unit = unit_new(UNIT_MONITOR, global_unit))) {
-		goto fail_without_unit;
-	}
-
-	m->nmaster = settings_get_default_clients_in_master();
-	m->lt[0] = &layouts[0];
-	m->lt[1] = &layouts[1 % LENGTH(layouts)];
-
-	return m;
-
-fail_without_unit:
-	free(m);
-fail_without_mon:
-	return NULL;
 }
 
 void detach(Client *c)
@@ -1078,6 +1039,45 @@ void manage(Window w, XWindowAttributes *wa)
 	arrange(c->mon);
 	XMapWindow(dpy, c->x_window);
 	focus(NULL);
+}
+
+Monitor *monitor_create()
+{
+	Monitor *const m = ecalloc(1, sizeof(Monitor));
+
+	m->screen_geometry      = basic_geometry_create();
+	m->window_area_geometry = basic_geometry_create();
+
+	if (!m) goto fail_without_mon;
+
+	if (!(m->unit = unit_new(UNIT_MONITOR, global_unit))) {
+		goto fail_without_unit;
+	}
+
+	m->nmaster = settings_get_default_clients_in_master();
+	m->lt[0] = &layouts[0];
+	m->lt[1] = &layouts[1 % LENGTH(layouts)];
+
+	return m;
+
+fail_without_unit:
+	free(m);
+fail_without_mon:
+	return NULL;
+}
+
+void monitor_destroy(Monitor *mon)
+{
+	if (mon == mons) {
+		mons = mons->next;
+	} else {
+		Monitor *m;
+		for (m = mons; m && m->next != mon; m = m->next);
+		m->next = mon->next;
+	}
+
+	UNIT_DELETE(mon->unit);
+	free(mon);
 }
 
 void movemouse(__attribute__((unused)) const Arg *arg)
@@ -1991,9 +1991,9 @@ int updategeom()
 			for (i = 0; i < (nn - n); i++) {
 				for (m = mons; m && m->next; m = m->next);
 				if (m)
-					m->next = createmon();
+					m->next = monitor_create();
 				else
-					mons = createmon();
+					mons = monitor_create();
 			}
 			for (i = 0, m = mons; i < nn && m; m = m->next, i++)
 				if (
@@ -2031,7 +2031,7 @@ int updategeom()
 				}
 				if (m == selmon)
 					selmon = mons;
-				cleanupmon(m);
+				monitor_destroy(m);
 			}
 		}
 		free(unique);
@@ -2039,7 +2039,7 @@ int updategeom()
 #endif /* ENABLE_XINERAMA */
 	{ /* default monitor setup */
 		if (!mons)
-			mons = createmon();
+			mons = monitor_create();
 
 		if (
 			mons->screen_geometry.sizes.w != screen.sizes.w
