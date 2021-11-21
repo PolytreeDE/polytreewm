@@ -145,7 +145,7 @@ struct Monitor {
  * function declarations *
  *************************/
 
-static int applysizehints(Client *c, int *x, int *y, int *w, int *h, int bw, int interact);
+static int applysizehints(Client *c, ClientGeometry client_geometry, int interact);
 static void arrange(Monitor *m);
 static void arrangemon(Monitor *m);
 static void attach(Client *c);
@@ -305,13 +305,15 @@ int main(int argc, char *argv[])
 
 int applysizehints(
 	Client *c,
-	int *x,
-	int *y,
-	int *w,
-	int *h,
-	int bw,
+	ClientGeometry client_geometry,
 	int interact
 ) {
+	int *const x = &client_geometry->basic.position.x;
+	int *const y = &client_geometry->basic.position.y;
+	int *const w = &client_geometry->basic.sizes.w;
+	int *const h = &client_geometry->basic.sizes.h;
+	int const bw = client_geometry->border_width;
+
 	Monitor *m = c->mon;
 
 	/* set minimum possible */
@@ -1257,17 +1259,7 @@ void resetnmaster(const Arg *arg)
 
 void resize(Client *c, struct ClientGeometry client_geometry, int interact)
 {
-	if (
-		applysizehints(
-			c,
-			&client_geometry.basic.position.x,
-			&client_geometry.basic.position.y,
-			&client_geometry.basic.sizes.w,
-			&client_geometry.basic.sizes.h,
-			client_geometry.border_width,
-			interact
-		)
-	) {
+	if (applysizehints(c, &client_geometry, interact)) {
 		resizeclient(c, client_geometry);
 	}
 }
