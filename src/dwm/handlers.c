@@ -17,8 +17,13 @@ void on_button_press(XEvent *e)
 		focus(NULL);
 	}
 	if ((c = wintoclient(ev->window))) {
-		if (settings_get_focus_on_wheel() || (ev->button != Button4 && ev->button != Button5))
+		if (
+			settings_get_focus_on_wheel()
+			||
+			(ev->button != Button4 && ev->button != Button5)
+		) {
 			focus(c);
+		}
 		XAllowEvents(dpy, ReplayPointer, CurrentTime);
 		click = ClkClientWin;
 	}
@@ -205,11 +210,17 @@ void on_key_press(XEvent *e)
 
 	ev = &e->xkey;
 	keysym = XKeycodeToKeysym(dpy, (KeyCode)ev->keycode, 0);
-	for (i = 0; i < LENGTH(keys); i++)
-		if (keysym == keys[i].keysym
-		&& CLEANMASK(keys[i].mod) == CLEANMASK(ev->state)
-		&& keys[i].func)
+	for (i = 0; i < LENGTH(keys); i++) {
+		if (
+			keysym == keys[i].keysym
+			&&
+			CLEANMASK(keys[i].mod) == CLEANMASK(ev->state)
+			&&
+			keys[i].func
+		) {
 			keys[i].func(&(keys[i].arg));
+		}
+	}
 }
 
 void on_mapping_notify(XEvent *e)
@@ -226,12 +237,12 @@ void on_map_request(XEvent *e)
 	static XWindowAttributes wa;
 	XMapRequestEvent *ev = &e->xmaprequest;
 
-	if (!XGetWindowAttributes(dpy, ev->window, &wa))
-		return;
-	if (wa.override_redirect)
-		return;
-	if (!wintoclient(ev->window))
+	if (!XGetWindowAttributes(dpy, ev->window, &wa)) return;
+	if (wa.override_redirect) return;
+
+	if (!wintoclient(ev->window)) {
 		manage(ev->window, &wa);
+	}
 }
 
 void on_property_notify(XEvent *e)
@@ -246,9 +257,15 @@ void on_property_notify(XEvent *e)
 		switch(ev->atom) {
 		default: break;
 		case XA_WM_TRANSIENT_FOR:
-			if (!c->state.is_floating && (XGetTransientForHint(dpy, c->x_window, &trans)) &&
-				(c->state.is_floating = (wintoclient(trans)) != NULL))
+			if (
+				!c->state.is_floating
+				&&
+				(XGetTransientForHint(dpy, c->x_window, &trans))
+				&&
+				(c->state.is_floating = (wintoclient(trans)) != NULL)
+			) {
 				arrange(c->mon);
+			}
 			break;
 		case XA_WM_NORMAL_HINTS:
 			updatesizehints(c);
