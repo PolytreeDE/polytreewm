@@ -141,6 +141,11 @@ struct Monitor {
 	const Layout *lt[2];
 };
 
+struct Screen {
+	struct Sizes sizes;
+	int x_screen;
+};
+
 /*************************
  * function declarations *
  *************************/
@@ -222,11 +227,14 @@ static void zoom(const Arg *arg);
  * variables *
  *************/
 
-static struct Sizes screen_sizes = { 0, 0 };
+static struct Screen screen = {
+	.sizes = { 0, 0 },
+	.x_screen = 0,
+};
+
 static Unit global_unit = NULL;
 
 static const char broken[] = "broken";
-static int x_screen;
 static int (*xerrorxlib)(Display *, XErrorEvent *);
 static unsigned int numlockmask = 0;
 static void (*handler[LASTEvent]) (XEvent *) = {
@@ -321,15 +329,15 @@ int applysizehints(
 	*h = MAX(1, *h);
 
 	if (interact) {
-		if (*x > screen_sizes.w) {
+		if (*x > screen.sizes.w) {
 			*x =
-				screen_sizes.w
+				screen.sizes.w
 				-
 				client_geometry_total_width(&c->state.geometry);
 		}
-		if (*y > screen_sizes.h) {
+		if (*y > screen.sizes.h) {
 			*y =
-				screen_sizes.h
+				screen.sizes.h
 				-
 				client_geometry_total_height(&c->state.geometry);
 		}
@@ -989,7 +997,7 @@ void manage(Window w, XWindowAttributes *wa)
 	XMoveResizeWindow(
 		dpy,
 		c->x_window,
-		c->state.geometry.basic.position.x + 2 * screen_sizes.w,
+		c->state.geometry.basic.position.x + 2 * screen.sizes.w,
 		c->state.geometry.basic.position.y,
 		c->state.geometry.basic.sizes.w,
 		c->state.geometry.basic.sizes.h
@@ -1624,11 +1632,11 @@ bool setup()
 	if (!(global_unit = unit_new(UNIT_GLOBAL, NULL))) return false;
 
 	/* init screen */
-	x_screen = DefaultScreen(dpy);
-	screen_sizes.w = DisplayWidth(dpy, x_screen);
-	screen_sizes.h = DisplayHeight(dpy, x_screen);
-	root = RootWindow(dpy, x_screen);
-	drw = drw_create(dpy, x_screen, root, screen_sizes.w, screen_sizes.h);
+	screen.x_screen = DefaultScreen(dpy);
+	screen.sizes.w = DisplayWidth(dpy, screen.x_screen);
+	screen.sizes.h = DisplayHeight(dpy, screen.x_screen);
+	root = RootWindow(dpy, screen.x_screen);
+	drw = drw_create(dpy, screen.x_screen, root, screen.sizes.w, screen.sizes.h);
 	if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
 		die("no fonts could be loaded.");
 	updategeom();
@@ -1932,14 +1940,14 @@ int updategeom()
 			mons = createmon();
 
 		if (
-			mons->screen_geometry.sizes.w != screen_sizes.w
+			mons->screen_geometry.sizes.w != screen.sizes.w
 			||
-			mons->screen_geometry.sizes.h != screen_sizes.h
+			mons->screen_geometry.sizes.h != screen.sizes.h
 		) {
 			dirty = 1;
 			mons->screen_geometry.sizes =
 				mons->window_area_geometry.sizes =
-				screen_sizes;
+				screen.sizes;
 		}
 	}
 	if (dirty) {
