@@ -138,7 +138,7 @@ void on_configure_request(XEvent *e)
 			if (ISVISIBLE(c)) {
 				XMoveResizeWindow(
 					dpy,
-					c->win,
+					c->x_window,
 					c->state.geometry.basic.position.x,
 					c->state.geometry.basic.position.y,
 					c->state.geometry.basic.sizes.w,
@@ -193,7 +193,7 @@ void on_focus_in(XEvent *e)
 {
 	XFocusChangeEvent *ev = &e->xfocus;
 
-	if (selmon->sel && ev->window != selmon->sel->win)
+	if (selmon->sel && ev->window != selmon->sel->x_window)
 		setfocus(selmon->sel);
 }
 
@@ -246,7 +246,7 @@ void on_property_notify(XEvent *e)
 		switch(ev->atom) {
 		default: break;
 		case XA_WM_TRANSIENT_FOR:
-			if (!c->state.is_floating && (XGetTransientForHint(dpy, c->win, &trans)) &&
+			if (!c->state.is_floating && (XGetTransientForHint(dpy, c->x_window, &trans)) &&
 				(c->state.is_floating = (wintoclient(trans)) != NULL))
 				arrange(c->mon);
 			break;
