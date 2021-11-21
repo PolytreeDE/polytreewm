@@ -1,7 +1,5 @@
 /* See LICENSE file for copyright and license details. */
 
-static const char wm_name[] = "PolytreeWM";
-
 /* appearance */
 
 static const char *fonts[]          = { "monospace:size=10" };

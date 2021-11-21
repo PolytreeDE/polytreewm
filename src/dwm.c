@@ -229,6 +229,8 @@ static void zoom(const Arg *arg);
  * variables *
  *************/
 
+static const char *program_title = NULL;
+
 static struct Screen screen = {
 	.sizes = { 0, 0 },
 	.x_screen = 0,
@@ -280,8 +282,12 @@ static void (*handler[LASTEvent])(XEvent*) = {
  * Public function implementations *
  ***********************************/
 
-int dwm_main()
+int dwm_main(const char *const new_program_title)
 {
+	if (!(program_title = new_program_title)) {
+		fatal("no program title is given");
+	}
+
 	if (!XSupportsLocale()) {
 		warning("no locale support in X");
 	}
@@ -2195,8 +2201,8 @@ void wmcheckwin_create()
 		8,
 		PropModeReplace,
 		(unsigned char*)
-		wm_name,
-		strlen(wm_name)
+		program_title,
+		strlen(program_title)
 	);
 	XChangeProperty(
 		dpy,

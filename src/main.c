@@ -12,7 +12,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#define PROGRAM_NAME "polytreewm"
+#define PROGRAM_TITLE "PolytreeWM"
+#define PROGRAM_NAME  "polytreewm"
 
 static char *program_exe = NULL;
 
@@ -57,7 +58,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	exit(dwm_main(argc, argv));
+	exit(dwm_main(PROGRAM_TITLE));
 }
 
 void signal_callback(const int signo)
