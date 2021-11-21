@@ -216,6 +216,8 @@ static void updatewindowtype(Client *c);
 static void updatewmhints(Client *c);
 static Client *wintoclient(Window w);
 static Monitor *wintomon(Window w);
+static void wmcheckwin_create();
+static void wmcheckwin_destroy();
 static void zoom(const Arg *arg);
 
 #include "dwm/handlers.h"
@@ -545,8 +547,8 @@ void cleanup()
 		free(scheme[i]);
 	}
 
+	wmcheckwin_destroy();
 	ATOMS_DELETE(atoms);
-	XDestroyWindow(dpy, wmcheckwin);
 	drw_free(drw);
 	XSync(dpy, False);
 	XSetInputFocus(dpy, PointerRoot, RevertToPointerRoot, CurrentTime);
@@ -1777,38 +1779,7 @@ bool setup()
 		scheme[i] = drw_scm_create(drw, colors[i], 3);
 
 	/* supporting window for NetWMCheck */
-	wmcheckwin = XCreateSimpleWindow(dpy, root, 0, 0, 1, 1, 0, 0, 0);
-	XChangeProperty(
-		dpy,
-		wmcheckwin,
-		atoms->netatom[NetWMCheck],
-		XA_WINDOW,
-		32,
-		PropModeReplace,
-		(unsigned char*)&wmcheckwin,
-		1
-	);
-	XChangeProperty(
-		dpy,
-		wmcheckwin,
-		atoms->netatom[NetWMName],
-		atoms->utf8string,
-		8,
-		PropModeReplace,
-		(unsigned char*)
-		wm_name,
-		strlen(wm_name)
-	);
-	XChangeProperty(
-		dpy,
-		root,
-		atoms->netatom[NetWMCheck],
-		XA_WINDOW,
-		32,
-		PropModeReplace,
-		(unsigned char*)&wmcheckwin,
-		1
-	);
+	wmcheckwin_create();
 
 	/* EWMH support per view */
 	XChangeProperty(
@@ -2187,6 +2158,48 @@ Monitor *wintomon(Window w)
 	}
 
 	return selmon;
+}
+
+void wmcheckwin_create()
+{
+	wmcheckwin = XCreateSimpleWindow(dpy, root, 0, 0, 1, 1, 0, 0, 0);
+
+	XChangeProperty(
+		dpy,
+		wmcheckwin,
+		atoms->netatom[NetWMCheck],
+		XA_WINDOW,
+		32,
+		PropModeReplace,
+		(unsigned char*)&wmcheckwin,
+		1
+	);
+	XChangeProperty(
+		dpy,
+		wmcheckwin,
+		atoms->netatom[NetWMName],
+		atoms->utf8string,
+		8,
+		PropModeReplace,
+		(unsigned char*)
+		wm_name,
+		strlen(wm_name)
+	);
+	XChangeProperty(
+		dpy,
+		root,
+		atoms->netatom[NetWMCheck],
+		XA_WINDOW,
+		32,
+		PropModeReplace,
+		(unsigned char*)&wmcheckwin,
+		1
+	);
+}
+
+void wmcheckwin_destroy()
+{
+	XDestroyWindow(dpy, wmcheckwin);
 }
 
 void zoom(__attribute__((unused)) const Arg *arg)
