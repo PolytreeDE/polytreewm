@@ -1,3 +1,5 @@
+#include "dwm.h"
+
 #include "atoms.h"
 #include "helpers.h"
 #include "layouts.h"
@@ -274,7 +276,7 @@ static void (*handler[LASTEvent])(XEvent*) = {
 #include "dwm/layouts.c"
 #include "dwm/xerror.c"
 
-int main(int argc, char *argv[])
+int dwm_main(int argc, char *argv[])
 {
 	if (argc == 2 && !strcmp("-v", argv[1])) {
 		die("polytreewm-"VERSION);

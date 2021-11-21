@@ -21,6 +21,7 @@ MODULES_SRC = \
 	src/atoms.c \
 	src/constraints.c \
 	src/drw.c \
+	src/dwm.c \
 	src/helpers.c \
 	src/layouts.c \
 	src/settings.c \
@@ -37,7 +38,7 @@ DWM_SRC = \
 MODULES_HDR = $(MODULES_SRC:.c=.h)
 DWM_HDR = $(DWM_SRC:.c=.h)
 
-SRC = $(MODULES_SRC) src/dwm.c
+SRC = $(MODULES_SRC) src/main.c
 HDR = $(MODULES_HDR) src/config.def.h
 
 OBJ = $(SRC:.c=.o)
