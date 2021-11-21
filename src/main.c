@@ -10,8 +10,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/wait.h>
+#include <unistd.h>
 
 #define PROGRAM_NAME "polytreewm"
+
+static char *program_exe = NULL;
 
 static void signal_callback(int signo);
 
@@ -30,6 +33,10 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
+	if (!(program_exe = argv[0])) {
+		fatal("no program executable name");
+	}
+
 	if (!setlocale(LC_CTYPE, "") || !dwm_has_locale_support()) {
 		warning("no locale support");
 	}
@@ -44,6 +51,7 @@ int main(int argc, char *argv[])
 		struct sigaction action;
 		memset(&action, 0, sizeof(action));
 		action.sa_handler = signal_callback;
+
 		if (sigaction(SIGCHLD, &action, NULL) != 0) {
 			fatal_perror("can't install SIGCHLD handler");
 		}
@@ -54,10 +62,20 @@ int main(int argc, char *argv[])
 
 void signal_callback(const int signo)
 {
-	if (signo != SIGCHLD) return;
+	switch (signo) {
+	case SIGCHLD:
+		// Clean up any zombies immediately.
+		while (waitpid(-1, NULL, WNOHANG) > 0);
+		break;
+	}
+}
 
-	// Clean up any zombies immediately.
-	while (waitpid(-1, NULL, WNOHANG) > 0);
+void restart()
+{
+	info("restarting");
+	char *args[] = { program_exe, NULL };
+	execvp(program_exe, args);
+	fatal_perror("restart with `execvp' failed");
 }
 
 void logger(const char *const level, const char *const fmt, ...)
@@ -134,5 +152,13 @@ void warning_perror(const char *const fmt, ...)
 	va_list ap;
 	va_start(ap, fmt);
 	logger_perror("WARN", fmt, ap);
+	va_end(ap);
+}
+
+void info(const char *const fmt, ...)
+{
+	va_list ap;
+	va_start(ap, fmt);
+	logger("INFO", fmt, ap);
 	va_end(ap);
 }

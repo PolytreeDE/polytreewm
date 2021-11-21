@@ -34,6 +34,7 @@ static const Layout layouts[] = {
 static Key keys[] = {
 	// WM
 	{ MODKEY|ControlMask|ShiftMask, XK_q,            quit,           {0} },
+	{ MODKEY|ControlMask|ShiftMask, XK_r,            dorestart,      {0} },
 	// Monitor
 	{ MODKEY,                       XK_bracketleft,  focusmon,       {.i = -1 } },
 	{ MODKEY,                       XK_bracketright, focusmon,       {.i = +1 } },

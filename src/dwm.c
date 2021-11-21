@@ -164,6 +164,7 @@ static Monitor *createmon();
 static void detach(Client *c);
 static void detachstack(Client *c);
 static Monitor *dirtomon(int dir);
+static void dorestart(const Arg *arg);
 static void focus(Client *c);
 static void focusmon(const Arg *arg);
 static void focusstack(const Arg *arg);
@@ -648,6 +649,11 @@ Monitor *dirtomon(int dir)
 	else
 		for (m = mons; m->next != selmon; m = m->next);
 	return m;
+}
+
+void dorestart(__attribute__((unused)) const Arg *const arg)
+{
+	restart();
 }
 
 void focus(Client *c)
