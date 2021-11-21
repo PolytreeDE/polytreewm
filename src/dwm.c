@@ -545,7 +545,7 @@ void cleanup()
 		free(scheme[i]);
 	}
 
-	atoms_destroy(atoms);
+	ATOMS_DELETE(atoms);
 	XDestroyWindow(dpy, wmcheckwin);
 	drw_free(drw);
 	XSync(dpy, False);

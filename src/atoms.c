@@ -28,7 +28,10 @@ Atoms atoms_create(Display *const dpy)
 	return atoms;
 }
 
-void atoms_destroy(Atoms atoms)
+void atoms_delete(Atoms atoms)
 {
+	// TODO: maybe we should assert
+	if (atoms == NULL) return;
+
 	free(atoms);
 }
