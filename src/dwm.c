@@ -592,8 +592,8 @@ Monitor *createmon()
 {
 	Monitor *const m = ecalloc(1, sizeof(Monitor));
 
-	basic_geometry_init(&m->screen_geometry);
-	basic_geometry_init(&m->window_area_geometry);
+	m->screen_geometry      = basic_geometry_create();
+	m->window_area_geometry = basic_geometry_create();
 
 	if (!m) goto fail_without_mon;
 
@@ -1780,8 +1780,7 @@ void togglefloating(__attribute__((unused)) const Arg *arg)
 	if (selmon->sel->state.is_floating) {
 		struct ClientGeometry client_geometry = selmon->sel->state.geometry;
 
-		sizes_init_from_args(
-			&client_geometry.basic.sizes,
+		client_geometry.basic.sizes = sizes_create_from_args(
 			selmon->sel->state.geometry.basic.sizes.w -
 				2 * (border_width - selmon->sel->state.geometry.border_width),
 			selmon->sel->state.geometry.basic.sizes.h -
@@ -1894,18 +1893,14 @@ int updategeom()
 				) {
 					dirty = 1;
 					m->num = i;
-					m->screen_geometry.position.x =
-						m->window_area_geometry.position.x =
-						unique[i].x_org;
-					m->screen_geometry.position.y =
-						m->window_area_geometry.position.y =
-						unique[i].y_org;
-					m->screen_geometry.sizes.w =
-						m->window_area_geometry.sizes.w =
-						unique[i].width;
-					m->screen_geometry.sizes.h =
-						m->window_area_geometry.sizes.h =
-						unique[i].height;
+
+					m->screen_geometry = m->window_area_geometry =
+						basic_geometry_create_from_args(
+							unique[i].x_org,
+							unique[i].y_org,
+							unique[i].width,
+							unique[i].height
+						);
 				}
 		} else { /* less monitors available nn < n */
 			for (i = nn; i < n; i++) {
@@ -1929,18 +1924,16 @@ int updategeom()
 	{ /* default monitor setup */
 		if (!mons)
 			mons = createmon();
+
 		if (
 			mons->screen_geometry.sizes.w != screen_sizes.w
 			||
 			mons->screen_geometry.sizes.h != screen_sizes.h
 		) {
 			dirty = 1;
-			mons->screen_geometry.sizes.w =
-				mons->window_area_geometry.sizes.w =
-				screen_sizes.w;
-			mons->screen_geometry.sizes.h =
-				mons->window_area_geometry.sizes.h =
-				screen_sizes.h;
+			mons->screen_geometry.sizes =
+				mons->window_area_geometry.sizes =
+				screen_sizes;
 		}
 	}
 	if (dirty) {

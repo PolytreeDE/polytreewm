@@ -2,6 +2,31 @@
 
 #include <string.h>
 
+/****************************
+ * Default create functions *
+ ****************************/
+
+struct Position position_create()
+{
+	struct Position position;
+	position_init(&position);
+	return position;
+}
+
+struct Sizes sizes_create()
+{
+	struct Sizes sizes;
+	sizes_init(&sizes);
+	return sizes;
+}
+
+struct BasicGeometry basic_geometry_create()
+{
+	struct BasicGeometry basic_geometry;
+	basic_geometry_init(&basic_geometry);
+	return basic_geometry;
+}
+
 /**************************
  * Default init functions *
  **************************/
@@ -55,6 +80,35 @@ void client_state_init(const ClientState client_state)
 	client_state->is_fullscreen = false;
 }
 
+/*****************************
+ * Argument create functions *
+ *****************************/
+
+struct Position position_create_from_args(const int x, const int y)
+{
+	const struct Position position = { .x = x, .y = y };
+	return position;
+}
+
+struct Sizes sizes_create_from_args(const int width, const int height)
+{
+	const struct Sizes sizes = { .w = width, .h = height };
+	return sizes;
+}
+
+struct BasicGeometry basic_geometry_create_from_args(
+	const int x,
+	const int y,
+	const int width,
+	const int height
+) {
+	const struct BasicGeometry basic_geometry = {
+		.position = position_create_from_args(x, y),
+		.sizes = sizes_create_from_args(width, height),
+	};
+	return basic_geometry;
+}
+
 /***************************
  * Argument init functions *
  ***************************/
@@ -71,16 +125,26 @@ void sizes_init_from_args(const Sizes sizes, const int width, const int height)
 	sizes->h = height;
 }
 
+void basic_geometry_init_from_args(
+	const BasicGeometry basic_geometry,
+	const int x,
+	const int y,
+	const int width,
+	const int height
+) {
+	position_init_from_args(&basic_geometry->position, x, y);
+	sizes_init_from_args(&basic_geometry->sizes, width, height);
+}
+
 void client_geometry_init_from_args(
 	const ClientGeometry client_geometry,
-	int x,
-	int y,
-	int width,
-	int height,
-	int border_width
+	const int x,
+	const int y,
+	const int width,
+	const int height,
+	const int border_width
 ) {
-	position_init_from_args(&client_geometry->basic.position, x, y);
-	sizes_init_from_args(&client_geometry->basic.sizes, width, height);
+	basic_geometry_init_from_args(&client_geometry->basic, x, y, width, height);
 	client_geometry->border_width = border_width;
 }
 

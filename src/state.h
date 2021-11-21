@@ -48,6 +48,14 @@ struct ClientState {
 	bool is_fixed, is_floating, is_urgent, never_focus, is_fullscreen;
 };
 
+/****************************
+ * Default create functions *
+ ****************************/
+
+struct Position position_create();
+struct Sizes sizes_create();
+struct BasicGeometry basic_geometry_create();
+
 /**************************
  * Default init functions *
  **************************/
@@ -59,12 +67,34 @@ void client_geometry_init(ClientGeometry client_geometry);
 void client_size_hints_init(ClientSizeHints client_size_hints);
 void client_state_init(ClientState client_state);
 
+/*****************************
+ * Argument create functions *
+ *****************************/
+
+struct Position position_create_from_args(int x, int y);
+struct Sizes sizes_create_from_args(int width, int height);
+
+struct BasicGeometry basic_geometry_create_from_args(
+	int x,
+	int y,
+	int width,
+	int height
+);
+
 /***************************
  * Argument init functions *
  ***************************/
 
 void position_init_from_args(Position position, int x, int y);
 void sizes_init_from_args(Sizes sizes, int width, int height);
+
+void basic_geometry_init_from_args(
+	BasicGeometry basic_geometry,
+	int x,
+	int y,
+	int width,
+	int height
+);
 
 void client_geometry_init_from_args(
 	ClientGeometry client_geometry,
