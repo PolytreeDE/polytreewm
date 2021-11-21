@@ -10,7 +10,6 @@
 #include "unit.h"
 #include "util.h"
 
-#include <locale.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -268,20 +267,20 @@ static void (*handler[LASTEvent])(XEvent*) = {
 
 #include "config.h"
 
-/****************************
- * function implementations *
- ****************************/
+/************************************
+ * Private function implementations *
+ ************************************/
 
 #include "dwm/handlers.c"
 #include "dwm/layouts.c"
 #include "dwm/xerror.c"
 
+/***********************************
+ * Public function implementations *
+ ***********************************/
+
 int dwm_main()
 {
-	if (!setlocale(LC_CTYPE, "") || !XSupportsLocale()) {
-		fputs("warning: no locale support\n", stderr);
-	}
-
 	if (!(dpy = XOpenDisplay(NULL))) {
 		die("polytreewm: cannot open display");
 	}
@@ -305,6 +304,15 @@ int dwm_main()
 
 	return EXIT_SUCCESS;
 }
+
+bool dwm_has_locale_support()
+{
+	return XSupportsLocale();
+}
+
+/************************************
+ * Private function implementations *
+ ************************************/
 
 int applysizehints(
 	Client *c,

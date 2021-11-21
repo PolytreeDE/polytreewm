@@ -2,6 +2,7 @@
 
 #include "dwm.h"
 
+#include <locale.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,6 +17,10 @@ int main(int argc, char *argv[])
 
 	if (argc != 1) {
 		die("usage: polytreewm [-v]");
+	}
+
+	if (!setlocale(LC_CTYPE, "") || !dwm_has_locale_support()) {
+		warning("no locale support");
 	}
 
 	return dwm_main(argc, argv);
@@ -44,4 +49,16 @@ void die_perror(const char *const fmt, ...)
 	perror(NULL);
 
 	exit(EXIT_FAILURE);
+}
+
+void warning(const char *const fmt, ...)
+{
+	fputs("WARN: ", stderr);
+
+	va_list ap;
+	va_start(ap, fmt);
+	vfprintf(stderr, fmt, ap);
+	va_end(ap);
+
+	fputc('\n', stderr);
 }
