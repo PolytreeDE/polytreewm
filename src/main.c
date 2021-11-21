@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 		fatal("no program executable name");
 	}
 
-	if (!setlocale(LC_CTYPE, "") || !dwm_has_locale_support()) {
+	if (!setlocale(LC_CTYPE, "")) {
 		warning("no locale support");
 	}
 

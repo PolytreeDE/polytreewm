@@ -279,6 +279,10 @@ static void (*handler[LASTEvent])(XEvent*) = {
 
 int dwm_main()
 {
+	if (!XSupportsLocale()) {
+		warning("no locale support in X");
+	}
+
 	if (!(dpy = XOpenDisplay(NULL))) {
 		fatal("cannot open display");
 	}
@@ -295,11 +299,6 @@ int dwm_main()
 	XCloseDisplay(dpy);
 
 	return EXIT_SUCCESS;
-}
-
-bool dwm_has_locale_support()
-{
-	return XSupportsLocale();
 }
 
 /************************************
