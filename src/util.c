@@ -10,6 +10,6 @@
 void *ecalloc(size_t nmemb, size_t size)
 {
 	void *p = calloc(nmemb, size);
-	if (!p) die_perror("calloc");
+	if (!p) fatal_perror("calloc");
 	return p;
 }

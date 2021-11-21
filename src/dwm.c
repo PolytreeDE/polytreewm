@@ -282,18 +282,18 @@ static void (*handler[LASTEvent])(XEvent*) = {
 int dwm_main()
 {
 	if (!(dpy = XOpenDisplay(NULL))) {
-		die("polytreewm: cannot open display");
+		fatal("cannot open display");
 	}
 
 	checkotherwm();
 
 	if (!setup()) {
-		die("polytreewm: cannot setup");
+		fatal("cannot setup");
 	}
 
 #ifdef __OpenBSD__
 	if (pledge("stdio rpath proc exec", NULL) == -1) {
-		die("pledge");
+		fatal("pledge");
 	}
 #endif /* __OpenBSD__ */
 
@@ -1641,11 +1641,11 @@ bool setup()
 	root = RootWindow(dpy, screen.x_screen);
 	drw = drw_create(dpy, screen.x_screen, root, screen.sizes.w, screen.sizes.h);
 	if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
-		die("no fonts could be loaded.");
+		fatal("no fonts could be loaded.");
 	updategeom();
 	/* init atoms */
 	atoms = atoms_create(dpy);
-	if (atoms == NULL) die("polytreewm: fatal: cannot allocate atoms");
+	if (atoms == NULL) fatal("cannot allocate atoms");
 	/* init cursors */
 	cursor[CurNormal] = drw_cur_create(drw, XC_left_ptr);
 	cursor[CurResize] = drw_cur_create(drw, XC_sizing);
@@ -1760,7 +1760,7 @@ void showhide(Client *c)
 void sigchld(__attribute__((unused)) int unused)
 {
 	if (signal(SIGCHLD, sigchld) == SIG_ERR)
-		die("can't install SIGCHLD handler:");
+		fatal_perror("can't install SIGCHLD handler");
 	while (0 < waitpid(-1, NULL, WNOHANG));
 }
 

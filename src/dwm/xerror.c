@@ -19,9 +19,8 @@ int xerror(Display *const dpy, XErrorEvent *const ee)
 		return 0;
 	}
 
-	fprintf(
-		stderr,
-		"polytreewm: fatal error: request code=%d, error code=%d\n",
+	fatal_nodie(
+		"request code=%d, error code=%d\n",
 		ee->request_code,
 		ee->error_code
 	);
@@ -42,7 +41,7 @@ int xerrorstart(
 	__attribute__((unused)) Display *const dpy,
 	__attribute__((unused)) XErrorEvent *const ee
 ) {
-	die("polytreewm: another window manager is already running");
+	fatal("another window manager is already running");
 	return -1;
 }
 
