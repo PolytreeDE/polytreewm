@@ -2,8 +2,6 @@
 
 #include <stdlib.h>
 
-Atom wmatom[WMLast], netatom[NetLast];
-
 Atoms atoms_create(Display *const dpy)
 {
 	Atoms atoms = malloc(sizeof(struct Atoms));
