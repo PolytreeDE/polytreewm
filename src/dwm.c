@@ -143,7 +143,6 @@ struct Monitor {
 
 struct Screen {
 	struct Sizes sizes;
-	int x_screen;
 };
 
 /*************************
@@ -234,7 +233,6 @@ static Xbase xbase = NULL;
 
 static struct Screen screen = {
 	.sizes = { 0, 0 },
-	.x_screen = 0,
 };
 
 static Unit global_unit = NULL;
@@ -286,9 +284,8 @@ int dwm_main(const char *const new_program_title)
 {
 	xbase = xbase_new(new_program_title);
 
-	screen.x_screen = xbase->x_screen;
-	screen.sizes    = xbase->screen_sizes;
-	root            = xbase->x_root;
+	screen.sizes = xbase->screen_sizes;
+	root         = xbase->x_root;
 
 	checkotherwm();
 
@@ -1832,7 +1829,7 @@ bool setup()
 
 	drw = drw_create(
 		xbase->x_display,
-		screen.x_screen,
+		xbase->x_screen,
 		root,
 		screen.sizes.w,
 		screen.sizes.h
