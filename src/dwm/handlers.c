@@ -24,7 +24,7 @@ void on_button_press(XEvent *e)
 		) {
 			focus(c);
 		}
-		XAllowEvents(dpy, ReplayPointer, CurrentTime);
+		XAllowEvents(xbase->x_display, ReplayPointer, CurrentTime);
 		click = ClkClientWin;
 	}
 	for (i = 0; i < LENGTH(buttons); i++)
@@ -142,7 +142,7 @@ void on_configure_request(XEvent *e)
 			}
 			if (ISVISIBLE(c)) {
 				XMoveResizeWindow(
-					dpy,
+					xbase->x_display,
 					c->x_window,
 					c->state.geometry.basic.position.x,
 					c->state.geometry.basic.position.y,
@@ -160,9 +160,9 @@ void on_configure_request(XEvent *e)
 		wc.border_width = ev->border_width;
 		wc.sibling = ev->above;
 		wc.stack_mode = ev->detail;
-		XConfigureWindow(dpy, ev->window, ev->value_mask, &wc);
+		XConfigureWindow(xbase->x_display, ev->window, ev->value_mask, &wc);
 	}
-	XSync(dpy, False);
+	XSync(xbase->x_display, False);
 }
 
 void on_configure_notify(XEvent *e)
@@ -209,7 +209,7 @@ void on_key_press(XEvent *e)
 	XKeyEvent *ev;
 
 	ev = &e->xkey;
-	keysym = XKeycodeToKeysym(dpy, (KeyCode)ev->keycode, 0);
+	keysym = XKeycodeToKeysym(xbase->x_display, (KeyCode)ev->keycode, 0);
 	for (i = 0; i < LENGTH(keys); i++) {
 		if (
 			keysym == keys[i].keysym
@@ -237,7 +237,7 @@ void on_map_request(XEvent *e)
 	static XWindowAttributes wa;
 	XMapRequestEvent *ev = &e->xmaprequest;
 
-	if (!XGetWindowAttributes(dpy, ev->window, &wa)) return;
+	if (!XGetWindowAttributes(xbase->x_display, ev->window, &wa)) return;
 	if (wa.override_redirect) return;
 
 	if (!wintoclient(ev->window)) {
@@ -260,7 +260,7 @@ void on_property_notify(XEvent *e)
 			if (
 				!c->state.is_floating
 				&&
-				(XGetTransientForHint(dpy, c->x_window, &trans))
+				(XGetTransientForHint(xbase->x_display, c->x_window, &trans))
 				&&
 				(c->state.is_floating = (wintoclient(trans)) != NULL)
 			) {
