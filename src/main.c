@@ -24,12 +24,17 @@ static void logger_perror(const char *level, const char *fmt, ...);
 
 int main(int argc, char *argv[])
 {
-	if (argc == 2 && strcmp(argv[1], "-v") == 0) {
+	if (argc == 2 &&
+		(strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "--version") == 0))
+	{
 		fputs(PROGRAM_NAME"-"VERSION"\n", stderr);
 		exit(EXIT_SUCCESS);
 	}
 
-	if (argc != 1) {
+	if (argc != 1 ||
+		(argc == 2 &&
+			(strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0)))
+	{
 		fputs("usage: "PROGRAM_NAME" [-v]\n", stderr);
 		exit(EXIT_FAILURE);
 	}
