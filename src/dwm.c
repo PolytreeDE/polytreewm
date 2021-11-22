@@ -238,7 +238,7 @@ static Cur *cursor[CurLast];
 static Clr **scheme;
 static Drw *drw;
 static Monitor *mons, *selmon;
-static Window root, wmcheckwin;
+static Window wmcheckwin;
 
 static void (*handler[LASTEvent])(XEvent*) = {
 	[ButtonPress] = on_button_press,
@@ -275,8 +275,6 @@ static void (*handler[LASTEvent])(XEvent*) = {
 int dwm_main(const char *const new_program_title)
 {
 	xbase = xbase_new(new_program_title);
-
-	root = xbase->x_root;
 
 	checkotherwm();
 
@@ -538,7 +536,7 @@ void cleanup()
 		}
 	}
 
-	XUngrabKey(xbase->x_display, AnyKey, AnyModifier, root);
+	XUngrabKey(xbase->x_display, AnyKey, AnyModifier, xbase->x_root);
 
 	while (mons) {
 		monitor_destroy(mons);
@@ -559,7 +557,11 @@ void cleanup()
 		RevertToPointerRoot,
 		CurrentTime
 	);
-	XDeleteProperty(xbase->x_display, root, atoms->netatom[NetActiveWindow]);
+	XDeleteProperty(
+		xbase->x_display,
+		xbase->x_root,
+		atoms->netatom[NetActiveWindow]
+	);
 }
 
 void configure(Client *c)
@@ -652,13 +654,13 @@ void focus(Client *c)
 	} else {
 		XSetInputFocus(
 			xbase->x_display,
-			root,
+			xbase->x_root,
 			RevertToPointerRoot,
 			CurrentTime
 		);
 		XDeleteProperty(
 			xbase->x_display,
-			root,
+			xbase->x_root,
 			atoms->netatom[NetActiveWindow]
 		);
 	}
@@ -766,7 +768,7 @@ int getrootptr(int *x, int *y)
 
 	return XQueryPointer(
 		xbase->x_display,
-		root,
+		xbase->x_root,
 		&dummy,
 		&dummy,
 		x,
@@ -903,7 +905,7 @@ void grabkeys()
 		unsigned int modifiers[] = { 0, LockMask, numlockmask, numlockmask|LockMask };
 		KeyCode code;
 
-		XUngrabKey(xbase->x_display, AnyKey, AnyModifier, root);
+		XUngrabKey(xbase->x_display, AnyKey, AnyModifier, xbase->x_root);
 
 		for (i = 0; i < LENGTH(keys); i++) {
 			if ((code = XKeysymToKeycode(xbase->x_display, keys[i].keysym))) {
@@ -912,7 +914,7 @@ void grabkeys()
 						xbase->x_display,
 						code,
 						keys[i].mod | modifiers[j],
-						root,
+						xbase->x_root,
 						True,
 						GrabModeAsync,
 						GrabModeAsync
@@ -1052,7 +1054,7 @@ void manage(Window w, XWindowAttributes *wa)
 
 	XChangeProperty(
 		xbase->x_display,
-		root,
+		xbase->x_root,
 		atoms->netatom[NetClientList],
 		XA_WINDOW,
 		32,
@@ -1133,7 +1135,7 @@ void movemouse(__attribute__((unused)) const Arg *arg)
 	if (
 		XGrabPointer(
 			xbase->x_display,
-			root,
+			xbase->x_root,
 			False,
 			MOUSEMASK,
 			GrabModeAsync,
@@ -1416,7 +1418,7 @@ void resizemouse(__attribute__((unused)) const Arg *arg)
 	if (
 		XGrabPointer(
 			xbase->x_display,
-			root,
+			xbase->x_root,
 			False,
 			MOUSEMASK,
 			GrabModeAsync,
@@ -1615,7 +1617,7 @@ void scan()
 	Window d1, d2, *wins = NULL;
 	XWindowAttributes wa;
 
-	if (XQueryTree(xbase->x_display, root, &d1, &d2, &wins, &num)) {
+	if (XQueryTree(xbase->x_display, xbase->x_root, &d1, &d2, &wins, &num)) {
 		for (i = 0; i < num; i++) {
 			if (
 				!XGetWindowAttributes(xbase->x_display, wins[i], &wa)
@@ -1736,7 +1738,7 @@ void setfocus(Client *c)
 		);
 		XChangeProperty(
 			xbase->x_display,
-			root,
+			xbase->x_root,
 			atoms->netatom[NetActiveWindow],
 			XA_WINDOW,
 			32,
@@ -1821,7 +1823,7 @@ bool setup()
 	drw = drw_create(
 		xbase->x_display,
 		xbase->x_screen,
-		root,
+		xbase->x_root,
 		xbase->screen_sizes.w,
 		xbase->screen_sizes.h
 	);
@@ -1842,7 +1844,7 @@ bool setup()
 	/* EWMH support per view */
 	XChangeProperty(
 		xbase->x_display,
-		root,
+		xbase->x_root,
 		atoms->netatom[NetSupported],
 		XA_ATOM,
 		32,
@@ -1850,7 +1852,11 @@ bool setup()
 		(unsigned char*)atoms->netatom,
 		NetLast
 	);
-	XDeleteProperty(xbase->x_display, root, atoms->netatom[NetClientList]);
+	XDeleteProperty(
+		xbase->x_display,
+		xbase->x_root,
+		atoms->netatom[NetClientList]
+	);
 
 	/* select events */
 	wa.cursor = cursor[CurNormal]->cursor;
@@ -1858,8 +1864,13 @@ bool setup()
 		SubstructureRedirectMask | SubstructureNotifyMask | ButtonPressMask |
 		PointerMotionMask | EnterWindowMask | LeaveWindowMask |
 		StructureNotifyMask | PropertyChangeMask;
-	XChangeWindowAttributes(xbase->x_display, root, CWEventMask|CWCursor, &wa);
-	XSelectInput(xbase->x_display, root, wa.event_mask);
+	XChangeWindowAttributes(
+		xbase->x_display,
+		xbase->x_root,
+		CWEventMask | CWCursor,
+		&wa
+	);
+	XSelectInput(xbase->x_display, xbase->x_root, wa.event_mask);
 	grabkeys();
 	focus(NULL);
 
@@ -1969,13 +1980,13 @@ void unfocus(Client *c, int setfocus)
 	if (setfocus) {
 		XSetInputFocus(
 			xbase->x_display,
-			root,
+			xbase->x_root,
 			RevertToPointerRoot,
 			CurrentTime
 		);
 		XDeleteProperty(
 			xbase->x_display,
-			root,
+			xbase->x_root,
 			atoms->netatom[NetActiveWindow]
 		);
 	}
@@ -2007,13 +2018,17 @@ void unmanage(Client *c, int destroyed)
 
 void updateclientlist()
 {
-	XDeleteProperty(xbase->x_display, root, atoms->netatom[NetClientList]);
+	XDeleteProperty(
+		xbase->x_display,
+		xbase->x_root,
+		atoms->netatom[NetClientList]
+	);
 
 	for (Monitor *m = mons; m; m = m->next) {
 		for (Client *c = m->clients; c; c = c->next) {
 			XChangeProperty(
 				xbase->x_display,
-				root,
+				xbase->x_root,
 				atoms->netatom[NetClientList],
 				XA_WINDOW,
 				32,
@@ -2112,7 +2127,7 @@ int updategeom()
 	}
 	if (dirty) {
 		selmon = mons;
-		selmon = wintomon(root);
+		selmon = wintomon(xbase->x_root);
 	}
 	return dirty;
 }
@@ -2218,7 +2233,7 @@ Monitor *wintomon(Window w)
 {
 	{
 		int x = 0, y = 0;
-		if (w == root && getrootptr(&x, &y)) {
+		if (w == xbase->x_root && getrootptr(&x, &y)) {
 			return recttomon(x, y, 1, 1);
 		}
 	}
@@ -2235,7 +2250,7 @@ void wmcheckwin_create()
 {
 	wmcheckwin = XCreateSimpleWindow(
 		xbase->x_display,
-		root,
+		xbase->x_root,
 		0,
 		0,
 		1,
@@ -2268,7 +2283,7 @@ void wmcheckwin_create()
 	);
 	XChangeProperty(
 		xbase->x_display,
-		root,
+		xbase->x_root,
 		atoms->netatom[NetWMCheck],
 		XA_WINDOW,
 		32,

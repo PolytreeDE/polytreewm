@@ -171,7 +171,7 @@ void on_configure_notify(XEvent *e)
 	int dirty;
 
 	/* TODO: updategeom handling sucks, needs to be simplified */
-	if (ev->window == root) {
+	if (ev->window == xbase->x_root) {
 		dirty =
 			xbase->screen_sizes.w != ev->width ||
 			xbase->screen_sizes.h != ev->height;
