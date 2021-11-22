@@ -141,10 +141,6 @@ struct Monitor {
 	const Layout *lt[2];
 };
 
-struct Screen {
-	struct Sizes sizes;
-};
-
 /*************************
  * function declarations *
  *************************/
@@ -231,10 +227,6 @@ static void zoom(const Arg *arg);
 
 static Xbase xbase = NULL;
 
-static struct Screen screen = {
-	.sizes = { 0, 0 },
-};
-
 static Unit global_unit = NULL;
 
 static const char broken[] = "broken";
@@ -284,8 +276,7 @@ int dwm_main(const char *const new_program_title)
 {
 	xbase = xbase_new(new_program_title);
 
-	screen.sizes = xbase->screen_sizes;
-	root         = xbase->x_root;
+	root = xbase->x_root;
 
 	checkotherwm();
 
@@ -335,15 +326,15 @@ int applysizehints(
 	*h = MAX(1, *h);
 
 	if (interact) {
-		if (*x > screen.sizes.w) {
+		if (*x > xbase->screen_sizes.w) {
 			*x =
-				screen.sizes.w
+				xbase->screen_sizes.w
 				-
 				client_geometry_total_width(&c->state.geometry);
 		}
-		if (*y > screen.sizes.h) {
+		if (*y > xbase->screen_sizes.h) {
 			*y =
-				screen.sizes.h
+				xbase->screen_sizes.h
 				-
 				client_geometry_total_height(&c->state.geometry);
 		}
@@ -1074,7 +1065,7 @@ void manage(Window w, XWindowAttributes *wa)
 	XMoveResizeWindow(
 		xbase->x_display,
 		c->x_window,
-		c->state.geometry.basic.position.x + 2 * screen.sizes.w,
+		c->state.geometry.basic.position.x + 2 * xbase->screen_sizes.w,
 		c->state.geometry.basic.position.y,
 		c->state.geometry.basic.sizes.w,
 		c->state.geometry.basic.sizes.h
@@ -1831,8 +1822,8 @@ bool setup()
 		xbase->x_display,
 		xbase->x_screen,
 		root,
-		screen.sizes.w,
-		screen.sizes.h
+		xbase->screen_sizes.w,
+		xbase->screen_sizes.h
 	);
 
 	if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
@@ -2109,14 +2100,14 @@ int updategeom()
 			mons = monitor_create();
 
 		if (
-			mons->screen_geometry.sizes.w != screen.sizes.w
+			mons->screen_geometry.sizes.w != xbase->screen_sizes.w
 			||
-			mons->screen_geometry.sizes.h != screen.sizes.h
+			mons->screen_geometry.sizes.h != xbase->screen_sizes.h
 		) {
 			dirty = 1;
 			mons->screen_geometry.sizes =
 				mons->window_area_geometry.sizes =
-				screen.sizes;
+				xbase->screen_sizes;
 		}
 	}
 	if (dirty) {
