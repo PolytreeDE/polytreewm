@@ -311,6 +311,8 @@ int dwm_main(const char *const new_program_title)
 
 	screen_init();
 
+	root = RootWindow(dpy, screen.x_screen);
+
 	// Old code.
 
 	if (!setup()) {
@@ -1801,7 +1803,6 @@ bool setup()
 {
 	XSetWindowAttributes wa;
 
-	root = RootWindow(dpy, screen.x_screen);
 	drw = drw_create(dpy, screen.x_screen, root, screen.sizes.w, screen.sizes.h);
 	if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
 		fatal("no fonts could be loaded.");
