@@ -152,7 +152,6 @@ static void attach(Client *c);
 static void attachstack(Client *c);
 static void configborder(const Arg *arg);
 static void configgap(const Arg *arg);
-static void checkotherwm();
 static void cleanup();
 static void configure(Client *c);
 static void detach(Client *c);
@@ -230,7 +229,6 @@ static Xbase xbase = NULL;
 static Unit global_unit = NULL;
 
 static const char broken[] = "broken";
-static int (*xerrorxlib)(Display *, XErrorEvent *);
 static unsigned int numlockmask = 0;
 static Atoms atoms = NULL;
 static int running = 1;
@@ -274,9 +272,7 @@ static void (*handler[LASTEvent])(XEvent*) = {
 
 int dwm_main(const char *const new_program_title)
 {
-	xbase = xbase_new(new_program_title);
-
-	checkotherwm();
+	xbase = xbase_new(new_program_title, xerror);
 
 	if (!(atoms = atoms_create(xbase->x_display))) {
 		fatal("cannot create atoms");
@@ -509,20 +505,6 @@ void configgap(const Arg *const arg)
 	const int new_gap_size = old_gap_size + (arg->i >= 0 ? +2 : -2);
 	settings_set_gap_size(new_gap_size);
 	arrange(selmon);
-}
-
-void checkotherwm()
-{
-	xerrorxlib = XSetErrorHandler(xerrorstart);
-	/* this causes an error if some other window manager is running */
-	XSelectInput(
-		xbase->x_display,
-		DefaultRootWindow(xbase->x_display),
-		SubstructureRedirectMask
-	);
-	XSync(xbase->x_display, False);
-	XSetErrorHandler(xerror);
-	XSync(xbase->x_display, False);
 }
 
 void cleanup()

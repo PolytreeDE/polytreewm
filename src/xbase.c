@@ -5,8 +5,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-Xbase xbase_new(const char *const program_title)
-{
+/* Startup Error handler to check if another
+ * window manager is already running. */
+static int x_error_wm_check(Display*, XErrorEvent*);
+
+Xbase xbase_new(
+	const char *const program_title,
+	const XErrorHandler x_error_handler
+) {
 	if (!XSupportsLocale()) warning("no locale support in X");
 
 	Xbase xbase = malloc(sizeof(struct Xbase));
@@ -27,6 +33,20 @@ Xbase xbase_new(const char *const program_title)
 		DisplayHeight(xbase->x_display, xbase->x_screen)
 	);
 
+	if (!(xbase->x_error = XSetErrorHandler(x_error_wm_check))) {
+		fatal("no X error handler is given");
+	}
+
+	// This causes an error if some other window manager is running
+	XSelectInput(
+		xbase->x_display,
+		DefaultRootWindow(xbase->x_display),
+		SubstructureRedirectMask
+	);
+	XSync(xbase->x_display, False);
+	XSetErrorHandler(x_error_handler);
+	XSync(xbase->x_display, False);
+
 	return xbase;
 }
 
@@ -37,4 +57,11 @@ void xbase_delete(const Xbase xbase)
 
 	XCloseDisplay(xbase->x_display);
 	free(xbase);
+}
+
+int x_error_wm_check(
+	__attribute__((unused)) Display *const x_display,
+	__attribute__((unused)) XErrorEvent *const x_error_event
+) {
+	fatal("another window manager is already running");
 }

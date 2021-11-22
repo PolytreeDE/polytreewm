@@ -19,9 +19,11 @@ typedef struct Xbase {
 	int x_root;
 
 	struct Sizes screen_sizes;
+
+	int (*x_error)(Display*, XErrorEvent*);
 } *Xbase;
 
-Xbase xbase_new(const char *program_title);
+Xbase xbase_new(const char *program_title, XErrorHandler x_error_handler);
 void xbase_delete(Xbase xbase);
 
 #endif // _XBASE_H

@@ -25,7 +25,7 @@ int xerror(Display *const dpy, XErrorEvent *const ee)
 		ee->error_code
 	);
 
-	return xerrorxlib(dpy, ee); /* may call exit */
+	return xbase->x_error(dpy, ee); /* may call exit */
 }
 
 int xerrordummy(
@@ -33,16 +33,6 @@ int xerrordummy(
 	__attribute__((unused)) XErrorEvent *const ee
 ) {
 	return 0;
-}
-
-/* Startup Error handler to check if another window manager
- * is already running. */
-int xerrorstart(
-	__attribute__((unused)) Display *const dpy,
-	__attribute__((unused)) XErrorEvent *const ee
-) {
-	fatal("another window manager is already running");
-	return -1;
 }
 
 #endif // _DWM_XERROR_C
