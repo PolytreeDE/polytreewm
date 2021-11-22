@@ -192,7 +192,6 @@ static void restack(Monitor *m);
 static void run();
 static void scan();
 static void scheme_destroy();
-static void screen_init();
 static int sendevent(Client *c, Atom proto);
 static void sendmon(Client *c, Monitor *m);
 static void setclientstate(Client *c, long state);
@@ -309,7 +308,9 @@ int dwm_main(const char *const new_program_title)
 		fatal("cannot create atoms");
 	}
 
-	screen_init();
+	screen.x_screen = DefaultScreen(dpy);
+	screen.sizes.w = DisplayWidth(dpy, screen.x_screen);
+	screen.sizes.h = DisplayHeight(dpy, screen.x_screen);
 
 	root = RootWindow(dpy, screen.x_screen);
 
@@ -1649,13 +1650,6 @@ void scheme_destroy()
 	for (size_t i = 0; i < LENGTH(colors); ++i) {
 		free(scheme[i]);
 	}
-}
-
-void screen_init()
-{
-	screen.x_screen = DefaultScreen(dpy);
-	screen.sizes.w = DisplayWidth(dpy, screen.x_screen);
-	screen.sizes.h = DisplayHeight(dpy, screen.x_screen);
 }
 
 void sendmon(Client *c, Monitor *m)
