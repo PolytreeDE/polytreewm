@@ -13,10 +13,12 @@
 
 typedef struct Xbase {
 	const char *program_title;
+
 	Display *x_display;
 	int x_screen;
-	struct Sizes screen_sizes;
 	int x_root;
+
+	struct Sizes screen_sizes;
 } *Xbase;
 
 Xbase xbase_new(const char *program_title);

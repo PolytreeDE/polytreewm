@@ -21,11 +21,11 @@ Xbase xbase_new(const char *const program_title)
 	}
 
 	xbase->x_screen = DefaultScreen(xbase->x_display);
+	xbase->x_root = RootWindow(xbase->x_display, xbase->x_screen);
 	xbase->screen_sizes = sizes_create_from_args(
 		DisplayWidth(xbase->x_display, xbase->x_screen),
 		DisplayHeight(xbase->x_display, xbase->x_screen)
 	);
-	xbase->x_root = RootWindow(xbase->x_display, xbase->x_screen);
 
 	return xbase;
 }
