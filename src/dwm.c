@@ -192,6 +192,7 @@ static void restack(Monitor *m);
 static void run();
 static void scan();
 static void scheme_destroy();
+static void screen_init();
 static int sendevent(Client *c, Atom proto);
 static void sendmon(Client *c, Monitor *m);
 static void setclientstate(Client *c, long state);
@@ -307,6 +308,8 @@ int dwm_main(const char *const new_program_title)
 	if (!(global_unit = unit_new(UNIT_GLOBAL, NULL))) {
 		fatal("cannot create atoms");
 	}
+
+	screen_init();
 
 	// Old code.
 
@@ -1646,6 +1649,13 @@ void scheme_destroy()
 	}
 }
 
+void screen_init()
+{
+	screen.x_screen = DefaultScreen(dpy);
+	screen.sizes.w = DisplayWidth(dpy, screen.x_screen);
+	screen.sizes.h = DisplayHeight(dpy, screen.x_screen);
+}
+
 void sendmon(Client *c, Monitor *m)
 {
 	if (c->mon == m)
@@ -1791,10 +1801,6 @@ bool setup()
 {
 	XSetWindowAttributes wa;
 
-	/* init screen */
-	screen.x_screen = DefaultScreen(dpy);
-	screen.sizes.w = DisplayWidth(dpy, screen.x_screen);
-	screen.sizes.h = DisplayHeight(dpy, screen.x_screen);
 	root = RootWindow(dpy, screen.x_screen);
 	drw = drw_create(dpy, screen.x_screen, root, screen.sizes.w, screen.sizes.h);
 	if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
