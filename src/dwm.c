@@ -9,6 +9,7 @@
 #include "state.h"
 #include "unit.h"
 #include "util.h"
+#include "xbase.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -229,7 +230,7 @@ static void zoom(const Arg *arg);
  * variables *
  *************/
 
-static const char *program_title = NULL;
+static Xbase xbase = NULL;
 
 static struct Screen screen = {
 	.sizes = { 0, 0 },
@@ -284,19 +285,12 @@ static void (*handler[LASTEvent])(XEvent*) = {
 
 int dwm_main(const char *const new_program_title)
 {
-	if (!(program_title = new_program_title)) {
-		fatal("no program title is given");
-	}
+	xbase = xbase_new(new_program_title);
 
-	if (!XSupportsLocale()) {
-		warning("no locale support in X");
-	}
-
-	// Resource allocations start here.
-
-	if (!(dpy = XOpenDisplay(NULL))) {
-		fatal("cannot open display");
-	}
+	dpy             = xbase->x_display;
+	screen.x_screen = xbase->x_screen;
+	screen.sizes    = xbase->screen_sizes;
+	root            = xbase->x_root;
 
 	checkotherwm();
 
@@ -308,14 +302,6 @@ int dwm_main(const char *const new_program_title)
 		fatal("cannot create atoms");
 	}
 
-	screen.x_screen = DefaultScreen(dpy);
-	screen.sizes.w = DisplayWidth(dpy, screen.x_screen);
-	screen.sizes.h = DisplayHeight(dpy, screen.x_screen);
-
-	root = RootWindow(dpy, screen.x_screen);
-
-	// Old code.
-
 	if (!setup()) {
 		fatal("cannot setup");
 	}
@@ -325,11 +311,9 @@ int dwm_main(const char *const new_program_title)
 
 	cleanup();
 
-	// Resource cleanups.
-
 	UNIT_DELETE(global_unit);
 	ATOMS_DELETE(atoms);
-	XCloseDisplay(dpy);
+	XBASE_DELETE(xbase);
 
 	return EXIT_SUCCESS;
 }
@@ -2212,8 +2196,8 @@ void wmcheckwin_create()
 		8,
 		PropModeReplace,
 		(unsigned char*)
-		program_title,
-		strlen(program_title)
+		xbase->program_title,
+		strlen(xbase->program_title)
 	);
 	XChangeProperty(
 		dpy,

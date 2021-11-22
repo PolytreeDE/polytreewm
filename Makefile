@@ -28,7 +28,8 @@ MODULES_SRC = \
 	src/spawn.c \
 	src/state.c \
 	src/unit.c \
-	src/util.c
+	src/util.c \
+	src/xbase.c
 
 DWM_SRC = \
 	src/dwm/handlers.c \
