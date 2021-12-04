@@ -151,7 +151,6 @@ static void attach(Client *c);
 static void attachstack(Client *c);
 static void configborder(const Arg *arg);
 static void configgap(const Arg *arg);
-static void cleanup();
 static void configure(Client *c);
 static void detach(Client *c);
 static void detachstack(Client *c);
@@ -185,6 +184,7 @@ static void resizemouse(const Arg *arg);
 static void restack(Monitor *m);
 static void run();
 static void scan();
+static void scheme_create();
 static void scheme_destroy();
 static int sendevent(Client *c, Atom proto);
 static void sendmon(Client *c, Monitor *m);
@@ -193,7 +193,6 @@ static void setfocus(Client *c);
 static void setfullscreen(Client *c, int fullscreen);
 static void setlayout(const Arg *arg);
 static void setmfact(const Arg *arg);
-static bool setup();
 static void seturgent(Client *c, bool is_urgent);
 static void showhide(Client *c);
 static void spawn(const Arg *arg);
@@ -276,14 +275,108 @@ int dwm_main(const char *const new_program_title)
 		fatal("cannot create global unit");
 	}
 
-	if (!setup()) {
-		fatal("cannot setup");
-	}
+	// Setup start
+
+	XSetWindowAttributes wa;
+
+	drw = drw_create(
+		xbase->x_display,
+		xbase->x_screen,
+		xbase->x_root,
+		xbase->screen_sizes.w,
+		xbase->screen_sizes.h
+	);
+
+	if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
+		fatal("no fonts could be loaded.");
+	updategeom();
+	/* init cursors */
+	cursor[CurNormal] = drw_cur_create(drw, XC_left_ptr);
+	cursor[CurResize] = drw_cur_create(drw, XC_sizing);
+	cursor[CurMove] = drw_cur_create(drw, XC_fleur);
+	/* init appearance */
+	scheme_create();
+
+	/* supporting window for NetWMCheck */
+	wmcheckwin_create();
+
+	/* EWMH support per view */
+	XChangeProperty(
+		xbase->x_display,
+		xbase->x_root,
+		xbase->atoms->netatom[NetSupported],
+		XA_ATOM,
+		32,
+		PropModeReplace,
+		(unsigned char*)xbase->atoms->netatom,
+		NetLast
+	);
+	XDeleteProperty(
+		xbase->x_display,
+		xbase->x_root,
+		xbase->atoms->netatom[NetClientList]
+	);
+
+	/* select events */
+	wa.cursor = cursor[CurNormal]->cursor;
+	wa.event_mask =
+		SubstructureRedirectMask | SubstructureNotifyMask | ButtonPressMask |
+		PointerMotionMask | EnterWindowMask | LeaveWindowMask |
+		StructureNotifyMask | PropertyChangeMask;
+	XChangeWindowAttributes(
+		xbase->x_display,
+		xbase->x_root,
+		CWEventMask | CWCursor,
+		&wa
+	);
+	XSelectInput(xbase->x_display, xbase->x_root, wa.event_mask);
+	grabkeys();
+	focus(NULL);
+
+	// Setup end
 
 	scan();
 	run();
 
-	cleanup();
+	// Cleanup start
+
+	Layout foo = { NULL, NULL };
+	selmon->lt[selmon->sellt] = &foo;
+
+	for (Monitor *m = mons; m; m = m->next) {
+		while (m->stack) {
+			unmanage(m->stack, 0);
+		}
+	}
+
+	XUngrabKey(xbase->x_display, AnyKey, AnyModifier, xbase->x_root);
+
+	while (mons) {
+		monitor_destroy(mons);
+	}
+
+	for (size_t i = 0; i < CurLast; i++) {
+		drw_cur_free(drw, cursor[i]);
+	}
+
+	scheme_destroy();
+
+	wmcheckwin_destroy();
+	drw_free(drw);
+	XSync(xbase->x_display, False);
+	XSetInputFocus(
+		xbase->x_display,
+		PointerRoot,
+		RevertToPointerRoot,
+		CurrentTime
+	);
+	XDeleteProperty(
+		xbase->x_display,
+		xbase->x_root,
+		xbase->atoms->netatom[NetActiveWindow]
+	);
+
+	// Cleanup end
 
 	UNIT_DELETE(global_unit);
 	XBASE_DELETE(xbase);
@@ -498,45 +591,6 @@ void configgap(const Arg *const arg)
 	const int new_gap_size = old_gap_size + (arg->i >= 0 ? +2 : -2);
 	settings_set_gap_size(new_gap_size);
 	arrange(selmon);
-}
-
-void cleanup()
-{
-	Layout foo = { NULL, NULL };
-	selmon->lt[selmon->sellt] = &foo;
-
-	for (Monitor *m = mons; m; m = m->next) {
-		while (m->stack) {
-			unmanage(m->stack, 0);
-		}
-	}
-
-	XUngrabKey(xbase->x_display, AnyKey, AnyModifier, xbase->x_root);
-
-	while (mons) {
-		monitor_destroy(mons);
-	}
-
-	for (size_t i = 0; i < CurLast; i++) {
-		drw_cur_free(drw, cursor[i]);
-	}
-
-	scheme_destroy();
-
-	wmcheckwin_destroy();
-	drw_free(drw);
-	XSync(xbase->x_display, False);
-	XSetInputFocus(
-		xbase->x_display,
-		PointerRoot,
-		RevertToPointerRoot,
-		CurrentTime
-	);
-	XDeleteProperty(
-		xbase->x_display,
-		xbase->x_root,
-		xbase->atoms->netatom[NetActiveWindow]
-	);
 }
 
 void configure(Client *c)
@@ -1789,67 +1843,6 @@ void setmfact(const Arg *arg)
 	for (Monitor *m = mons; m; m = m->next) {
 		arrange(m);
 	}
-}
-
-bool setup()
-{
-	XSetWindowAttributes wa;
-
-	drw = drw_create(
-		xbase->x_display,
-		xbase->x_screen,
-		xbase->x_root,
-		xbase->screen_sizes.w,
-		xbase->screen_sizes.h
-	);
-
-	if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
-		fatal("no fonts could be loaded.");
-	updategeom();
-	/* init cursors */
-	cursor[CurNormal] = drw_cur_create(drw, XC_left_ptr);
-	cursor[CurResize] = drw_cur_create(drw, XC_sizing);
-	cursor[CurMove] = drw_cur_create(drw, XC_fleur);
-	/* init appearance */
-	scheme_create();
-
-	/* supporting window for NetWMCheck */
-	wmcheckwin_create();
-
-	/* EWMH support per view */
-	XChangeProperty(
-		xbase->x_display,
-		xbase->x_root,
-		xbase->atoms->netatom[NetSupported],
-		XA_ATOM,
-		32,
-		PropModeReplace,
-		(unsigned char*)xbase->atoms->netatom,
-		NetLast
-	);
-	XDeleteProperty(
-		xbase->x_display,
-		xbase->x_root,
-		xbase->atoms->netatom[NetClientList]
-	);
-
-	/* select events */
-	wa.cursor = cursor[CurNormal]->cursor;
-	wa.event_mask =
-		SubstructureRedirectMask | SubstructureNotifyMask | ButtonPressMask |
-		PointerMotionMask | EnterWindowMask | LeaveWindowMask |
-		StructureNotifyMask | PropertyChangeMask;
-	XChangeWindowAttributes(
-		xbase->x_display,
-		xbase->x_root,
-		CWEventMask | CWCursor,
-		&wa
-	);
-	XSelectInput(xbase->x_display, xbase->x_root, wa.event_mask);
-	grabkeys();
-	focus(NULL);
-
-	return true;
 }
 
 void seturgent(Client *c, bool is_urgent)
