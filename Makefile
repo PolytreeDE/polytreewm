@@ -1,6 +1,3 @@
-# PolytreeWM - tiling window manager
-# See LICENSE file for copyright and license details.
-
 all: polytreewm
 
 include config/1-generated.mk
