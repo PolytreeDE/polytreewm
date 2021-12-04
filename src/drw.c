@@ -1,4 +1,4 @@
-#include "main.h"
+#include "logger.h"
 #include "util.h"
 
 #include <stdio.h>

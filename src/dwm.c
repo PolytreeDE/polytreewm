@@ -2,6 +2,7 @@
 
 #include "helpers.h"
 #include "layouts.h"
+#include "logger.h"
 #include "main.h"
 #include "settings.h"
 #include "spawn.h"

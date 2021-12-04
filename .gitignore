@@ -2,3 +2,5 @@
 /config/2-conditionals.mk
 /polytreewm
 /src/*.o
+/tests/*.o
+/tests/*.test

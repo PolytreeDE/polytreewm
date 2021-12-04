@@ -1,6 +1,6 @@
 #include "xbase.h"
 
-#include "main.h"
+#include "logger.h"
 
 #include <stdlib.h>
 #include <string.h>
