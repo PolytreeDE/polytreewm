@@ -22,6 +22,7 @@ MODULES_SRC = \
 	src/constraints.c \
 	src/drw.c \
 	src/dwm.c \
+	src/geom.c \
 	src/helpers.c \
 	src/layouts.c \
 	src/settings.c \
