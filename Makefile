@@ -46,23 +46,37 @@ DWM_HDR     = $(DWM_SRC:.c=.h)
 MAIN_HDR    = $(MODULES_HDR) src/main.h src/config.def.h
 
 MODULES_OBJ = $(MODULES_SRC:.c=.o)
-TEST_OBJ    = $(TEST_SRC:.c=.o) tests/main.o
-MAIN_OBJ    = src/main.o
-ALL_OBJ     = $(MODULES_OBJ) $(TEST_OBJ) $(MAIN_OBJ)
+TEST_OBJ    = $(TEST_SRC:.c=.o)
+ALL_OBJ     = $(MODULES_OBJ) $(TEST_OBJ) tests/main.o src/main.o
 
 TEST_EXE = $(TEST_SRC:.c=.test)
 ALL_EXE  = polytreewm $(TEST_EXE)
 
-polytreewm: $(MAIN_OBJ) $(MODULES_OBJ)
+###############
+# Executables #
+###############
+
+polytreewm: src/main.o $(MODULES_OBJ)
 	$(CC) -o $@ $^ $(LDFLAGS)
+
+%.test: %.o tests/main.o $(MODULES_OBJ)
+	$(CC) -o $@ $^ $(LDFLAGS)
+
+################
+# Object files #
+################
 
 %.o: %.c $(CONFIGMKS) $(HDR)
 	$(CC) -c $< -o $@ $(CFLAGS)
 
-%.test: %.o $(MODULES_OBJ) tests/main.o
-	$(CC) -o $@ $^ $(LDFLAGS)
-
 dwm.o: $(DWM_SRC) $(DWM_HDR)
+
+#########
+# Tasks #
+#########
+
+test: $(TEST_EXE)
+	@echo "$(TEST_EXE)" | awk '{ OFS="\n"; $$1=$$1 } 1' | /bin/sh
 
 clean:
 	rm -f $(ALL_OBJ) $(ALL_EXE)
@@ -83,8 +97,5 @@ uninstall:
 	rm -f \
 		$(DESTDIR)$(BINDIR)/polytreewm \
 		$(DESTDIR)$(MANDIR)/man1/polytreewm.1
-
-test: $(TEST_EXE)
-	@echo "$(TEST_EXE)" | awk '{ OFS="\n"; $$1=$$1 } 1' | sh
 
 .PHONY: all clean distclean install uninstall test
