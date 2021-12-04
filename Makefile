@@ -43,7 +43,7 @@ MAIN_SRC = $(MODULES_SRC) src/main.c
 
 MODULES_HDR = $(MODULES_SRC:.c=.h)
 DWM_HDR     = $(DWM_SRC:.c=.h)
-MAIN_HDR    = $(MODULES_HDR) src/main.h src/config.def.h
+MAIN_HDR    = $(MODULES_HDR) src/main.h
 
 MODULES_OBJ = $(MODULES_SRC:.c=.o)
 TEST_OBJ    = $(TEST_SRC:.c=.o)
