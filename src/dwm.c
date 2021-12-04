@@ -229,7 +229,6 @@ static Unit global_unit = NULL;
 
 static const char broken[] = "broken";
 static unsigned int numlockmask = 0;
-static Atoms atoms = NULL;
 static int running = 1;
 static Cur *cursor[CurLast];
 static Clr **scheme;
@@ -272,7 +271,6 @@ static void (*handler[LASTEvent])(XEvent*) = {
 int dwm_main(const char *const new_program_title)
 {
 	xbase = xbase_new(new_program_title, xerror);
-	atoms = xbase->atoms;
 
 	if (!(global_unit = unit_new(UNIT_GLOBAL, NULL))) {
 		fatal("cannot create global unit");
@@ -537,7 +535,7 @@ void cleanup()
 	XDeleteProperty(
 		xbase->x_display,
 		xbase->x_root,
-		atoms->netatom[NetActiveWindow]
+		xbase->atoms->netatom[NetActiveWindow]
 	);
 }
 
@@ -638,7 +636,7 @@ void focus(Client *c)
 		XDeleteProperty(
 			xbase->x_display,
 			xbase->x_root,
-			atoms->netatom[NetActiveWindow]
+			xbase->atoms->netatom[NetActiveWindow]
 		);
 	}
 	selmon->sel = c;
@@ -768,11 +766,11 @@ long getstate(Window w)
 		XGetWindowProperty(
 			xbase->x_display,
 			w,
-			atoms->wmatom[WMState],
+			xbase->atoms->wmatom[WMState],
 			0L,
 			2L,
 			False,
-			atoms->wmatom[WMState],
+			xbase->atoms->wmatom[WMState],
 			&real,
 			&format,
 			&n,
@@ -930,7 +928,7 @@ void killclient(__attribute__((unused)) const Arg *arg)
 {
 	if (!selmon->sel)
 		return;
-	if (!sendevent(selmon->sel, atoms->wmatom[WMDelete])) {
+	if (!sendevent(selmon->sel, xbase->atoms->wmatom[WMDelete])) {
 		XGrabServer(xbase->x_display);
 		XSetErrorHandler(xerrordummy);
 		XSetCloseDownMode(xbase->x_display, DestroyAll);
@@ -1032,7 +1030,7 @@ void manage(Window w, XWindowAttributes *wa)
 	XChangeProperty(
 		xbase->x_display,
 		xbase->x_root,
-		atoms->netatom[NetClientList],
+		xbase->atoms->netatom[NetClientList],
 		XA_WINDOW,
 		32,
 		PropModeAppend,
@@ -1668,8 +1666,8 @@ void setclientstate(Client *c, long state)
 	XChangeProperty(
 		xbase->x_display,
 		c->x_window,
-		atoms->wmatom[WMState],
-		atoms->wmatom[WMState],
+		xbase->atoms->wmatom[WMState],
+		xbase->atoms->wmatom[WMState],
 		32,
 		PropModeReplace,
 		(unsigned char*)data,
@@ -1694,7 +1692,7 @@ int sendevent(Client *c, Atom proto)
 	if (exists) {
 		ev.type = ClientMessage;
 		ev.xclient.window = c->x_window;
-		ev.xclient.message_type = atoms->wmatom[WMProtocols];
+		ev.xclient.message_type = xbase->atoms->wmatom[WMProtocols];
 		ev.xclient.format = 32;
 		ev.xclient.data.l[0] = proto;
 		ev.xclient.data.l[1] = CurrentTime;
@@ -1716,7 +1714,7 @@ void setfocus(Client *c)
 		XChangeProperty(
 			xbase->x_display,
 			xbase->x_root,
-			atoms->netatom[NetActiveWindow],
+			xbase->atoms->netatom[NetActiveWindow],
 			XA_WINDOW,
 			32,
 			PropModeReplace,
@@ -1725,7 +1723,7 @@ void setfocus(Client *c)
 		);
 	}
 
-	sendevent(c, atoms->wmatom[WMTakeFocus]);
+	sendevent(c, xbase->atoms->wmatom[WMTakeFocus]);
 }
 
 void setfullscreen(Client *c, int fullscreen)
@@ -1734,11 +1732,11 @@ void setfullscreen(Client *c, int fullscreen)
 		XChangeProperty(
 			xbase->x_display,
 			c->x_window,
-			atoms->netatom[NetWMState],
+			xbase->atoms->netatom[NetWMState],
 			XA_ATOM,
 			32,
 			PropModeReplace,
-			(unsigned char*)&atoms->netatom[NetWMFullscreen],
+			(unsigned char*)&xbase->atoms->netatom[NetWMFullscreen],
 			1
 		);
 		c->state.is_fullscreen = true;
@@ -1748,7 +1746,7 @@ void setfullscreen(Client *c, int fullscreen)
 		XChangeProperty(
 			xbase->x_display,
 			c->x_window,
-			atoms->netatom[NetWMState],
+			xbase->atoms->netatom[NetWMState],
 			XA_ATOM,
 			32,
 			PropModeReplace,
@@ -1822,17 +1820,17 @@ bool setup()
 	XChangeProperty(
 		xbase->x_display,
 		xbase->x_root,
-		atoms->netatom[NetSupported],
+		xbase->atoms->netatom[NetSupported],
 		XA_ATOM,
 		32,
 		PropModeReplace,
-		(unsigned char*)atoms->netatom,
+		(unsigned char*)xbase->atoms->netatom,
 		NetLast
 	);
 	XDeleteProperty(
 		xbase->x_display,
 		xbase->x_root,
-		atoms->netatom[NetClientList]
+		xbase->atoms->netatom[NetClientList]
 	);
 
 	/* select events */
@@ -1964,7 +1962,7 @@ void unfocus(Client *c, int setfocus)
 		XDeleteProperty(
 			xbase->x_display,
 			xbase->x_root,
-			atoms->netatom[NetActiveWindow]
+			xbase->atoms->netatom[NetActiveWindow]
 		);
 	}
 }
@@ -1998,7 +1996,7 @@ void updateclientlist()
 	XDeleteProperty(
 		xbase->x_display,
 		xbase->x_root,
-		atoms->netatom[NetClientList]
+		xbase->atoms->netatom[NetClientList]
 	);
 
 	for (Monitor *m = mons; m; m = m->next) {
@@ -2006,7 +2004,7 @@ void updateclientlist()
 			XChangeProperty(
 				xbase->x_display,
 				xbase->x_root,
-				atoms->netatom[NetClientList],
+				xbase->atoms->netatom[NetClientList],
 				XA_WINDOW,
 				32,
 				PropModeAppend,
@@ -2155,20 +2153,28 @@ void updatesizehints(Client *c)
 
 void updatetitle(Client *c)
 {
-	if (!gettextprop(c->x_window, atoms->netatom[NetWMName], c->state.name, sizeof(c->state.name)))
+	if (!gettextprop(c->x_window,
+						xbase->atoms->netatom[NetWMName],
+						c->state.name,
+						sizeof(c->state.name)))
+	{
 		gettextprop(c->x_window, XA_WM_NAME, c->state.name, sizeof(c->state.name));
-	if (c->state.name[0] == '\0') /* hack to mark broken clients */
+	}
+
+	// hack to mark broken clients
+	if (c->state.name[0] == '\0') {
 		strcpy(c->state.name, broken);
+	}
 }
 
 void updatewindowtype(Client *c)
 {
-	Atom state = getatomprop(c, atoms->netatom[NetWMState]);
-	Atom wtype = getatomprop(c, atoms->netatom[NetWMWindowType]);
+	Atom state = getatomprop(c, xbase->atoms->netatom[NetWMState]);
+	Atom wtype = getatomprop(c, xbase->atoms->netatom[NetWMWindowType]);
 
-	if (state == atoms->netatom[NetWMFullscreen])
+	if (state == xbase->atoms->netatom[NetWMFullscreen])
 		setfullscreen(c, 1);
-	if (wtype == atoms->netatom[NetWMWindowTypeDialog])
+	if (wtype == xbase->atoms->netatom[NetWMWindowTypeDialog])
 		c->state.is_floating = true;
 }
 
@@ -2240,7 +2246,7 @@ void wmcheckwin_create()
 	XChangeProperty(
 		xbase->x_display,
 		wmcheckwin,
-		atoms->netatom[NetWMCheck],
+		xbase->atoms->netatom[NetWMCheck],
 		XA_WINDOW,
 		32,
 		PropModeReplace,
@@ -2250,8 +2256,8 @@ void wmcheckwin_create()
 	XChangeProperty(
 		xbase->x_display,
 		wmcheckwin,
-		atoms->netatom[NetWMName],
-		atoms->utf8string,
+		xbase->atoms->netatom[NetWMName],
+		xbase->atoms->utf8string,
 		8,
 		PropModeReplace,
 		(unsigned char*)
@@ -2261,7 +2267,7 @@ void wmcheckwin_create()
 	XChangeProperty(
 		xbase->x_display,
 		xbase->x_root,
-		atoms->netatom[NetWMCheck],
+		xbase->atoms->netatom[NetWMCheck],
 		XA_WINDOW,
 		32,
 		PropModeReplace,

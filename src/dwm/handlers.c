@@ -47,11 +47,11 @@ void on_client_message(XEvent *e)
 
 	if (!c) return;
 
-	if (cme->message_type == atoms->netatom[NetWMState]) {
+	if (cme->message_type == xbase->atoms->netatom[NetWMState]) {
 		if (
-			cme->data.l[1] == atoms->netatom[NetWMFullscreen]
+			cme->data.l[1] == xbase->atoms->netatom[NetWMFullscreen]
 			||
-			cme->data.l[2] == atoms->netatom[NetWMFullscreen]
+			cme->data.l[2] == xbase->atoms->netatom[NetWMFullscreen]
 		) {
 			setfullscreen(
 				c,
@@ -62,7 +62,7 @@ void on_client_message(XEvent *e)
 				)
 			);
 		}
-	} else if (cme->message_type == atoms->netatom[NetActiveWindow]) {
+	} else if (cme->message_type == xbase->atoms->netatom[NetActiveWindow]) {
 		if (c != selmon->sel && !c->state.is_urgent) {
 			seturgent(c, true);
 		}
@@ -278,10 +278,10 @@ void on_property_notify(XEvent *e)
 			updatewmhints(c);
 			break;
 		}
-		if (ev->atom == XA_WM_NAME || ev->atom == atoms->netatom[NetWMName]) {
+		if (ev->atom == XA_WM_NAME || ev->atom == xbase->atoms->netatom[NetWMName]) {
 			updatetitle(c);
 		}
-		if (ev->atom == atoms->netatom[NetWMWindowType])
+		if (ev->atom == xbase->atoms->netatom[NetWMWindowType])
 			updatewindowtype(c);
 	}
 }
