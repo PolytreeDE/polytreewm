@@ -36,6 +36,7 @@ DWM_SRC = \
 	src/dwm/xerror.c
 
 TEST_SRC = \
+	tests/geom_basic_geom.c \
 	tests/geom_position.c \
 	tests/geom_sizes.c
 
