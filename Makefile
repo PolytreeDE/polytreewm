@@ -1,5 +1,7 @@
 all: polytreewm
 
+VERSION = 6.2
+
 include config/1-generated.mk
 include config/2-conditionals.mk
 include config/3-defvars.mk
@@ -11,8 +13,6 @@ CONFIGMKS_TO_REMOVE = \
 CONFIGMKS = \
 	$(CONFIGMKS_TO_REMOVE) \
 	config/3-defvars.mk
-
-VERSION = 6.2
 
 MODULES_SRC = \
 	src/atoms.c \
