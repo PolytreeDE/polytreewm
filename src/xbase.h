@@ -1,6 +1,7 @@
 #ifndef _XBASE_H
 #define _XBASE_H
 
+#include "atoms.h"
 #include "state.h"
 
 #include <stddef.h>
@@ -21,6 +22,8 @@ typedef struct Xbase {
 	struct Sizes screen_sizes;
 
 	int (*x_error)(Display*, XErrorEvent*);
+
+	Atoms atoms;
 } *Xbase;
 
 Xbase xbase_new(const char *program_title, XErrorHandler x_error_handler);

@@ -47,6 +47,10 @@ Xbase xbase_new(
 	XSetErrorHandler(x_error_handler);
 	XSync(xbase->x_display, False);
 
+	if (!(xbase->atoms = atoms_create(xbase->x_display))) {
+		fatal("cannot create atoms");
+	}
+
 	return xbase;
 }
 
@@ -55,6 +59,7 @@ void xbase_delete(const Xbase xbase)
 	// TODO: maybe we should assert here
 	if (xbase == NULL) return;
 
+	ATOMS_DELETE(xbase->atoms);
 	XCloseDisplay(xbase->x_display);
 	free(xbase);
 }

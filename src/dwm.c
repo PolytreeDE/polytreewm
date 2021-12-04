@@ -1,6 +1,5 @@
 #include "dwm.h"
 
-#include "atoms.h"
 #include "helpers.h"
 #include "layouts.h"
 #include "main.h"
@@ -273,13 +272,10 @@ static void (*handler[LASTEvent])(XEvent*) = {
 int dwm_main(const char *const new_program_title)
 {
 	xbase = xbase_new(new_program_title, xerror);
-
-	if (!(atoms = atoms_create(xbase->x_display))) {
-		fatal("cannot create atoms");
-	}
+	atoms = xbase->atoms;
 
 	if (!(global_unit = unit_new(UNIT_GLOBAL, NULL))) {
-		fatal("cannot create atoms");
+		fatal("cannot create global unit");
 	}
 
 	if (!setup()) {
@@ -292,7 +288,6 @@ int dwm_main(const char *const new_program_title)
 	cleanup();
 
 	UNIT_DELETE(global_unit);
-	ATOMS_DELETE(atoms);
 	XBASE_DELETE(xbase);
 
 	return EXIT_SUCCESS;
