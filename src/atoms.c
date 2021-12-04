@@ -2,24 +2,36 @@
 
 #include <stdlib.h>
 
+static const char *const default_atoms[WMLast] = {
+	[WMProtocols] = "WM_PROTOCOLS",
+	[WMDelete]    = "WM_DELETE_WINDOW",
+	[WMState]     = "WM_STATE",
+	[WMTakeFocus] = "WM_TAKE_FOCUS",
+};
+
+static const char *const ewmh_atoms[NetLast] = {
+	[NetActiveWindow]       = "_NET_ACTIVE_WINDOW",
+	[NetSupported]          = "_NET_SUPPORTED",
+	[NetWMName]             = "_NET_WM_NAME",
+	[NetWMState]            = "_NET_WM_STATE",
+	[NetWMCheck]            = "_NET_SUPPORTING_WM_CHECK",
+	[NetWMFullscreen]       = "_NET_WM_STATE_FULLSCREEN",
+	[NetWMWindowType]       = "_NET_WM_WINDOW_TYPE",
+	[NetWMWindowTypeDialog] = "_NET_WM_WINDOW_TYPE_DIALOG",
+	[NetClientList]         = "_NET_CLIENT_LIST",
+};
+
 Atoms atoms_create(Display *const dpy)
 {
 	Atoms atoms = malloc(sizeof(struct Atoms));
 
-	atoms->wmatom[WMProtocols] = XInternAtom(dpy, "WM_PROTOCOLS", False);
-	atoms->wmatom[WMDelete] = XInternAtom(dpy, "WM_DELETE_WINDOW", False);
-	atoms->wmatom[WMState] = XInternAtom(dpy, "WM_STATE", False);
-	atoms->wmatom[WMTakeFocus] = XInternAtom(dpy, "WM_TAKE_FOCUS", False);
+	for (int index = 0; index < WMLast; ++index) {
+		atoms->wmatom[index] = XInternAtom(dpy, default_atoms[index], False);
+	}
 
-	atoms->netatom[NetActiveWindow] = XInternAtom(dpy, "_NET_ACTIVE_WINDOW", False);
-	atoms->netatom[NetSupported] = XInternAtom(dpy, "_NET_SUPPORTED", False);
-	atoms->netatom[NetWMName] = XInternAtom(dpy, "_NET_WM_NAME", False);
-	atoms->netatom[NetWMState] = XInternAtom(dpy, "_NET_WM_STATE", False);
-	atoms->netatom[NetWMCheck] = XInternAtom(dpy, "_NET_SUPPORTING_WM_CHECK", False);
-	atoms->netatom[NetWMFullscreen] = XInternAtom(dpy, "_NET_WM_STATE_FULLSCREEN", False);
-	atoms->netatom[NetWMWindowType] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE", False);
-	atoms->netatom[NetWMWindowTypeDialog] = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE_DIALOG", False);
-	atoms->netatom[NetClientList] = XInternAtom(dpy, "_NET_CLIENT_LIST", False);
+	for (int index = 0; index < NetLast; ++index) {
+		atoms->netatom[index] = XInternAtom(dpy, ewmh_atoms[index], False);
+	}
 
 	atoms->utf8string = XInternAtom(dpy, "UTF8_STRING", False);
 
