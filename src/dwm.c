@@ -283,8 +283,7 @@ int dwm_main(const char *const new_program_title)
 		xbase->x_display,
 		xbase->x_screen,
 		xbase->x_root,
-		xbase->screen_sizes.w,
-		xbase->screen_sizes.h
+		xbase->screen_sizes
 	);
 
 	if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
