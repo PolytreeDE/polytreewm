@@ -1,8 +1,6 @@
 #ifndef _DRW_H
 #define _DRW_H
 
-#include "state.h"
-
 typedef struct {
 	Cursor cursor;
 } Cur;
@@ -30,7 +28,7 @@ typedef struct {
 } Drw;
 
 /* Drawable abstraction */
-Drw *drw_create(Display *dpy, int screen, Window win, struct Sizes sizes);
+Drw *drw_create(Display *dpy, int screen, Window win, unsigned int w, unsigned int h);
 void drw_resize(Drw *drw, unsigned int w, unsigned int h);
 void drw_free(Drw *drw);
 
