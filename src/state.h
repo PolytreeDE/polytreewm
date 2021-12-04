@@ -23,7 +23,7 @@ struct ClientSizeHints {
 
 struct ClientState {
 	char name[256];
-	struct ClientGeom geom;
+	struct WinGeom geom;
 	bool is_fixed, is_floating, is_urgent, never_focus, is_fullscreen;
 };
 

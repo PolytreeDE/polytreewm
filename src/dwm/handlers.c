@@ -113,7 +113,7 @@ void on_configure_request(XEvent *e)
 					(
 						m->screen_geom.sizes.w / 2
 						-
-						client_geom_total_width(&c->state.geom) / 2
+						win_geom_total_width(&c->state.geom) / 2
 					);
 			}
 			if (
@@ -134,7 +134,7 @@ void on_configure_request(XEvent *e)
 					(
 						m->screen_geom.sizes.h / 2
 						-
-						client_geom_total_height(&c->state.geom) / 2
+						win_geom_total_height(&c->state.geom) / 2
 					);
 			}
 			if ((ev->value_mask & (CWX|CWY)) && !(ev->value_mask & (CWWidth|CWHeight))) {

@@ -7,10 +7,10 @@
  * Pointer types *
  *****************/
 
-typedef struct Position   *Position;
-typedef struct Sizes      *Sizes;
-typedef struct BasicGeom  *BasicGeom;
-typedef struct ClientGeom *ClientGeom;
+typedef struct Position  *Position;
+typedef struct Sizes     *Sizes;
+typedef struct BasicGeom *BasicGeom;
+typedef struct WinGeom   *WinGeom;
 
 /**************
  * Structures *
@@ -29,7 +29,7 @@ struct BasicGeom {
 	struct Sizes sizes;
 };
 
-struct ClientGeom {
+struct WinGeom {
 	struct BasicGeom basic;
 	int border_width;
 };
@@ -41,7 +41,7 @@ struct ClientGeom {
 struct Position position_create();
 struct Sizes sizes_create();
 struct BasicGeom basic_geom_create();
-struct ClientGeom client_geom_create();
+struct WinGeom win_geom_create();
 
 /**************************
  * Default init functions *
@@ -50,7 +50,7 @@ struct ClientGeom client_geom_create();
 void position_init(Position position);
 void sizes_init(Sizes sizes);
 void basic_geom_init(BasicGeom basic_geom);
-void client_geom_init(ClientGeom client_geom);
+void win_geom_init(WinGeom win_geom);
 
 /*****************************
  * Argument create functions *
@@ -66,7 +66,7 @@ struct BasicGeom basic_geom_create_from_args(
 	int height
 );
 
-struct ClientGeom client_geom_create_from_args(
+struct WinGeom win_geom_create_from_args(
 	int x,
 	int y,
 	int width,
@@ -89,8 +89,8 @@ void basic_geom_init_from_args(
 	int height
 );
 
-void client_geom_init_from_args(
-	ClientGeom client_geom,
+void win_geom_init_from_args(
+	WinGeom win_geom,
 	int x,
 	int y,
 	int width,
@@ -102,8 +102,8 @@ void client_geom_init_from_args(
  * Conversion functions *
  ************************/
 
-void client_geom_convert_to_x_window_changes(
-	const struct ClientGeom *client_geom,
+void win_geom_convert_to_x_window_changes(
+	const struct WinGeom *win_geom,
 	XWindowChanges *x_window_changes
 );
 
@@ -111,15 +111,15 @@ void client_geom_convert_to_x_window_changes(
  * Constant functions *
  **********************/
 
-int client_geom_total_width(const struct ClientGeom *client_geom);
-int client_geom_total_height(const struct ClientGeom *client_geom);
+int win_geom_total_width(const struct WinGeom *win_geom);
+int win_geom_total_height(const struct WinGeom *win_geom);
 
 /***********************
  * Modifying functions *
  ***********************/
 
-void client_geom_adjust_to_boundary(
-	ClientGeom client_geom,
+void win_geom_adjust_to_boundary(
+	WinGeom win_geom,
 	const struct BasicGeom *boundary_geom
 );
 

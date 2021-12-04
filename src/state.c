@@ -23,7 +23,7 @@ void client_size_hints_init(const ClientSizeHints client_size_hints)
 void client_state_init(const ClientState client_state)
 {
 	memset(client_state->name, 0, sizeof(client_state->name));
-	client_geom_init(&client_state->geom);
+	win_geom_init(&client_state->geom);
 	client_state->is_fixed = false;
 	client_state->is_floating = false;
 	client_state->is_urgent = false;

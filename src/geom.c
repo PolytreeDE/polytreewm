@@ -25,11 +25,11 @@ struct BasicGeom basic_geom_create()
 	return basic_geom;
 }
 
-struct ClientGeom client_geom_create()
+struct WinGeom win_geom_create()
 {
-	struct ClientGeom client_geom;
-	client_geom_init(&client_geom);
-	return client_geom;
+	struct WinGeom win_geom;
+	win_geom_init(&win_geom);
+	return win_geom;
 }
 
 /**************************
@@ -54,10 +54,10 @@ void basic_geom_init(const BasicGeom basic_geom)
 	sizes_init(&basic_geom->sizes);
 }
 
-void client_geom_init(const ClientGeom client_geom)
+void win_geom_init(const WinGeom win_geom)
 {
-	basic_geom_init(&client_geom->basic);
-	client_geom->border_width = 0;
+	basic_geom_init(&win_geom->basic);
+	win_geom->border_width = 0;
 }
 
 /*****************************
@@ -89,16 +89,16 @@ struct BasicGeom basic_geom_create_from_args(
 	return basic_geom;
 }
 
-struct ClientGeom client_geom_create_from_args(
+struct WinGeom win_geom_create_from_args(
 	const int x,
 	const int y,
 	const int width,
 	const int height,
 	const int border_width
 ) {
-	struct ClientGeom client_geom;
-	client_geom_init_from_args(&client_geom, x, y, width, height, border_width);
-	return client_geom;
+	struct WinGeom win_geom;
+	win_geom_init_from_args(&win_geom, x, y, width, height, border_width);
+	return win_geom;
 }
 
 /***************************
@@ -128,66 +128,66 @@ void basic_geom_init_from_args(
 	sizes_init_from_args(&basic_geom->sizes, width, height);
 }
 
-void client_geom_init_from_args(
-	const ClientGeom client_geom,
+void win_geom_init_from_args(
+	const WinGeom win_geom,
 	const int x,
 	const int y,
 	const int width,
 	const int height,
 	const int border_width
 ) {
-	basic_geom_init_from_args(&client_geom->basic, x, y, width, height);
-	client_geom->border_width = border_width;
+	basic_geom_init_from_args(&win_geom->basic, x, y, width, height);
+	win_geom->border_width = border_width;
 }
 
 /************************
  * Conversion functions *
  ************************/
 
-void client_geom_convert_to_x_window_changes(
-	const struct ClientGeom *const client_geom,
+void win_geom_convert_to_x_window_changes(
+	const struct WinGeom *const win_geom,
 	XWindowChanges *const x_window_changes
 ) {
-	x_window_changes->x            = client_geom->basic.position.x;
-	x_window_changes->y            = client_geom->basic.position.y;
-	x_window_changes->width        = client_geom->basic.sizes.w;
-	x_window_changes->height       = client_geom->basic.sizes.h;
-	x_window_changes->border_width = client_geom->border_width;
+	x_window_changes->x            = win_geom->basic.position.x;
+	x_window_changes->y            = win_geom->basic.position.y;
+	x_window_changes->width        = win_geom->basic.sizes.w;
+	x_window_changes->height       = win_geom->basic.sizes.h;
+	x_window_changes->border_width = win_geom->border_width;
 }
 
 /**********************
  * Constant functions *
  **********************/
 
-int client_geom_total_width(
-	const struct ClientGeom *const client_geom
+int win_geom_total_width(
+	const struct WinGeom *const win_geom
 ) {
-	return client_geom->basic.sizes.w + 2 * client_geom->border_width;
+	return win_geom->basic.sizes.w + 2 * win_geom->border_width;
 }
 
-int client_geom_total_height(
-	const struct ClientGeom *const client_geom
+int win_geom_total_height(
+	const struct WinGeom *const win_geom
 ) {
-	return client_geom->basic.sizes.h + 2 * client_geom->border_width;
+	return win_geom->basic.sizes.h + 2 * win_geom->border_width;
 }
 
 /***********************
  * Modifying functions *
  ***********************/
 
-void client_geom_adjust_to_boundary(
-	const ClientGeom client_geom,
+void win_geom_adjust_to_boundary(
+	const WinGeom win_geom,
 	const struct BasicGeom *const boundary_geom
 ) {
-	const int total_width  = client_geom_total_width(client_geom);
-	const int total_height = client_geom_total_height(client_geom);
+	const int total_width  = win_geom_total_width(win_geom);
+	const int total_height = win_geom_total_height(win_geom);
 
 	if (
-		client_geom->basic.position.x + total_width
+		win_geom->basic.position.x + total_width
 		>
 		boundary_geom->position.x + boundary_geom->sizes.w
 	) {
-		client_geom->basic.position.x =
+		win_geom->basic.position.x =
 			boundary_geom->position.x
 			+
 			boundary_geom->sizes.w
@@ -196,11 +196,11 @@ void client_geom_adjust_to_boundary(
 	}
 
 	if (
-		client_geom->basic.position.y + total_height
+		win_geom->basic.position.y + total_height
 		>
 		boundary_geom->position.y + boundary_geom->sizes.h
 	) {
-		client_geom->basic.position.y =
+		win_geom->basic.position.y =
 			boundary_geom->position.y
 			+
 			boundary_geom->sizes.h
@@ -208,11 +208,11 @@ void client_geom_adjust_to_boundary(
 			total_height;
 	}
 
-	if (client_geom->basic.position.x < boundary_geom->position.x) {
-		client_geom->basic.position.x = boundary_geom->position.x;
+	if (win_geom->basic.position.x < boundary_geom->position.x) {
+		win_geom->basic.position.x = boundary_geom->position.x;
 	}
 
-	if (client_geom->basic.position.y < boundary_geom->position.y) {
-		client_geom->basic.position.y = boundary_geom->position.y;
+	if (win_geom->basic.position.y < boundary_geom->position.y) {
+		win_geom->basic.position.y = boundary_geom->position.y;
 	}
 }
