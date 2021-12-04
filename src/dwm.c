@@ -45,36 +45,36 @@
 		Mod3Mask | Mod4Mask | Mod5Mask)              \
 )
 
-#define INTERSECT(x,y,w,h,basic_geometry) ( \
-	MAX(                                    \
-		0,                                  \
-		MIN(                                \
-			(x) + (w),                      \
-			basic_geometry.position.x       \
-			+                               \
-			basic_geometry.sizes.w          \
-		)                                   \
-		-                                   \
-		MAX(                                \
-			(x),                            \
-			basic_geometry.position.x       \
-		)                                   \
-	)                                       \
-	*                                       \
-	MAX(                                    \
-		0,                                  \
-		MIN(                                \
-			(y) + (h),                      \
-			basic_geometry.position.y       \
-			+                               \
-			basic_geometry.sizes.h          \
-		)                                   \
-		-                                   \
-		MAX(                                \
-			(y),                            \
-			basic_geometry.position.y       \
-		)                                   \
-	)                                       \
+#define INTERSECT(x,y,w,h,basic_geom) ( \
+	MAX(                                \
+		0,                              \
+		MIN(                            \
+			(x) + (w),                  \
+			basic_geom.position.x       \
+			+                           \
+			basic_geom.sizes.w          \
+		)                               \
+		-                               \
+		MAX(                            \
+			(x),                        \
+			basic_geom.position.x       \
+		)                               \
+	)                                   \
+	*                                   \
+	MAX(                                \
+		0,                              \
+		MIN(                            \
+			(y) + (h),                  \
+			basic_geom.position.y       \
+			+                           \
+			basic_geom.sizes.h          \
+		)                               \
+		-                               \
+		MAX(                            \
+			(y),                        \
+			basic_geom.position.y       \
+		)                               \
+	)                                   \
 )
 
 /*********
@@ -126,8 +126,8 @@ typedef struct {
 } Layout;
 
 struct Monitor {
-	struct BasicGeometry screen_geometry;
-	struct BasicGeometry window_area_geometry;
+	struct BasicGeom screen_geom;
+	struct BasicGeom window_area_geom;
 	Unit unit;
 
 	int nmaster;
@@ -144,7 +144,7 @@ struct Monitor {
  * function declarations *
  *************************/
 
-static int applysizehints(Client *c, ClientGeometry client_geometry, int interact);
+static int applysizehints(Client *c, ClientGeom client_geom, int interact);
 static void arrange(Monitor *m);
 static void arrangemon(Monitor *m);
 static void attach(Client *c);
@@ -178,8 +178,8 @@ static void pop(Client *);
 static void quit(const Arg *arg);
 static Monitor *recttomon(int x, int y, int w, int h);
 static void resetnmaster(const Arg *arg);
-static void resize(Client *c, struct ClientGeometry client_geometry, int interact);
-static void resizeclient(Client *c, struct ClientGeometry client_geometry);
+static void resize(Client *c, struct ClientGeom client_geom, int interact);
+static void resizeclient(Client *c, struct ClientGeom client_geom);
 static void resizemouse(const Arg *arg);
 static void restack(Monitor *m);
 static void run();
@@ -390,14 +390,14 @@ int dwm_main(const char *const new_program_title)
 
 int applysizehints(
 	Client *c,
-	ClientGeometry client_geometry,
+	ClientGeom client_geom,
 	int interact
 ) {
-	int *const x = &client_geometry->basic.position.x;
-	int *const y = &client_geometry->basic.position.y;
-	int *const w = &client_geometry->basic.sizes.w;
-	int *const h = &client_geometry->basic.sizes.h;
-	int const bw = client_geometry->border_width;
+	int *const x = &client_geom->basic.position.x;
+	int *const y = &client_geom->basic.position.y;
+	int *const w = &client_geom->basic.sizes.w;
+	int *const h = &client_geom->basic.sizes.h;
+	int const bw = client_geom->border_width;
 
 	Monitor *m = c->mon;
 
@@ -410,13 +410,13 @@ int applysizehints(
 			*x =
 				xbase->screen_sizes.w
 				-
-				client_geometry_total_width(&c->state.geometry);
+				client_geom_total_width(&c->state.geom);
 		}
 		if (*y > xbase->screen_sizes.h) {
 			*y =
 				xbase->screen_sizes.h
 				-
-				client_geometry_total_height(&c->state.geometry);
+				client_geom_total_height(&c->state.geom);
 		}
 		if (*x + *w + 2 * bw < 0) {
 			*x = 0;
@@ -428,32 +428,32 @@ int applysizehints(
 		if (
 			*x
 			>=
-			m->window_area_geometry.position.x + m->window_area_geometry.sizes.w
+			m->window_area_geom.position.x + m->window_area_geom.sizes.w
 		) {
 			*x =
-				m->window_area_geometry.position.x
+				m->window_area_geom.position.x
 				+
-				m->window_area_geometry.sizes.w
+				m->window_area_geom.sizes.w
 				-
-				client_geometry_total_width(&c->state.geometry);
+				client_geom_total_width(&c->state.geom);
 		}
 		if (
 			*y
 			>=
-			m->window_area_geometry.position.y + m->window_area_geometry.sizes.h
+			m->window_area_geom.position.y + m->window_area_geom.sizes.h
 		) {
 			*y =
-				m->window_area_geometry.position.y
+				m->window_area_geom.position.y
 				+
-				m->window_area_geometry.sizes.h
+				m->window_area_geom.sizes.h
 				-
-				client_geometry_total_height(&c->state.geometry);
+				client_geom_total_height(&c->state.geom);
 		}
-		if (*x + *w + 2 * bw <= m->window_area_geometry.position.x) {
-			*x = m->window_area_geometry.position.x;
+		if (*x + *w + 2 * bw <= m->window_area_geom.position.x) {
+			*x = m->window_area_geom.position.x;
 		}
-		if (*y + *h + 2 * bw <= m->window_area_geometry.position.y) {
-			*y = m->window_area_geometry.position.y;
+		if (*y + *h + 2 * bw <= m->window_area_geom.position.y) {
+			*y = m->window_area_geom.position.y;
 		}
 	}
 
@@ -514,15 +514,15 @@ int applysizehints(
 	}
 
 	return (
-		*x != c->state.geometry.basic.position.x
+		*x != c->state.geom.basic.position.x
 		||
-		*y != c->state.geometry.basic.position.y
+		*y != c->state.geom.basic.position.y
 		||
-		*w != c->state.geometry.basic.sizes.w
+		*w != c->state.geom.basic.sizes.w
 		||
-		*h != c->state.geometry.basic.sizes.h
+		*h != c->state.geom.basic.sizes.h
 		||
-		bw != c->state.geometry.border_width
+		bw != c->state.geom.border_width
 	);
 }
 
@@ -602,11 +602,11 @@ void configure(Client *c)
 		.display = xbase->x_display,
 		.event = c->x_window,
 		.window = c->x_window,
-		.x = c->state.geometry.basic.position.x,
-		.y = c->state.geometry.basic.position.y,
-		.width = c->state.geometry.basic.sizes.w,
-		.height = c->state.geometry.basic.sizes.h,
-		.border_width = c->state.geometry.border_width,
+		.x = c->state.geom.basic.position.x,
+		.y = c->state.geom.basic.position.y,
+		.width = c->state.geom.basic.sizes.w,
+		.height = c->state.geom.basic.sizes.h,
+		.border_width = c->state.geom.border_width,
 		.above = None,
 		.override_redirect = False,
 	};
@@ -1000,10 +1000,10 @@ void manage(Window w, XWindowAttributes *wa)
 	client_state_init(&c->state);
 
 	c->x_window = w;
-	c->state.geometry.basic.position.x = wa->x;
-	c->state.geometry.basic.position.y = wa->y;
-	c->state.geometry.basic.sizes.w = wa->width;
-	c->state.geometry.basic.sizes.h = wa->height;
+	c->state.geom.basic.position.x = wa->x;
+	c->state.geom.basic.position.y = wa->y;
+	c->state.geom.basic.sizes.w = wa->width;
+	c->state.geom.basic.sizes.h = wa->height;
 	c->state.is_floating = false;
 
 	updatetitle(c);
@@ -1024,16 +1024,16 @@ void manage(Window w, XWindowAttributes *wa)
 		}
 	}
 
-	client_geometry_adjust_to_boundary(
-		&c->state.geometry,
-		&c->mon->screen_geometry
+	client_geom_adjust_to_boundary(
+		&c->state.geom,
+		&c->mon->screen_geom
 	);
 
-	c->state.geometry.border_width = settings_get_border_width();
+	c->state.geom.border_width = settings_get_border_width();
 
 	{
 		XWindowChanges wc;
-		wc.border_width = c->state.geometry.border_width;
+		wc.border_width = c->state.geom.border_width;
 		XConfigureWindow(xbase->x_display, w, CWBorderWidth, &wc);
 	}
 
@@ -1045,18 +1045,18 @@ void manage(Window w, XWindowAttributes *wa)
 	updatewmhints(c);
 
 	{
-		const int total_width = client_geometry_total_width(&c->state.geometry);
+		const int total_width = client_geom_total_width(&c->state.geom);
 		const int total_height =
-			client_geometry_total_height(&c->state.geometry);
+			client_geom_total_height(&c->state.geom);
 
-		c->state.geometry.basic.position.x =
-			c->mon->screen_geometry.position.x
+		c->state.geom.basic.position.x =
+			c->mon->screen_geom.position.x
 			+
-			(c->mon->screen_geometry.sizes.w - total_width) / 2;
-		c->state.geometry.basic.position.y =
-			c->mon->screen_geometry.position.y
+			(c->mon->screen_geom.sizes.w - total_width) / 2;
+		c->state.geom.basic.position.y =
+			c->mon->screen_geom.position.y
 			+
-			(c->mon->screen_geometry.sizes.h - total_height) / 2;
+			(c->mon->screen_geom.sizes.h - total_height) / 2;
 	}
 
 	XSelectInput(
@@ -1096,10 +1096,10 @@ void manage(Window w, XWindowAttributes *wa)
 	XMoveResizeWindow(
 		xbase->x_display,
 		c->x_window,
-		c->state.geometry.basic.position.x + 2 * xbase->screen_sizes.w,
-		c->state.geometry.basic.position.y,
-		c->state.geometry.basic.sizes.w,
-		c->state.geometry.basic.sizes.h
+		c->state.geom.basic.position.x + 2 * xbase->screen_sizes.w,
+		c->state.geom.basic.position.y,
+		c->state.geom.basic.sizes.w,
+		c->state.geom.basic.sizes.h
 	);
 
 	setclientstate(c, NormalState);
@@ -1119,8 +1119,8 @@ Monitor *monitor_create()
 {
 	Monitor *const m = ecalloc(1, sizeof(Monitor));
 
-	m->screen_geometry      = basic_geometry_create();
-	m->window_area_geometry = basic_geometry_create();
+	m->screen_geom      = basic_geom_create();
+	m->window_area_geom = basic_geom_create();
 
 	if (!m) goto fail_without_mon;
 
@@ -1181,8 +1181,8 @@ void movemouse(__attribute__((unused)) const Arg *arg)
 	if (!getrootptr(&x, &y)) return;
 
 	const unsigned int snap_distance = settings_get_snap_distance();
-	const int ocx = c->state.geometry.basic.position.x;
-	const int ocy = c->state.geometry.basic.position.y;
+	const int ocx = c->state.geom.basic.position.x;
+	const int ocy = c->state.geom.basic.position.y;
 
 	Time lasttime = 0;
 
@@ -1210,72 +1210,72 @@ void movemouse(__attribute__((unused)) const Arg *arg)
 			int ny = ocy + (ev.xmotion.y - y);
 
 			if (
-				abs(selmon->window_area_geometry.position.x - nx)
+				abs(selmon->window_area_geom.position.x - nx)
 				<
 				snap_distance
 			) {
-				nx = selmon->window_area_geometry.position.x;
+				nx = selmon->window_area_geom.position.x;
 			} else if (
 				abs(
 					(
-						selmon->window_area_geometry.position.x
+						selmon->window_area_geom.position.x
 						+
-						selmon->window_area_geometry.sizes.w
+						selmon->window_area_geom.sizes.w
 					)
 					-
-					(nx + client_geometry_total_width(&c->state.geometry))
+					(nx + client_geom_total_width(&c->state.geom))
 				)
 				<
 				snap_distance
 			) {
 				nx =
-					selmon->window_area_geometry.position.x
+					selmon->window_area_geom.position.x
 					+
-					selmon->window_area_geometry.sizes.w
+					selmon->window_area_geom.sizes.w
 					-
-					client_geometry_total_width(&c->state.geometry);
+					client_geom_total_width(&c->state.geom);
 			}
 
 			if (
-				abs(selmon->window_area_geometry.position.y - ny)
+				abs(selmon->window_area_geom.position.y - ny)
 				<
 				snap_distance
 			) {
-				ny = selmon->window_area_geometry.position.y;
+				ny = selmon->window_area_geom.position.y;
 			} else if (
 				abs(
 					(
-						selmon->window_area_geometry.position.y
+						selmon->window_area_geom.position.y
 						+
-						selmon->window_area_geometry.sizes.h
-					) - (ny + client_geometry_total_height(&c->state.geometry))
+						selmon->window_area_geom.sizes.h
+					) - (ny + client_geom_total_height(&c->state.geom))
 				)
 				<
 				snap_distance
 			) {
 				ny =
-					selmon->window_area_geometry.position.y
+					selmon->window_area_geom.position.y
 					+
-					selmon->window_area_geometry.sizes.h
+					selmon->window_area_geom.sizes.h
 					-
-					client_geometry_total_height(&c->state.geometry);
+					client_geom_total_height(&c->state.geom);
 			}
 
 			if (
 				!c->state.is_floating
 				&&
 				(
-					abs(nx - c->state.geometry.basic.position.x) > snap_distance
+					abs(nx - c->state.geom.basic.position.x) > snap_distance
 					||
-					abs(ny - c->state.geometry.basic.position.y) > snap_distance)
+					abs(ny - c->state.geom.basic.position.y) > snap_distance)
 			) {
 				togglefloating(NULL);
 			}
 
 			if (!selmon->lt[selmon->sellt]->arrange || c->state.is_floating) {
-				struct ClientGeometry client_geometry = c->state.geometry;
-				position_init_from_args(&client_geometry.basic.position, nx, ny);
-				resize(c, client_geometry, 1);
+				struct ClientGeom client_geom = c->state.geom;
+				position_init_from_args(&client_geom.basic.position, nx, ny);
+				resize(c, client_geom, 1);
 			}
 
 			break;
@@ -1285,10 +1285,10 @@ void movemouse(__attribute__((unused)) const Arg *arg)
 	XUngrabPointer(xbase->x_display, CurrentTime);
 
 	Monitor *const m = recttomon(
-		c->state.geometry.basic.position.x,
-		c->state.geometry.basic.position.y,
-		c->state.geometry.basic.sizes.w,
-		c->state.geometry.basic.sizes.h
+		c->state.geom.basic.position.x,
+		c->state.geom.basic.position.y,
+		c->state.geom.basic.sizes.w,
+		c->state.geom.basic.sizes.h
 	);
 
 	if (m != selmon) {
@@ -1392,7 +1392,7 @@ Monitor *recttomon(int x, int y, int w, int h)
 	int a, area = 0;
 
 	for (m = mons; m; m = m->next)
-		if ((a = INTERSECT(x, y, w, h, m->window_area_geometry)) > area) {
+		if ((a = INTERSECT(x, y, w, h, m->window_area_geom)) > area) {
 			area = a;
 			r = m;
 		}
@@ -1412,19 +1412,19 @@ void resetnmaster(const Arg *arg)
 	arrange(selmon);
 }
 
-void resize(Client *c, struct ClientGeometry client_geometry, int interact)
+void resize(Client *c, struct ClientGeom client_geom, int interact)
 {
-	if (applysizehints(c, &client_geometry, interact)) {
-		resizeclient(c, client_geometry);
+	if (applysizehints(c, &client_geom, interact)) {
+		resizeclient(c, client_geom);
 	}
 }
 
-void resizeclient(Client *c, const struct ClientGeometry client_geometry)
+void resizeclient(Client *c, const struct ClientGeom client_geom)
 {
-	c->state.geometry = client_geometry;
+	c->state.geom = client_geom;
 
 	XWindowChanges wc = { 0 };
-	client_geometry_convert_to_x_window_changes(&client_geometry, &wc);
+	client_geom_convert_to_x_window_changes(&client_geom, &wc);
 
 	XConfigureWindow(
 		xbase->x_display,
@@ -1468,13 +1468,13 @@ void resizemouse(__attribute__((unused)) const Arg *arg)
 		0,
 		0,
 		0,
-		c->state.geometry.basic.sizes.w + c->state.geometry.border_width - 1,
-		c->state.geometry.basic.sizes.h + c->state.geometry.border_width - 1
+		c->state.geom.basic.sizes.w + c->state.geom.border_width - 1,
+		c->state.geom.basic.sizes.h + c->state.geom.border_width - 1
 	);
 
 	const unsigned int snap_distance = settings_get_snap_distance();
-	const int ocx = c->state.geometry.basic.position.x;
-	const int ocy = c->state.geometry.basic.position.y;
+	const int ocx = c->state.geom.basic.position.x;
+	const int ocy = c->state.geom.basic.position.y;
 
 	Time lasttime = 0;
 
@@ -1499,44 +1499,44 @@ void resizemouse(__attribute__((unused)) const Arg *arg)
 			lasttime = ev.xmotion.time;
 
 			const int nw = MAX(
-				ev.xmotion.x - ocx - 2 * c->state.geometry.border_width + 1,
+				ev.xmotion.x - ocx - 2 * c->state.geom.border_width + 1,
 				1
 			);
 			const int nh = MAX(
-				ev.xmotion.y - ocy - 2 * c->state.geometry.border_width + 1,
+				ev.xmotion.y - ocy - 2 * c->state.geom.border_width + 1,
 				1
 			);
 
 			if (
 				(
-					c->mon->window_area_geometry.position.x + nw
+					c->mon->window_area_geom.position.x + nw
 					>=
-					selmon->window_area_geometry.position.x
+					selmon->window_area_geom.position.x
 				)
 				&&
 				(
-					c->mon->window_area_geometry.position.x + nw
+					c->mon->window_area_geom.position.x + nw
 					<=
 					(
-						selmon->window_area_geometry.position.x
+						selmon->window_area_geom.position.x
 						+
-						selmon->window_area_geometry.sizes.w
+						selmon->window_area_geom.sizes.w
 					)
 				)
 				&&
 				(
-					c->mon->window_area_geometry.position.y + nh
+					c->mon->window_area_geom.position.y + nh
 					>=
-					selmon->window_area_geometry.position.y
+					selmon->window_area_geom.position.y
 				)
 				&&
 				(
-					c->mon->window_area_geometry.position.y + nh
+					c->mon->window_area_geom.position.y + nh
 					<=
 					(
-						selmon->window_area_geometry.position.y
+						selmon->window_area_geom.position.y
 						+
-						selmon->window_area_geometry.sizes.h
+						selmon->window_area_geom.sizes.h
 					)
 				)
 			) {
@@ -1546,9 +1546,9 @@ void resizemouse(__attribute__((unused)) const Arg *arg)
 					(
 						selmon->lt[selmon->sellt]->arrange == NULL
 						||
-						abs(nw - c->state.geometry.basic.sizes.w) > snap_distance
+						abs(nw - c->state.geom.basic.sizes.w) > snap_distance
 						||
-						abs(nh - c->state.geometry.basic.sizes.h) > snap_distance
+						abs(nh - c->state.geom.basic.sizes.h) > snap_distance
 					)
 				) {
 					togglefloating(NULL);
@@ -1556,9 +1556,9 @@ void resizemouse(__attribute__((unused)) const Arg *arg)
 			}
 
 			if (!selmon->lt[selmon->sellt]->arrange || c->state.is_floating) {
-				struct ClientGeometry client_geometry = c->state.geometry;
-				sizes_init_from_args(&client_geometry.basic.sizes, nw, nh);
-				resize(c, client_geometry, 1);
+				struct ClientGeom client_geom = c->state.geom;
+				sizes_init_from_args(&client_geom.basic.sizes, nw, nh);
+				resize(c, client_geom, 1);
 			}
 
 			break;
@@ -1573,8 +1573,8 @@ void resizemouse(__attribute__((unused)) const Arg *arg)
 		0,
 		0,
 		0,
-		c->state.geometry.basic.sizes.w + c->state.geometry.border_width - 1,
-		c->state.geometry.basic.sizes.h + c->state.geometry.border_width - 1
+		c->state.geom.basic.sizes.w + c->state.geom.border_width - 1,
+		c->state.geom.basic.sizes.h + c->state.geom.border_width - 1
 	);
 
 	XUngrabPointer(xbase->x_display, CurrentTime);
@@ -1582,10 +1582,10 @@ void resizemouse(__attribute__((unused)) const Arg *arg)
 	while (XCheckMaskEvent(xbase->x_display, EnterWindowMask, &ev));
 
 	Monitor *const m = recttomon(
-		c->state.geometry.basic.position.x,
-		c->state.geometry.basic.position.y,
-		c->state.geometry.basic.sizes.w,
-		c->state.geometry.basic.sizes.h
+		c->state.geom.basic.position.x,
+		c->state.geom.basic.position.y,
+		c->state.geom.basic.sizes.w,
+		c->state.geom.basic.sizes.h
 	);
 
 	if (m != selmon) {
@@ -1867,12 +1867,12 @@ void showhide(Client *c)
 		XMoveWindow(
 			xbase->x_display,
 			c->x_window,
-			c->state.geometry.basic.position.x,
-			c->state.geometry.basic.position.y
+			c->state.geom.basic.position.x,
+			c->state.geom.basic.position.y
 		);
 
 		if (!c->mon->lt[c->mon->sellt]->arrange || c->state.is_floating) {
-			resize(c, c->state.geometry, 0);
+			resize(c, c->state.geom, 0);
 		}
 		showhide(c->snext);
 	} else {
@@ -1881,8 +1881,8 @@ void showhide(Client *c)
 		XMoveWindow(
 			xbase->x_display,
 			c->x_window,
-			client_geometry_total_width(&c->state.geometry) * -2,
-			c->state.geometry.basic.position.y
+			client_geom_total_width(&c->state.geom) * -2,
+			c->state.geom.basic.position.y
 		);
 	}
 }
@@ -1918,18 +1918,18 @@ void togglefloating(__attribute__((unused)) const Arg *arg)
 	const int border_width = settings_get_border_width();
 
 	if (selmon->sel->state.is_floating) {
-		struct ClientGeometry client_geometry = selmon->sel->state.geometry;
+		struct ClientGeom client_geom = selmon->sel->state.geom;
 
-		client_geometry.basic.sizes = sizes_create_from_args(
-			selmon->sel->state.geometry.basic.sizes.w -
-				2 * (border_width - selmon->sel->state.geometry.border_width),
-			selmon->sel->state.geometry.basic.sizes.h -
-				2 * (border_width - selmon->sel->state.geometry.border_width)
+		client_geom.basic.sizes = sizes_create_from_args(
+			selmon->sel->state.geom.basic.sizes.w -
+				2 * (border_width - selmon->sel->state.geom.border_width),
+			selmon->sel->state.geom.basic.sizes.h -
+				2 * (border_width - selmon->sel->state.geom.border_width)
 		);
 
-		client_geometry.border_width = border_width;
+		client_geom.border_width = border_width;
 
-		resize(selmon->sel, client_geometry, 0);
+		resize(selmon->sel, client_geom, 0);
 	}
 
 	arrange(selmon);
@@ -2040,19 +2040,19 @@ int updategeom()
 				if (
 					i >= n
 					||
-					unique[i].x_org != m->screen_geometry.position.x
+					unique[i].x_org != m->screen_geom.position.x
 					||
-					unique[i].y_org != m->screen_geometry.position.y
+					unique[i].y_org != m->screen_geom.position.y
 					||
-					unique[i].width != m->screen_geometry.sizes.w
+					unique[i].width != m->screen_geom.sizes.w
 					||
-					unique[i].height != m->screen_geometry.sizes.h
+					unique[i].height != m->screen_geom.sizes.h
 				) {
 					dirty = 1;
 					m->num = i;
 
-					m->screen_geometry = m->window_area_geometry =
-						basic_geometry_create_from_args(
+					m->screen_geom = m->window_area_geom =
+						basic_geom_create_from_args(
 							unique[i].x_org,
 							unique[i].y_org,
 							unique[i].width,
@@ -2083,13 +2083,13 @@ int updategeom()
 			mons = monitor_create();
 
 		if (
-			mons->screen_geometry.sizes.w != xbase->screen_sizes.w
+			mons->screen_geom.sizes.w != xbase->screen_sizes.w
 			||
-			mons->screen_geometry.sizes.h != xbase->screen_sizes.h
+			mons->screen_geom.sizes.h != xbase->screen_sizes.h
 		) {
 			dirty = 1;
-			mons->screen_geometry.sizes =
-				mons->window_area_geometry.sizes =
+			mons->screen_geom.sizes =
+				mons->window_area_geom.sizes =
 				xbase->screen_sizes;
 		}
 	}

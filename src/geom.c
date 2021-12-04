@@ -18,11 +18,11 @@ struct Sizes sizes_create()
 	return sizes;
 }
 
-struct BasicGeometry basic_geometry_create()
+struct BasicGeom basic_geom_create()
 {
-	struct BasicGeometry basic_geometry;
-	basic_geometry_init(&basic_geometry);
-	return basic_geometry;
+	struct BasicGeom basic_geom;
+	basic_geom_init(&basic_geom);
+	return basic_geom;
 }
 
 /**************************
@@ -41,10 +41,10 @@ void sizes_init(const Sizes sizes)
 	sizes->h = 0;
 }
 
-void basic_geometry_init(const BasicGeometry basic_geometry)
+void basic_geom_init(const BasicGeom basic_geom)
 {
-	position_init(&basic_geometry->position);
-	sizes_init(&basic_geometry->sizes);
+	position_init(&basic_geom->position);
+	sizes_init(&basic_geom->sizes);
 }
 
 /*****************************
@@ -63,17 +63,17 @@ struct Sizes sizes_create_from_args(const int width, const int height)
 	return sizes;
 }
 
-struct BasicGeometry basic_geometry_create_from_args(
+struct BasicGeom basic_geom_create_from_args(
 	const int x,
 	const int y,
 	const int width,
 	const int height
 ) {
-	const struct BasicGeometry basic_geometry = {
+	const struct BasicGeom basic_geom = {
 		.position = position_create_from_args(x, y),
 		.sizes = sizes_create_from_args(width, height),
 	};
-	return basic_geometry;
+	return basic_geom;
 }
 
 /***************************
@@ -92,13 +92,13 @@ void sizes_init_from_args(const Sizes sizes, const int width, const int height)
 	sizes->h = height;
 }
 
-void basic_geometry_init_from_args(
-	const BasicGeometry basic_geometry,
+void basic_geom_init_from_args(
+	const BasicGeom basic_geom,
 	const int x,
 	const int y,
 	const int width,
 	const int height
 ) {
-	position_init_from_args(&basic_geometry->position, x, y);
-	sizes_init_from_args(&basic_geometry->sizes, width, height);
+	position_init_from_args(&basic_geom->position, x, y);
+	sizes_init_from_args(&basic_geom->sizes, width, height);
 }

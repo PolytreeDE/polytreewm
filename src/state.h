@@ -10,7 +10,7 @@
  * Pointer types *
  *****************/
 
-typedef struct ClientGeometry  *ClientGeometry;
+typedef struct ClientGeom      *ClientGeom;
 typedef struct ClientSizeHints *ClientSizeHints;
 typedef struct ClientState     *ClientState;
 
@@ -18,8 +18,8 @@ typedef struct ClientState     *ClientState;
  * Structures *
  **************/
 
-struct ClientGeometry {
-	struct BasicGeometry basic;
+struct ClientGeom {
+	struct BasicGeom basic;
 	int border_width;
 };
 
@@ -30,7 +30,7 @@ struct ClientSizeHints {
 
 struct ClientState {
 	char name[256];
-	struct ClientGeometry geometry;
+	struct ClientGeom geom;
 	bool is_fixed, is_floating, is_urgent, never_focus, is_fullscreen;
 };
 
@@ -38,7 +38,7 @@ struct ClientState {
  * Default init functions *
  **************************/
 
-void client_geometry_init(ClientGeometry client_geometry);
+void client_geom_init(ClientGeom client_geom);
 void client_size_hints_init(ClientSizeHints client_size_hints);
 void client_state_init(ClientState client_state);
 
@@ -46,8 +46,8 @@ void client_state_init(ClientState client_state);
  * Argument init functions *
  ***************************/
 
-void client_geometry_init_from_args(
-	ClientGeometry client_geometry,
+void client_geom_init_from_args(
+	ClientGeom client_geom,
 	int x,
 	int y,
 	int width,
@@ -59,8 +59,8 @@ void client_geometry_init_from_args(
  * Conversion functions *
  ************************/
 
-void client_geometry_convert_to_x_window_changes(
-	const struct ClientGeometry *client_geometry,
+void client_geom_convert_to_x_window_changes(
+	const struct ClientGeom *client_geom,
 	XWindowChanges *x_window_changes
 );
 
@@ -68,16 +68,16 @@ void client_geometry_convert_to_x_window_changes(
  * Constant functions *
  **********************/
 
-int client_geometry_total_width(const struct ClientGeometry *client_geometry);
-int client_geometry_total_height(const struct ClientGeometry *client_geometry);
+int client_geom_total_width(const struct ClientGeom *client_geom);
+int client_geom_total_height(const struct ClientGeom *client_geom);
 
 /***********************
  * Modifying functions *
  ***********************/
 
-void client_geometry_adjust_to_boundary(
-	ClientGeometry client_geometry,
-	const struct BasicGeometry *boundary_geometry
+void client_geom_adjust_to_boundary(
+	ClientGeom client_geom,
+	const struct BasicGeom *boundary_geom
 );
 
 void client_size_hints_update(

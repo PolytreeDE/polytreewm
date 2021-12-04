@@ -5,9 +5,9 @@
  * Pointer types *
  *****************/
 
-typedef struct Position      *Position;
-typedef struct Sizes         *Sizes;
-typedef struct BasicGeometry *BasicGeometry;
+typedef struct Position  *Position;
+typedef struct Sizes     *Sizes;
+typedef struct BasicGeom *BasicGeom;
 
 /**************
  * Structures *
@@ -21,7 +21,7 @@ struct Sizes {
 	int w, h;
 };
 
-struct BasicGeometry {
+struct BasicGeom {
 	struct Position position;
 	struct Sizes sizes;
 };
@@ -32,7 +32,7 @@ struct BasicGeometry {
 
 struct Position position_create();
 struct Sizes sizes_create();
-struct BasicGeometry basic_geometry_create();
+struct BasicGeom basic_geom_create();
 
 /**************************
  * Default init functions *
@@ -40,7 +40,7 @@ struct BasicGeometry basic_geometry_create();
 
 void position_init(Position position);
 void sizes_init(Sizes sizes);
-void basic_geometry_init(BasicGeometry basic_geometry);
+void basic_geom_init(BasicGeom basic_geom);
 
 /*****************************
  * Argument create functions *
@@ -49,7 +49,7 @@ void basic_geometry_init(BasicGeometry basic_geometry);
 struct Position position_create_from_args(int x, int y);
 struct Sizes sizes_create_from_args(int width, int height);
 
-struct BasicGeometry basic_geometry_create_from_args(
+struct BasicGeom basic_geom_create_from_args(
 	int x,
 	int y,
 	int width,
@@ -63,8 +63,8 @@ struct BasicGeometry basic_geometry_create_from_args(
 void position_init_from_args(Position position, int x, int y);
 void sizes_init_from_args(Sizes sizes, int width, int height);
 
-void basic_geometry_init_from_args(
-	BasicGeometry basic_geometry,
+void basic_geom_init_from_args(
+	BasicGeom basic_geom,
 	int x,
 	int y,
 	int width,

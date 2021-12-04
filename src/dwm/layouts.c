@@ -10,19 +10,19 @@ void centeredmaster(Monitor *m)
 	const float master_area_factor = unit_get_master_area_factor(m->unit);
 
 	unsigned int mx = 0;
-	unsigned int mw = m->window_area_geometry.sizes.w;
+	unsigned int mw = m->window_area_geom.sizes.w;
 	unsigned int tw = mw;
 	if (n > m->nmaster) {
 		/* go mfact box in the center if more than nmaster clients */
 		mw = m->nmaster
-			?  m->window_area_geometry.sizes.w * master_area_factor
+			?  m->window_area_geom.sizes.w * master_area_factor
 			: 0;
-		tw = m->window_area_geometry.sizes.w - mw;
+		tw = m->window_area_geom.sizes.w - mw;
 
 		if (n - m->nmaster > 1) {
 			/* only one client */
-			mx = (m->window_area_geometry.sizes.w - mw) / 2;
-			tw = (m->window_area_geometry.sizes.w - mw) / 2;
+			mx = (m->window_area_geom.sizes.w - mw) / 2;
+			tw = (m->window_area_geom.sizes.w - mw) / 2;
 		}
 	}
 
@@ -42,7 +42,7 @@ void centeredmaster(Monitor *m)
 			// nmaster clients are stacked vertically,
 			// in the center of the screen
 			const unsigned int h =
-				(m->window_area_geometry.sizes.h - my)
+				(m->window_area_geom.sizes.h - my)
 				/
 				(MIN(n, m->nmaster) - i);
 
@@ -51,72 +51,72 @@ void centeredmaster(Monitor *m)
 			const int right_gap  = n <= m->nmaster ? gap_size : bottom_right_half_gap;
 			const int bottom_gap = (i == m->nmaster - 1 || i == n - 1) ? gap_size : bottom_right_half_gap;
 
-			struct ClientGeometry client_geometry;
-			client_geometry_init_from_args(
-				&client_geometry,
-				m->window_area_geometry.position.x + mx + left_gap,
-				m->window_area_geometry.position.y + my + top_gap,
+			struct ClientGeom client_geom;
+			client_geom_init_from_args(
+				&client_geom,
+				m->window_area_geom.position.x + mx + left_gap,
+				m->window_area_geom.position.y + my + top_gap,
 				mw - 2 * border_width - left_gap - right_gap,
 				h - 2 * border_width - top_gap - bottom_gap,
 				border_width
 			);
 
-			resize(c, client_geometry, 0);
+			resize(c, client_geom, 0);
 
 			const int total_height =
-				client_geometry_total_height(&c->state.geometry);
+				client_geom_total_height(&c->state.geom);
 
 			my += total_height + top_gap + bottom_gap;
 		} else {
 			// stack clients are stacked vertically
 			if ((i - m->nmaster) % 2) {
 				const unsigned int h =
-					(m->window_area_geometry.sizes.h - ety) / ((1 + n - i) / 2);
+					(m->window_area_geom.sizes.h - ety) / ((1 + n - i) / 2);
 
 				const int left_gap   = gap_size;
 				const int top_gap    = (i == m->nmaster + 1) ? gap_size : top_left_half_gap;
 				const int right_gap  = bottom_right_half_gap;
 				const int bottom_gap = (i == n - 1 || i == n - 2) ? gap_size : bottom_right_half_gap;
 
-				struct ClientGeometry client_geometry;
-				client_geometry_init_from_args(
-					&client_geometry,
-					m->window_area_geometry.position.x + left_gap,
-					m->window_area_geometry.position.y + ety + top_gap,
+				struct ClientGeom client_geom;
+				client_geom_init_from_args(
+					&client_geom,
+					m->window_area_geom.position.x + left_gap,
+					m->window_area_geom.position.y + ety + top_gap,
 					tw - 2 * border_width - left_gap - right_gap,
 					h - 2 * border_width - top_gap - bottom_gap,
 					border_width
 				);
 
-				resize(c, client_geometry, 0);
+				resize(c, client_geom, 0);
 
 				const int total_height =
-					client_geometry_total_height(&c->state.geometry);
+					client_geom_total_height(&c->state.geom);
 
 				ety += total_height + top_gap + bottom_gap;
 			} else {
 				const unsigned int h =
-					(m->window_area_geometry.sizes.h - oty) / ((1 + n - i) / 2);
+					(m->window_area_geom.sizes.h - oty) / ((1 + n - i) / 2);
 
 				const int left_gap   = (m->nmaster == 0 && n == 1) ? gap_size : top_left_half_gap;
 				const int top_gap    = i == m->nmaster ? gap_size : top_left_half_gap;
 				const int right_gap  = gap_size;
 				const int bottom_gap = (i == n - 1 || i == n - 2) ? gap_size : bottom_right_half_gap;
 
-				struct ClientGeometry client_geometry;
-				client_geometry_init_from_args(
-					&client_geometry,
-					m->window_area_geometry.position.x + mx + mw + left_gap,
-					m->window_area_geometry.position.y + oty + top_gap,
+				struct ClientGeom client_geom;
+				client_geom_init_from_args(
+					&client_geom,
+					m->window_area_geom.position.x + mx + mw + left_gap,
+					m->window_area_geom.position.y + oty + top_gap,
 					tw - 2 * border_width - left_gap - right_gap,
 					h - 2 * border_width - top_gap - bottom_gap,
 					border_width
 				);
 
-				resize(c, client_geometry, 0);
+				resize(c, client_geom, 0);
 
 				const int total_height =
-					client_geometry_total_height(&c->state.geometry);
+					client_geom_total_height(&c->state.geom);
 
 				oty += total_height + top_gap + bottom_gap;
 			}
@@ -129,18 +129,18 @@ void floating(Monitor *m)
 	const int border_width = settings_get_border_width();
 
 	for (Client *c = m->clients; c; c = c->next) {
-		if (ISVISIBLE(c) && c->state.geometry.border_width == 0) {
-			struct ClientGeometry client_geometry;
-			client_geometry_init_from_args(
-				&client_geometry,
-				c->state.geometry.basic.position.x,
-				c->state.geometry.basic.position.y,
-				c->state.geometry.basic.sizes.w - 2 * border_width,
-				c->state.geometry.basic.sizes.h - 2 * border_width,
+		if (ISVISIBLE(c) && c->state.geom.border_width == 0) {
+			struct ClientGeom client_geom;
+			client_geom_init_from_args(
+				&client_geom,
+				c->state.geom.basic.position.x,
+				c->state.geom.basic.position.y,
+				c->state.geom.basic.sizes.w - 2 * border_width,
+				c->state.geom.basic.sizes.h - 2 * border_width,
 				border_width
 			);
 
-			resize(c, client_geometry, 0);
+			resize(c, client_geom, 0);
 		}
 	}
 }
@@ -164,16 +164,16 @@ void horizontile(Monitor *m)
 	const unsigned int mh =
 		n > m->nmaster
 		?
-		(m->nmaster ? m->window_area_geometry.sizes.h * master_area_factor : 0)
+		(m->nmaster ? m->window_area_geom.sizes.h * master_area_factor : 0)
 		:
-		m->window_area_geometry.sizes.h;
+		m->window_area_geom.sizes.h;
 
 	Client *c = nexttiled(m->clients);
 
 	for (unsigned int i = 0, mx = 0, tx = 0; c; c = nexttiled(c->next), ++i) {
 		if (i < m->nmaster) {
 			const unsigned int w =
-				(m->window_area_geometry.sizes.w - mx)
+				(m->window_area_geom.sizes.w - mx)
 				/
 				(MIN(n, m->nmaster) - i);
 
@@ -182,50 +182,50 @@ void horizontile(Monitor *m)
 			const unsigned int right_gap  = (i == m->nmaster - 1 || i == n - 1) ? gap_size : bottom_right_half_gap;
 			const unsigned int bottom_gap = n <= m->nmaster ? gap_size : bottom_right_half_gap;
 
-			struct ClientGeometry client_geometry;
-			client_geometry_init_from_args(
-				&client_geometry,
-				m->window_area_geometry.position.x + mx + left_gap,
-				m->window_area_geometry.position.y + top_gap,
+			struct ClientGeom client_geom;
+			client_geom_init_from_args(
+				&client_geom,
+				m->window_area_geom.position.x + mx + left_gap,
+				m->window_area_geom.position.y + top_gap,
 				w - 2 * border_width - left_gap - right_gap,
 				mh - 2 * border_width - top_gap - bottom_gap,
 				border_width
 			);
 
-			resize(c, client_geometry, 0);
+			resize(c, client_geom, 0);
 
 			const int total_width =
-				client_geometry_total_width(&c->state.geometry);
+				client_geom_total_width(&c->state.geom);
 
 			// FIXME: maybe need + left_gap + right_gap
-			if (mx + total_width < m->window_area_geometry.sizes.w) {
+			if (mx + total_width < m->window_area_geom.sizes.w) {
 				mx += total_width + left_gap + right_gap;
 			}
 		} else {
-			const unsigned int w = (m->window_area_geometry.sizes.w - tx) / (n - i);
+			const unsigned int w = (m->window_area_geom.sizes.w - tx) / (n - i);
 
 			const unsigned int left_gap   = i == m->nmaster ? gap_size : top_left_half_gap;
 			const unsigned int top_gap    = m->nmaster == 0 ? gap_size : top_left_half_gap;
 			const unsigned int right_gap  = (i == n - 1) ? gap_size : bottom_right_half_gap;
 			const unsigned int bottom_gap = gap_size;
 
-			struct ClientGeometry client_geometry;
-			client_geometry_init_from_args(
-				&client_geometry,
-				m->window_area_geometry.position.x + tx + left_gap,
-				m->window_area_geometry.position.y + mh + top_gap,
+			struct ClientGeom client_geom;
+			client_geom_init_from_args(
+				&client_geom,
+				m->window_area_geom.position.x + tx + left_gap,
+				m->window_area_geom.position.y + mh + top_gap,
 				w - 2 * border_width - left_gap - right_gap,
-				m->window_area_geometry.sizes.h - mh - 2 * border_width - top_gap - bottom_gap,
+				m->window_area_geom.sizes.h - mh - 2 * border_width - top_gap - bottom_gap,
 				border_width
 			);
 
-			resize(c, client_geometry, 0);
+			resize(c, client_geom, 0);
 
 			const int total_width =
-				client_geometry_total_width(&c->state.geometry);
+				client_geom_total_width(&c->state.geom);
 
 			// FIXME: maybe need + left_gap + right_gap
-			if (tx + total_width < m->window_area_geometry.sizes.w) {
+			if (tx + total_width < m->window_area_geom.sizes.w) {
 				tx += total_width + left_gap + right_gap;
 			}
 		}
@@ -245,17 +245,17 @@ void monocle(Monitor *m)
 	const int border_width = helpers_border_width(1, is_fullscreen, any_is_fullscreen);
 
 	for (Client *c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
-		struct ClientGeometry client_geometry;
-		client_geometry_init_from_args(
-			&client_geometry,
-			m->window_area_geometry.position.x + gap_size,
-			m->window_area_geometry.position.y + gap_size,
-			m->window_area_geometry.sizes.w - 2 * border_width - 2 * gap_size,
-			m->window_area_geometry.sizes.h - 2 * border_width - 2 * gap_size,
+		struct ClientGeom client_geom;
+		client_geom_init_from_args(
+			&client_geom,
+			m->window_area_geom.position.x + gap_size,
+			m->window_area_geom.position.y + gap_size,
+			m->window_area_geom.sizes.w - 2 * border_width - 2 * gap_size,
+			m->window_area_geom.sizes.h - 2 * border_width - 2 * gap_size,
 			border_width
 		);
 
-		resize(c, client_geometry, 0);
+		resize(c, client_geom, 0);
 	}
 }
 
@@ -278,67 +278,67 @@ void tile(Monitor *m)
 	const unsigned int mw =
 		n > m->nmaster
 		?
-		(m->nmaster ? m->window_area_geometry.sizes.w * master_area_factor : 0)
+		(m->nmaster ? m->window_area_geom.sizes.w * master_area_factor : 0)
 		:
-		m->window_area_geometry.sizes.w;
+		m->window_area_geom.sizes.w;
 
 	Client *c = nexttiled(m->clients);
 
 	for (unsigned int i = 0, my = 0, ty = 0; c; c = nexttiled(c->next), ++i) {
 		if (i < m->nmaster) {
 			const unsigned int h =
-				(m->window_area_geometry.sizes.h - my) / (MIN(n, m->nmaster) - i);
+				(m->window_area_geom.sizes.h - my) / (MIN(n, m->nmaster) - i);
 
 			const unsigned int left_gap   = gap_size;
 			const unsigned int top_gap    = i == 0 ? gap_size : top_left_half_gap;
 			const unsigned int right_gap  = n <= m->nmaster ? gap_size : bottom_right_half_gap;
 			const unsigned int bottom_gap = (i == m->nmaster - 1 || i == n - 1) ? gap_size : bottom_right_half_gap;
 
-			struct ClientGeometry client_geometry;
-			client_geometry_init_from_args(
-				&client_geometry,
-				m->window_area_geometry.position.x + left_gap,
-				m->window_area_geometry.position.y + my + top_gap,
+			struct ClientGeom client_geom;
+			client_geom_init_from_args(
+				&client_geom,
+				m->window_area_geom.position.x + left_gap,
+				m->window_area_geom.position.y + my + top_gap,
 				mw - 2 * border_width - left_gap - right_gap,
 				h - 2 * border_width - top_gap - bottom_gap,
 				border_width
 			);
 
-			resize(c, client_geometry, 0);
+			resize(c, client_geom, 0);
 
 			const int total_height =
-				client_geometry_total_height(&c->state.geometry);
+				client_geom_total_height(&c->state.geom);
 
 			// FIXME: maybe need + top_gap + bottom_gap
-			if (my + total_height < m->window_area_geometry.sizes.h) {
+			if (my + total_height < m->window_area_geom.sizes.h) {
 				my += total_height + top_gap + bottom_gap;
 			}
 		} else {
 			const unsigned int h =
-				(m->window_area_geometry.sizes.h - ty) / (n - i);
+				(m->window_area_geom.sizes.h - ty) / (n - i);
 
 			const unsigned int left_gap   = m->nmaster == 0 ? gap_size : top_left_half_gap;
 			const unsigned int top_gap    = i == m->nmaster ? gap_size : top_left_half_gap;
 			const unsigned int right_gap  = gap_size;
 			const unsigned int bottom_gap = (i == n - 1) ? gap_size : bottom_right_half_gap;
 
-			struct ClientGeometry client_geometry;
-			client_geometry_init_from_args(
-				&client_geometry,
-				m->window_area_geometry.position.x + mw + left_gap,
-				m->window_area_geometry.position.y + ty + top_gap,
-				m->window_area_geometry.sizes.w - mw - 2 * border_width - left_gap - right_gap,
+			struct ClientGeom client_geom;
+			client_geom_init_from_args(
+				&client_geom,
+				m->window_area_geom.position.x + mw + left_gap,
+				m->window_area_geom.position.y + ty + top_gap,
+				m->window_area_geom.sizes.w - mw - 2 * border_width - left_gap - right_gap,
 				h - 2 * border_width - top_gap - bottom_gap,
 				border_width
 			);
 
-			resize(c, client_geometry, 0);
+			resize(c, client_geom, 0);
 
 			const int total_height =
-				client_geometry_total_height(&c->state.geometry);
+				client_geom_total_height(&c->state.geom);
 
 			// FIXME: maybe need + top_gap + bottom_gap
-			if (ty + total_height < m->window_area_geometry.sizes.h) {
+			if (ty + total_height < m->window_area_geom.sizes.h) {
 				ty += total_height + top_gap + bottom_gap;
 			}
 		}

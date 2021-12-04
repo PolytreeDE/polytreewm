@@ -78,63 +78,63 @@ void on_configure_request(XEvent *e)
 
 	if ((c = wintoclient(ev->window))) {
 		if (ev->value_mask & CWBorderWidth) {
-			c->state.geometry.border_width = ev->border_width;
+			c->state.geom.border_width = ev->border_width;
 		} else if (c->state.is_floating || !selmon->lt[selmon->sellt]->arrange) {
 			m = c->mon;
 			if (ev->value_mask & CWX) {
-				c->state.geometry.basic.position.x =
-					m->screen_geometry.position.x + ev->x;
+				c->state.geom.basic.position.x =
+					m->screen_geom.position.x + ev->x;
 			}
 			if (ev->value_mask & CWY) {
-				c->state.geometry.basic.position.y =
-					m->screen_geometry.position.y + ev->y;
+				c->state.geom.basic.position.y =
+					m->screen_geom.position.y + ev->y;
 			}
 			if (ev->value_mask & CWWidth) {
-				c->state.geometry.basic.sizes.w = ev->width;
+				c->state.geom.basic.sizes.w = ev->width;
 			}
 			if (ev->value_mask & CWHeight) {
-				c->state.geometry.basic.sizes.h = ev->height;
+				c->state.geom.basic.sizes.h = ev->height;
 			}
 			if (
 				(
-					c->state.geometry.basic.position.x
+					c->state.geom.basic.position.x
 					+
-					c->state.geometry.basic.sizes.w
+					c->state.geom.basic.sizes.w
 				)
 				>
-				m->screen_geometry.position.x + m->screen_geometry.sizes.w
+				m->screen_geom.position.x + m->screen_geom.sizes.w
 				&&
 				c->state.is_floating
 			) {
 				/* center in x direction */
-				c->state.geometry.basic.position.x =
-					m->screen_geometry.position.x
+				c->state.geom.basic.position.x =
+					m->screen_geom.position.x
 					+
 					(
-						m->screen_geometry.sizes.w / 2
+						m->screen_geom.sizes.w / 2
 						-
-						client_geometry_total_width(&c->state.geometry) / 2
+						client_geom_total_width(&c->state.geom) / 2
 					);
 			}
 			if (
 				(
-					c->state.geometry.basic.position.y
+					c->state.geom.basic.position.y
 					+
-					c->state.geometry.basic.sizes.h
+					c->state.geom.basic.sizes.h
 				)
 				>
-				m->screen_geometry.position.y + m->screen_geometry.sizes.h
+				m->screen_geom.position.y + m->screen_geom.sizes.h
 				&&
 				c->state.is_floating
 			) {
 				/* center in y direction */
-				c->state.geometry.basic.position.y =
-					m->screen_geometry.position.y
+				c->state.geom.basic.position.y =
+					m->screen_geom.position.y
 					+
 					(
-						m->screen_geometry.sizes.h / 2
+						m->screen_geom.sizes.h / 2
 						-
-						client_geometry_total_height(&c->state.geometry) / 2
+						client_geom_total_height(&c->state.geom) / 2
 					);
 			}
 			if ((ev->value_mask & (CWX|CWY)) && !(ev->value_mask & (CWWidth|CWHeight))) {
@@ -144,10 +144,10 @@ void on_configure_request(XEvent *e)
 				XMoveResizeWindow(
 					xbase->x_display,
 					c->x_window,
-					c->state.geometry.basic.position.x,
-					c->state.geometry.basic.position.y,
-					c->state.geometry.basic.sizes.w,
-					c->state.geometry.basic.sizes.h
+					c->state.geom.basic.position.x,
+					c->state.geom.basic.position.y,
+					c->state.geom.basic.sizes.w,
+					c->state.geom.basic.sizes.h
 				);
 			}
 		} else

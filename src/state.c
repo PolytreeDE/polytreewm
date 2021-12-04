@@ -6,10 +6,10 @@
  * Default init functions *
  **************************/
 
-void client_geometry_init(const ClientGeometry client_geometry)
+void client_geom_init(const ClientGeom client_geom)
 {
-	basic_geometry_init(&client_geometry->basic);
-	client_geometry->border_width = 0;
+	basic_geom_init(&client_geom->basic);
+	client_geom->border_width = 0;
 }
 
 void client_size_hints_init(const ClientSizeHints client_size_hints)
@@ -29,7 +29,7 @@ void client_size_hints_init(const ClientSizeHints client_size_hints)
 void client_state_init(const ClientState client_state)
 {
 	memset(client_state->name, 0, sizeof(client_state->name));
-	client_geometry_init(&client_state->geometry);
+	client_geom_init(&client_state->geom);
 	client_state->is_fixed = false;
 	client_state->is_floating = false;
 	client_state->is_urgent = false;
@@ -41,92 +41,92 @@ void client_state_init(const ClientState client_state)
  * Argument init functions *
  ***************************/
 
-void client_geometry_init_from_args(
-	const ClientGeometry client_geometry,
+void client_geom_init_from_args(
+	const ClientGeom client_geom,
 	const int x,
 	const int y,
 	const int width,
 	const int height,
 	const int border_width
 ) {
-	basic_geometry_init_from_args(&client_geometry->basic, x, y, width, height);
-	client_geometry->border_width = border_width;
+	basic_geom_init_from_args(&client_geom->basic, x, y, width, height);
+	client_geom->border_width = border_width;
 }
 
 /************************
  * Conversion functions *
  ************************/
 
-void client_geometry_convert_to_x_window_changes(
-	const struct ClientGeometry *const client_geometry,
+void client_geom_convert_to_x_window_changes(
+	const struct ClientGeom *const client_geom,
 	XWindowChanges *const x_window_changes
 ) {
-	x_window_changes->x            = client_geometry->basic.position.x;
-	x_window_changes->y            = client_geometry->basic.position.y;
-	x_window_changes->width        = client_geometry->basic.sizes.w;
-	x_window_changes->height       = client_geometry->basic.sizes.h;
-	x_window_changes->border_width = client_geometry->border_width;
+	x_window_changes->x            = client_geom->basic.position.x;
+	x_window_changes->y            = client_geom->basic.position.y;
+	x_window_changes->width        = client_geom->basic.sizes.w;
+	x_window_changes->height       = client_geom->basic.sizes.h;
+	x_window_changes->border_width = client_geom->border_width;
 }
 
 /**********************
  * Constant functions *
  **********************/
 
-int client_geometry_total_width(
-	const struct ClientGeometry *const client_geometry
+int client_geom_total_width(
+	const struct ClientGeom *const client_geom
 ) {
-	return client_geometry->basic.sizes.w + 2 * client_geometry->border_width;
+	return client_geom->basic.sizes.w + 2 * client_geom->border_width;
 }
 
-int client_geometry_total_height(
-	const struct ClientGeometry *const client_geometry
+int client_geom_total_height(
+	const struct ClientGeom *const client_geom
 ) {
-	return client_geometry->basic.sizes.h + 2 * client_geometry->border_width;
+	return client_geom->basic.sizes.h + 2 * client_geom->border_width;
 }
 
 /***********************
  * Modifying functions *
  ***********************/
 
-void client_geometry_adjust_to_boundary(
-	const ClientGeometry client_geometry,
-	const struct BasicGeometry *const boundary_geometry
+void client_geom_adjust_to_boundary(
+	const ClientGeom client_geom,
+	const struct BasicGeom *const boundary_geom
 ) {
-	const int total_width  = client_geometry_total_width(client_geometry);
-	const int total_height = client_geometry_total_height(client_geometry);
+	const int total_width  = client_geom_total_width(client_geom);
+	const int total_height = client_geom_total_height(client_geom);
 
 	if (
-		client_geometry->basic.position.x + total_width
+		client_geom->basic.position.x + total_width
 		>
-		boundary_geometry->position.x + boundary_geometry->sizes.w
+		boundary_geom->position.x + boundary_geom->sizes.w
 	) {
-		client_geometry->basic.position.x =
-			boundary_geometry->position.x
+		client_geom->basic.position.x =
+			boundary_geom->position.x
 			+
-			boundary_geometry->sizes.w
+			boundary_geom->sizes.w
 			-
 			total_width;
 	}
 
 	if (
-		client_geometry->basic.position.y + total_height
+		client_geom->basic.position.y + total_height
 		>
-		boundary_geometry->position.y + boundary_geometry->sizes.h
+		boundary_geom->position.y + boundary_geom->sizes.h
 	) {
-		client_geometry->basic.position.y =
-			boundary_geometry->position.y
+		client_geom->basic.position.y =
+			boundary_geom->position.y
 			+
-			boundary_geometry->sizes.h
+			boundary_geom->sizes.h
 			-
 			total_height;
 	}
 
-	if (client_geometry->basic.position.x < boundary_geometry->position.x) {
-		client_geometry->basic.position.x = boundary_geometry->position.x;
+	if (client_geom->basic.position.x < boundary_geom->position.x) {
+		client_geom->basic.position.x = boundary_geom->position.x;
 	}
 
-	if (client_geometry->basic.position.y < boundary_geometry->position.y) {
-		client_geometry->basic.position.y = boundary_geometry->position.y;
+	if (client_geom->basic.position.y < boundary_geom->position.y) {
+		client_geom->basic.position.y = boundary_geom->position.y;
 	}
 }
 
