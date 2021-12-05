@@ -1746,7 +1746,9 @@ void scan()
 			if (!XGetWindowAttributes(xbase->x_display, wins[i], &wa)) {
 				continue;
 			}
-			if (
+			if (winpolybar(wins[i])) {
+				// do nothing
+			} else if (
 				XGetTransientForHint(xbase->x_display, wins[i], &d1)
 				&&
 				(wa.map_state == IsViewable || getstate(wins[i]) == IconicState)
