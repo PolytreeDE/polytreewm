@@ -244,7 +244,9 @@ void on_map_request(XEvent *e)
 	if (!XGetWindowAttributes(xbase->x_display, ev->window, &wa)) return;
 	if (wa.override_redirect) return;
 
-	if (!wintoclient(ev->window)) {
+	if (winpolybar(ev->window)) {
+		// do nothing
+	} else if (!wintoclient(ev->window)) {
 		manage(ev->window, &wa);
 	}
 }
