@@ -45,6 +45,9 @@ Optional Features:
 Optional Packages:
   --with-PACKAGE[ ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE no)
+  --with-locker [i3lock|i3lock-color]
+                          use ARG as screen locker [i3lock]
+  --without-locker        do not use screen locker at all
   --with-terminal [alacritty|gnome|st|xterm]
                           use ARG as terminal [alacritty]
   --without-terminal      do not use terminal at all
@@ -58,6 +61,7 @@ bindir=''
 datarootdir=''
 mandir=''
 enable_xinerama=''
+with_locker=''
 with_terminal=''
 
 while [ $# -gt 0 ]; do
@@ -90,12 +94,56 @@ while [ $# -gt 0 ]; do
 		--disable-xinerama)
 			enable_xinerama='no'
 			;;
+		--without-locker)
+			if [ "$with_locker" = '' ]; then
+				with_locker='no'
+			elif [ "$with_locker" != 'no' ]; then
+				usage
+			fi
+			;;
 		--without-terminal)
 			if [ "$with_terminal" = '' ]; then
 				with_terminal='no'
 			elif [ "$with_terminal" != 'no' ]; then
 				usage
 			fi
+			;;
+		--with-locker)
+			shift
+
+			case "$1" in
+				yes)
+					if [ "$with_locker" = '' ]; then
+						with_locker='yes'
+					elif [ "$with_locker" != 'yes' ]; then
+						usage
+					fi
+					;;
+				no)
+					if [ "$with_locker" = '' ]; then
+						with_locker='no'
+					elif [ "$with_locker" != 'no' ]; then
+						usage
+					fi
+					;;
+				i3lock)
+					if [ "$with_locker" = '' ]; then
+						with_locker='i3lock'
+					elif [ "$with_locker" != 'i3lock' ]; then
+						usage
+					fi
+					;;
+				i3lock-color)
+					if [ "$with_locker" = '' ]; then
+						with_locker='i3lock-color'
+					elif [ "$with_locker" != 'i3lock-color' ]; then
+						usage
+					fi
+					;;
+				*)
+					do_shift='no'
+					;;
+			esac
 			;;
 		--with-terminal)
 			shift
@@ -176,6 +224,10 @@ if [ "$enable_xinerama" = '' ]; then
 	enable_xinerama='yes'
 fi
 
+if [ "$with_locker" = '' -o "$with_locker" = 'yes' ]; then
+	with_locker='i3lock'
+fi
+
 if [ "$with_terminal" = '' -o "$with_terminal" = 'yes' ]; then
 	with_terminal='alacritty'
 fi
@@ -186,6 +238,7 @@ echo "BINDIR          = $bindir"
 echo "DATAROOTDIR     = $datarootdir"
 echo "MANDIR          = $mandir"
 echo "ENABLE_XINERAMA = $enable_xinerama"
+echo "WITH_LOCKER     = $with_locker"
 echo "WITH_TERMINAL   = $with_terminal"
 
 cat > 'config/1-generated.mk' << MAKE
@@ -195,6 +248,7 @@ BINDIR          = $bindir
 DATAROOTDIR     = $datarootdir
 MANDIR          = $mandir
 ENABLE_XINERAMA = $enable_xinerama
+WITH_LOCKER     = $with_locker
 WITH_TERMINAL   = $with_terminal
 MAKE
 

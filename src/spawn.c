@@ -6,9 +6,18 @@
 #include <string.h>
 #include <unistd.h>
 
-#define MAX_ARGS_COUNT 20
+#define MAX_ARGS_COUNT 25
 #define ARGS_SIZE (MAX_ARGS_COUNT + 1)
 #define MON_ARG_SIZE 2
+
+#ifdef WITH_LOCKER_I3LOCK_COLOR
+#define COLOR_BLANK     "#00000000"
+#define COLOR_CLEAR     "#ffffff22"
+#define COLOR_DEFAULT   "#ff00ffcc"
+#define COLOR_TEXT      "#ee00eeee"
+#define COLOR_WRONG     "#880000bb"
+#define COLOR_VERIFYING "#bb00bbbb"
+#endif // WITH_LOCKER_I3LOCK_COLOR
 
 struct Command {
 	const char *name;
@@ -17,11 +26,47 @@ struct Command {
 };
 
 static struct Command commands[] = {
+#ifdef WITH_LOCKER
 	{
 		.name = "lock",
 		.monitor_arg_index = 0,
+#ifdef WITH_LOCKER_I3LOCK
 		.args = { "i3lock", NULL },
+#endif // WITH_LOCKER_I3LOCK
+#ifdef WITH_LOCKER_I3LOCK_COLOR
+		.args = {
+			"i3lock",
+			"--insidever-color="COLOR_CLEAR,
+			"--ringver-color="COLOR_VERIFYING,
+
+			"--insidewrong-color="COLOR_CLEAR,
+			"--ringwrong-color="COLOR_WRONG,
+
+			"--inside-color="COLOR_BLANK,
+			"--ring-color="COLOR_DEFAULT,
+			"--line-color="COLOR_BLANK,
+			"--separator-color="COLOR_DEFAULT,
+
+			"--verif-color="COLOR_TEXT,
+			"--wrong-color="COLOR_TEXT,
+			"--time-color="COLOR_TEXT,
+			"--date-color="COLOR_TEXT,
+			"--layout-color="COLOR_TEXT,
+			"--keyhl-color="COLOR_WRONG,
+			"--bshl-color="COLOR_WRONG,
+
+			"--screen=1",
+			"--blur=5",
+			"--clock",
+			"--indicator",
+			"--time-str=%H:%M:%S",
+			"--date-str=%a, %e %b %Y",
+			"--keylayout=1",
+			NULL,
+		},
+#endif // WITH_LOCKER_I3LOCK_COLOR
 	},
+#endif // WITH_LOCKER
 	{
 		.name = "menu",
 		.monitor_arg_index = 6,
@@ -43,18 +88,18 @@ static struct Command commands[] = {
 		.monitor_arg_index = 0,
 #ifdef WITH_TERMINAL_ALACRITTY
 		.args = { "alacritty", NULL },
-#endif
+#endif // WITH_TERMINAL_ALACRITTY
 #ifdef WITH_TERMINAL_GNOME
 		.args = { "gnome-terminal", "--wait", NULL },
-#endif
+#endif // WITH_TERMINAL_GNOME
 #ifdef WITH_TERMINAL_ST
 		.args = { "st", NULL },
-#endif
+#endif // WITH_TERMINAL_ST
 #ifdef WITH_TERMINAL_XTERM
 		.args = { "xterm", NULL },
-#endif
+#endif // WITH_TERMINAL_XTERM
 	},
-#endif
+#endif // WITH_TERMINAL
 	{
 		.name = "firefox",
 		.monitor_arg_index = 0,
