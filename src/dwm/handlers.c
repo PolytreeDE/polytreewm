@@ -245,7 +245,7 @@ void on_map_request(XEvent *e)
 	if (wa.override_redirect) return;
 
 	if (winpolybar(ev->window)) {
-		// do nothing
+		managepolybar(ev->window, &wa);
 	} else if (!wintoclient(ev->window)) {
 		manage(ev->window, &wa);
 	}

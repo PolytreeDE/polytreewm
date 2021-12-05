@@ -170,6 +170,7 @@ static void incnmaster(const Arg *arg);
 static int isuniquegeom(XineramaScreenInfo *unique, size_t n, XineramaScreenInfo *info);
 static void killclient(const Arg *arg);
 static void manage(Window w, XWindowAttributes *wa);
+static void managepolybar(Window w, XWindowAttributes *wa);
 static Monitor *monitor_create();
 static void monitor_destroy(Monitor *mon);
 static void movemouse(const Arg *arg);
@@ -1189,6 +1190,40 @@ void manage(Window w, XWindowAttributes *wa)
 	focus(NULL);
 }
 
+void managepolybar(Window w, XWindowAttributes *wa)
+{
+	Monitor *m = recttomon(wa->x, wa->y, wa->width, wa->height);
+	if (!m) return;
+
+	XSelectInput(
+		xbase->x_display,
+		w,
+		EnterWindowMask | FocusChangeMask | PropertyChangeMask | StructureNotifyMask
+	);
+
+	XMoveResizeWindow(
+		xbase->x_display,
+		w,
+		wa->x,
+		wa->y,
+		wa->width,
+		wa->height
+	);
+
+	XMapWindow(xbase->x_display, w);
+
+	XChangeProperty(
+		xbase->x_display,
+		xbase->x_root,
+		xbase->atoms->netatom[NetClientList],
+		XA_WINDOW,
+		32,
+		PropModeAppend,
+		(unsigned char*)&w,
+		1
+	);
+}
+
 Monitor *monitor_create()
 {
 	Monitor *const m = ecalloc(1, sizeof(Monitor));
@@ -1733,7 +1768,7 @@ void scan()
 			}
 
 			if (winpolybar(wins[i])) {
-				// do nothing
+				managepolybar(wins[i], &wa);
 			} else if (
 				wa.map_state == IsViewable
 				||
