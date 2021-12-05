@@ -36,6 +36,7 @@ PolytreeWM is originally a fork of [dwm](https://dwm.suckless.org), but is very
 different now. It also includes the following dwm patches:
 
 * [alwayscenter](https://dwm.suckless.org/patches/alwayscenter)
+* [anybar](https://dwm.suckless.org/patches/anybar)
 * [fakefullscreen](https://dwm.suckless.org/patches/fakefullscreen)
 * [focusonclick](https://dwm.suckless.org/patches/focusonclick)
 * [movestack](https://dwm.suckless.org/patches/movestack)
