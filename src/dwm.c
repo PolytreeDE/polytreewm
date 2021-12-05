@@ -210,13 +210,13 @@ static void updatesizehints(Client *c);
 static void updatetitle(Client *c);
 static void updatewindowtype(Client *c);
 static void updatewmhints(Client *c);
-static bool winpolybar(Window w);
 static Client *wintoclient(Window w);
 static Monitor *wintomon(Window w);
 static void wmcheckwin_create();
 static void wmcheckwin_destroy();
 static void zoom(const Arg *arg);
 
+#include "dwm/bar.h"
 #include "dwm/handlers.h"
 #include "dwm/layouts.h"
 #include "dwm/xerror.h"
@@ -334,6 +334,7 @@ static Button buttons[] = {
  * Private function implementations *
  ************************************/
 
+#include "dwm/bar.c"
 #include "dwm/handlers.c"
 #include "dwm/layouts.c"
 #include "dwm/xerror.c"
@@ -2316,41 +2317,6 @@ Client *wintoclient(Window w)
 	}
 
 	return NULL;
-}
-
-bool winpolybar(const Window w)
-{
-	XClassHint ch = { NULL, NULL };
-	bool result = true;
-
-	if (XGetClassHint(xbase->x_display, w, &ch)) {
-		if (
-			ch.res_class
-			&&
-			strstr(ch.res_class, "Polybar") == NULL
-			&&
-			strstr(ch.res_class, "polybar") == NULL
-		) {
-			result = false;
-		}
-
-		if (
-			ch.res_name
-			&&
-			strstr(ch.res_name, "Polybar") == NULL
-			&&
-			strstr(ch.res_name, "polybar") == NULL
-		) {
-			result = false;
-		}
-	} else {
-		result = false;
-	}
-
-	if (ch.res_class) XFree(ch.res_class);
-	if (ch.res_name)  XFree(ch.res_name);
-
-	return result;
 }
 
 Monitor *wintomon(Window w)
