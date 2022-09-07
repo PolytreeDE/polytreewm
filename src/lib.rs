@@ -72,3 +72,12 @@ unsafe extern "C" fn position_init_from_args(
 ) {
     *position = geom::Position::new(x, y);
 }
+
+#[no_mangle]
+unsafe extern "C" fn sizes_init_from_args(
+    sizes: *mut geom::Sizes,
+    width: c_int,
+    height: c_int,
+) {
+    *sizes = geom::Sizes::new(width, height);
+}

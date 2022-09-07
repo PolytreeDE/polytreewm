@@ -93,12 +93,6 @@ struct WinGeom win_geom_create_from_args(
  * Argument init functions *
  ***************************/
 
-void sizes_init_from_args(const Sizes sizes, const int width, const int height)
-{
-	sizes->w = width;
-	sizes->h = height;
-}
-
 void basic_geom_init_from_args(
 	const BasicGeom basic_geom,
 	const int x,
