@@ -16,3 +16,8 @@ extern "C" fn constraints_default_clients_in_master(default_clients_in_master: c
 extern "C" fn constraints_gap_size(gap_size: c_int) -> c_int {
 	constraints::gap_size(gap_size)
 }
+
+#[no_mangle]
+extern "C" fn constraints_max_clients_in_master(max_clients_in_master: c_int) -> c_int {
+	constraints::max_clients_in_master(max_clients_in_master)
+}

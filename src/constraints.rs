@@ -6,6 +6,8 @@ const MIN_DEFAULT_CLIENTS_IN_MASTER: c_int = 1;
 const MAX_DEFAULT_CLIENTS_IN_MASTER: c_int = 10000;
 const MIN_GAP_SIZE: c_int = 0;
 const MAX_GAP_SIZE: c_int = 10000;
+const MIN_MAX_CLIENTS_IN_MASTER: c_int = 1;
+const MAX_MAX_CLIENTS_IN_MASTER: c_int = 10000;
 
 pub fn border_width(border_width: c_int) -> c_int {
 	if border_width < MIN_BORDER_WIDTH { return MIN_BORDER_WIDTH }
@@ -27,6 +29,16 @@ pub fn gap_size(gap_size: c_int) -> c_int {
 	if gap_size < MIN_GAP_SIZE { return MIN_GAP_SIZE }
 	if gap_size > MAX_GAP_SIZE { return MAX_GAP_SIZE }
 	gap_size
+}
+
+pub fn max_clients_in_master(max_clients_in_master: c_int) -> c_int {
+	if max_clients_in_master < MIN_MAX_CLIENTS_IN_MASTER {
+		return MIN_MAX_CLIENTS_IN_MASTER
+	}
+	if max_clients_in_master > MAX_MAX_CLIENTS_IN_MASTER {
+		return MAX_MAX_CLIENTS_IN_MASTER
+	}
+	max_clients_in_master
 }
 
 #[cfg(test)]
@@ -72,5 +84,20 @@ mod tests {
 
 		assert_eq!(gap_size(10_001), 10_000);
 		assert_eq!(gap_size(20_000), 10_000);
+	}
+
+	#[test]
+	fn test_max_clients_in_master() {
+		assert_eq!(max_clients_in_master(-1), 1);
+		assert_eq!(max_clients_in_master(0), 1);
+
+		assert_eq!(max_clients_in_master(1), 1);
+		assert_eq!(max_clients_in_master(2), 2);
+		assert_eq!(max_clients_in_master(100), 100);
+		assert_eq!(max_clients_in_master(9999), 9999);
+		assert_eq!(max_clients_in_master(10_000), 10_000);
+
+		assert_eq!(max_clients_in_master(10_001), 10_000);
+		assert_eq!(max_clients_in_master(20_000), 10_000);
 	}
 }
