@@ -123,3 +123,17 @@ unsafe extern "C" fn win_geom_init_from_args(
         border_width,
     );
 }
+
+#[no_mangle]
+unsafe extern "C" fn win_geom_total_width(
+    win_geom: *const geom::WinGeom,
+) -> c_int {
+    (*win_geom).total_width()
+}
+
+#[no_mangle]
+unsafe extern "C" fn win_geom_total_height(
+    win_geom: *const geom::WinGeom,
+) -> c_int {
+    (*win_geom).total_height()
+}

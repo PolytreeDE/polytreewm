@@ -38,7 +38,8 @@ DWM_SRC = \
 TEST_SRC = \
 	tests/geom_basic_geom.c \
 	tests/geom_position.c \
-	tests/geom_sizes.c
+	tests/geom_sizes.c \
+	tests/geom_win_geom.c
 
 MAIN_SRC = $(MODULES_SRC) src/main.c
 

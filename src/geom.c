@@ -88,22 +88,6 @@ void win_geom_convert_to_x_window_changes(
 	x_window_changes->border_width = win_geom->border_width;
 }
 
-/**********************
- * Constant functions *
- **********************/
-
-int win_geom_total_width(
-	const struct WinGeom *const win_geom
-) {
-	return win_geom->basic.sizes.w + 2 * win_geom->border_width;
-}
-
-int win_geom_total_height(
-	const struct WinGeom *const win_geom
-) {
-	return win_geom->basic.sizes.h + 2 * win_geom->border_width;
-}
-
 /***********************
  * Modifying functions *
  ***********************/
