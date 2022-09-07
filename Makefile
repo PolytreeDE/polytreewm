@@ -58,10 +58,10 @@ ALL_EXE  = polytreewm $(TEST_EXE)
 # Executables #
 ###############
 
-polytreewm: src/main.o $(MODULES_OBJ)
+polytreewm: src/main.o $(MODULES_OBJ) target/debug/libpolytreewm.a
 	$(CC) -o $@ $^ $(LDFLAGS)
 
-%.test: %.o tests/main.o $(MODULES_OBJ)
+%.test: %.o tests/main.o $(MODULES_OBJ) target/debug/libpolytreewm.a
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 ################
@@ -73,6 +73,9 @@ polytreewm: src/main.o $(MODULES_OBJ)
 
 dwm.o: $(DWM_SRC) $(DWM_HDR)
 
+target/debug/libpolytreewm.a:
+	$(CARGO) build
+
 #########
 # Tasks #
 #########
@@ -82,6 +85,7 @@ test: $(TEST_EXE)
 
 clean:
 	rm -f $(ALL_OBJ) $(ALL_EXE)
+	$(CARGO) clean
 
 distclean: clean
 	rm -f $(CONFIGMKS_TO_REMOVE)

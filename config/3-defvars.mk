@@ -1,3 +1,4 @@
+CARGO = cargo
 CC = cc
 PKGCONFIG = pkg-config
 

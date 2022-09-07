@@ -6,7 +6,7 @@ PolytreeWM is an extremely fast, small, and dynamic tiling window manager for X.
 Requirements
 ------------
 
-In order to build PolytreeWM you need the Xlib header files.
+In order to build PolytreeWM you need Cargo for Rust and the Xlib header files.
 
 Installation
 ------------
