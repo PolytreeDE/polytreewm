@@ -86,12 +86,22 @@ impl WinGeom {
         self.border_width
     }
 
-    pub fn total_width(&self) -> c_int {
-        self.basic.sizes.width + 2 * self.border_width
+    pub fn total_position(&self) -> Position {
+        Position::new(
+            self.basic.position.x - self.border_width,
+            self.basic.position.y - self.border_width,
+        )
     }
 
-    pub fn total_height(&self) -> c_int {
-        self.basic.sizes.height + 2 * self.border_width
+    pub fn total_sizes(&self) -> Sizes {
+        Sizes::new(
+            self.basic.sizes.width + 2 * self.border_width,
+            self.basic.sizes.height + 2 * self.border_width,
+        )
+    }
+
+    pub fn total_geom(&self) -> BasicGeom {
+        BasicGeom::new(self.total_position(), self.total_sizes())
     }
 }
 
@@ -192,11 +202,30 @@ mod tests {
     }
 
     #[test]
-    fn win_geom_total_width_height() {
+    fn win_geom_total_position() {
+        let position = Position::new(34, 56);
+        let basic_geom = BasicGeom::new(position, Default::default());
+        let win_geom = WinGeom::new(basic_geom, 12);
+        assert_eq!(win_geom.total_position(), Position::new(22, 44));
+    }
+
+    #[test]
+    fn win_geom_total_sizes() {
         let sizes = Sizes::new(34, 56);
         let basic_geom = BasicGeom::new(Default::default(), sizes);
         let win_geom = WinGeom::new(basic_geom, 12);
-        assert_eq!(win_geom.total_width(), 58);
-        assert_eq!(win_geom.total_height(), 80);
+        assert_eq!(win_geom.total_sizes(), Sizes::new(58, 80));
+    }
+
+    #[test]
+    fn win_geom_total_geom() {
+        let position = Position::new(34, 56);
+        let sizes = Sizes::new(34, 56);
+        let basic_geom = BasicGeom::new(position, sizes);
+        let win_geom = WinGeom::new(basic_geom, 12);
+        assert_eq!(
+            win_geom.total_geom(),
+            BasicGeom::new(Position::new(22, 44), Sizes::new(58, 80)),
+        );
     }
 }
