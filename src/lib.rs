@@ -1,5 +1,5 @@
 mod constraints;
-mod geom;
+pub mod geom;
 
 use std::os::raw::*;
 

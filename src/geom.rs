@@ -25,29 +25,29 @@ impl Default for Sizes {
 }
 
 impl Position {
-    fn new(x: c_int, y: c_int) -> Self {
+    pub fn new(x: c_int, y: c_int) -> Self {
         Self { x, y }
     }
 
-    fn x(&self) -> c_int {
+    pub fn x(&self) -> c_int {
         self.x
     }
 
-    fn y(&self) -> c_int {
+    pub fn y(&self) -> c_int {
         self.y
     }
 }
 
 impl Sizes {
-    fn new(width: c_int, height: c_int) -> Self {
+    pub fn new(width: c_int, height: c_int) -> Self {
         Self { width, height }
     }
 
-    fn width(&self) -> c_int {
+    pub fn width(&self) -> c_int {
         self.width
     }
 
-    fn height(&self) -> c_int {
+    pub fn height(&self) -> c_int {
         self.height
     }
 }
