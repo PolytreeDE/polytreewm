@@ -82,6 +82,7 @@ target/debug/libpolytreewm.a:
 test: $(TEST_EXE)
 	@echo "$(TEST_EXE)" | awk '{ OFS="\n"; $$1=$$1 } 1' | /bin/sh
 	$(CARGO) test
+	$(CARGO) fmt --check
 
 clean:
 	rm -f $(ALL_OBJ) $(ALL_EXE)
