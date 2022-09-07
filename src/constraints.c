@@ -1,7 +1,5 @@
 #include "constraints.h"
 
-#define MIN_GAP_SIZE 0
-#define MAX_GAP_SIZE 10000
 #define MIN_MASTER_AREA_FACTOR 0.05
 #define MAX_MASTER_AREA_FACTOR 0.95
 #define MIN_MAX_CLIENTS_IN_MASTER 1
@@ -12,13 +10,6 @@
 float constraints_default_master_area_factor(const float default_master_area_factor)
 {
 	return constraints_master_area_factor(default_master_area_factor);
-}
-
-int constraints_gap_size(const int gap_size)
-{
-	if (gap_size < MIN_GAP_SIZE) return MIN_GAP_SIZE;
-	if (gap_size < MAX_GAP_SIZE) return MAX_GAP_SIZE;
-	return gap_size;
 }
 
 float constraints_master_area_factor(const float master_area_factor)

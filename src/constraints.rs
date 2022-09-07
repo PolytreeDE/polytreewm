@@ -4,6 +4,8 @@ const MIN_BORDER_WIDTH: c_int = 0;
 const MAX_BORDER_WIDTH: c_int = 10000;
 const MIN_DEFAULT_CLIENTS_IN_MASTER: c_int = 1;
 const MAX_DEFAULT_CLIENTS_IN_MASTER: c_int = 10000;
+const MIN_GAP_SIZE: c_int = 0;
+const MAX_GAP_SIZE: c_int = 10000;
 
 pub fn border_width(border_width: c_int) -> c_int {
 	if border_width < MIN_BORDER_WIDTH { return MIN_BORDER_WIDTH }
@@ -19,6 +21,12 @@ pub fn default_clients_in_master(default_clients_in_master: c_int) -> c_int {
 		return MAX_DEFAULT_CLIENTS_IN_MASTER
 	}
 	default_clients_in_master
+}
+
+pub fn gap_size(gap_size: c_int) -> c_int {
+	if gap_size < MIN_GAP_SIZE { return MIN_GAP_SIZE }
+	if gap_size > MAX_GAP_SIZE { return MAX_GAP_SIZE }
+	gap_size
 }
 
 #[cfg(test)]
@@ -49,5 +57,20 @@ mod tests {
 
 		assert_eq!(default_clients_in_master(10_001), 10_000);
 		assert_eq!(default_clients_in_master(20_000), 10_000);
+	}
+
+	#[test]
+	fn test_gap_size() {
+		assert_eq!(gap_size(-2), 0);
+		assert_eq!(gap_size(-1), 0);
+
+		assert_eq!(gap_size(0), 0);
+		assert_eq!(gap_size(1), 1);
+		assert_eq!(gap_size(100), 100);
+		assert_eq!(gap_size(9999), 9999);
+		assert_eq!(gap_size(10_000), 10_000);
+
+		assert_eq!(gap_size(10_001), 10_000);
+		assert_eq!(gap_size(20_000), 10_000);
 	}
 }
