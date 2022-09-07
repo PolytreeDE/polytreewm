@@ -8,6 +8,8 @@ const MIN_GAP_SIZE: c_int = 0;
 const MAX_GAP_SIZE: c_int = 10000;
 const MIN_MAX_CLIENTS_IN_MASTER: c_int = 1;
 const MAX_MAX_CLIENTS_IN_MASTER: c_int = 10000;
+const MIN_SNAP_DISTANCE: c_uint = 1;
+const MAX_SNAP_DISTANCE: c_uint = 10000;
 
 pub fn border_width(border_width: c_int) -> c_int {
 	if border_width < MIN_BORDER_WIDTH { return MIN_BORDER_WIDTH }
@@ -39,6 +41,12 @@ pub fn max_clients_in_master(max_clients_in_master: c_int) -> c_int {
 		return MAX_MAX_CLIENTS_IN_MASTER
 	}
 	max_clients_in_master
+}
+
+pub fn snap_distance(snap_distance: c_uint) -> c_uint {
+	if snap_distance < MIN_SNAP_DISTANCE { return MIN_SNAP_DISTANCE }
+	if snap_distance > MAX_SNAP_DISTANCE { return MAX_SNAP_DISTANCE }
+	snap_distance
 }
 
 #[cfg(test)]
@@ -99,5 +107,19 @@ mod tests {
 
 		assert_eq!(max_clients_in_master(10_001), 10_000);
 		assert_eq!(max_clients_in_master(20_000), 10_000);
+	}
+
+	#[test]
+	fn test_snap_distance() {
+		assert_eq!(snap_distance(0), 1);
+
+		assert_eq!(snap_distance(1), 1);
+		assert_eq!(snap_distance(2), 2);
+		assert_eq!(snap_distance(100), 100);
+		assert_eq!(snap_distance(9999), 9999);
+		assert_eq!(snap_distance(10_000), 10_000);
+
+		assert_eq!(snap_distance(10_001), 10_000);
+		assert_eq!(snap_distance(20_000), 10_000);
 	}
 }
