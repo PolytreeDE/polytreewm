@@ -85,6 +85,14 @@ impl WinGeom {
     pub fn border_width(&self) -> c_int {
         self.border_width
     }
+
+    pub fn total_width(&self) -> c_int {
+        self.basic.sizes.width + 2 * self.border_width
+    }
+
+    pub fn total_height(&self) -> c_int {
+        self.basic.sizes.height + 2 * self.border_width
+    }
 }
 
 #[cfg(test)]
@@ -106,5 +114,14 @@ mod tests {
     #[test]
     fn win_geom_default() {
         assert_eq!(WinGeom::default().border_width(), 0);
+    }
+
+    #[test]
+    fn win_geom_total_width_height() {
+        let sizes = Sizes::new(34, 56);
+        let basic_geom = BasicGeom::new(Default::default(), sizes);
+        let win_geom = WinGeom::new(basic_geom, 12);
+        assert_eq!(win_geom.total_width(), 58);
+        assert_eq!(win_geom.total_height(), 80);
     }
 }
