@@ -1,7 +1,5 @@
 #include "constraints.h"
 
-#define MIN_DEFAULT_MASTER_AREA_FACTOR 0.05
-#define MAX_DEFAULT_MASTER_AREA_FACTOR 0.95
 #define MIN_GAP_SIZE 0
 #define MAX_GAP_SIZE 10000
 #define MIN_MASTER_AREA_FACTOR 0.05
