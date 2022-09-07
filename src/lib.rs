@@ -58,3 +58,8 @@ extern "C" fn constraints_snap_distance(snap_distance: c_uint) -> c_uint {
 unsafe extern "C" fn position_init(position: *mut geom::Position) {
     *position = Default::default();
 }
+
+#[no_mangle]
+unsafe extern "C" fn sizes_init(sizes: &mut geom::Sizes) {
+    *sizes = Default::default();
+}

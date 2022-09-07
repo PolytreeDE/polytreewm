@@ -6,7 +6,19 @@ pub struct Position {
     y: c_int,
 }
 
+#[repr(C)]
+pub struct Sizes {
+    width: c_int,
+    height: c_int,
+}
+
 impl Default for Position {
+    fn default() -> Self {
+        Self::new(0, 0)
+    }
+}
+
+impl Default for Sizes {
     fn default() -> Self {
         Self::new(0, 0)
     }
@@ -23,5 +35,19 @@ impl Position {
 
     fn y(&self) -> c_int {
         self.y
+    }
+}
+
+impl Sizes {
+    fn new(width: c_int, height: c_int) -> Self {
+        Self { width, height }
+    }
+
+    fn width(&self) -> c_int {
+        self.width
+    }
+
+    fn height(&self) -> c_int {
+        self.height
     }
 }
