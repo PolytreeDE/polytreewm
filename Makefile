@@ -105,4 +105,4 @@ uninstall:
 		$(DESTDIR)$(BINDIR)/polytreewm \
 		$(DESTDIR)$(MANDIR)/man1/polytreewm.1
 
-.PHONY: all clean distclean install uninstall test
+.PHONY: all clean distclean install uninstall test target/debug/libpolytreewm.a
