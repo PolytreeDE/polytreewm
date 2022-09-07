@@ -70,6 +70,11 @@ unsafe extern "C" fn basic_geom_init(basic_geom: &mut geom::BasicGeom) {
 }
 
 #[no_mangle]
+unsafe extern "C" fn win_geom_init(win_geom: &mut geom::WinGeom) {
+    *win_geom = Default::default();
+}
+
+#[no_mangle]
 unsafe extern "C" fn position_init_from_args(
     position: *mut geom::Position,
     x: c_int,

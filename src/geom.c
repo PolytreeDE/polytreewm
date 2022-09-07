@@ -32,16 +32,6 @@ struct WinGeom win_geom_create()
 	return win_geom;
 }
 
-/**************************
- * Default init functions *
- **************************/
-
-void win_geom_init(const WinGeom win_geom)
-{
-	basic_geom_init(&win_geom->basic);
-	win_geom->border_width = 0;
-}
-
 /*****************************
  * Argument create functions *
  *****************************/
