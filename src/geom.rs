@@ -1,28 +1,28 @@
 use std::os::raw::*;
 
 #[repr(C)]
-#[derive(Clone, Copy, Default)]
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct Position {
     x: c_int,
     y: c_int,
 }
 
 #[repr(C)]
-#[derive(Clone, Copy, Default)]
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct Sizes {
     width: c_int,
     height: c_int,
 }
 
 #[repr(C)]
-#[derive(Clone, Copy, Default)]
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct BasicGeom {
     position: Position,
     sizes: Sizes,
 }
 
 #[repr(C)]
-#[derive(Clone, Copy, Default)]
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct WinGeom {
     basic: BasicGeom,
     border_width: c_int,
@@ -100,20 +100,95 @@ mod tests {
     use super::*;
 
     #[test]
+    fn position_eq() {
+        assert_eq!(Position::new(123, 456), Position::new(123, 456));
+
+        assert_ne!(Position::new(123, 123), Position::new(123, 456));
+        assert_ne!(Position::new(123, 456), Position::new(123, 123));
+
+        assert_ne!(Position::new(123, 123), Position::new(456, 123));
+        assert_ne!(Position::new(456, 123), Position::new(123, 123));
+
+        assert_ne!(Position::new(123, 123), Position::new(456, 456));
+        assert_ne!(Position::new(456, 456), Position::new(123, 123));
+    }
+
+    #[test]
+    fn sizes_eq() {
+        assert_eq!(Sizes::new(123, 456), Sizes::new(123, 456));
+
+        assert_ne!(Sizes::new(123, 123), Sizes::new(123, 456));
+        assert_ne!(Sizes::new(123, 456), Sizes::new(123, 123));
+
+        assert_ne!(Sizes::new(123, 123), Sizes::new(456, 123));
+        assert_ne!(Sizes::new(456, 123), Sizes::new(123, 123));
+
+        assert_ne!(Sizes::new(123, 123), Sizes::new(456, 456));
+        assert_ne!(Sizes::new(456, 456), Sizes::new(123, 123));
+    }
+
+    #[test]
+    fn basic_geom_eq() {
+        let pos1 = Position::new(123, 123);
+        let pos2 = Position::new(123, 456);
+
+        let sizes1 = Sizes::new(123, 123);
+        let sizes2 = Sizes::new(123, 456);
+
+        assert_eq!(BasicGeom::new(pos1, sizes1), BasicGeom::new(pos1, sizes1));
+        assert_eq!(BasicGeom::new(pos1, sizes2), BasicGeom::new(pos1, sizes2));
+        assert_eq!(BasicGeom::new(pos2, sizes1), BasicGeom::new(pos2, sizes1));
+        assert_eq!(BasicGeom::new(pos2, sizes2), BasicGeom::new(pos2, sizes2));
+
+        assert_ne!(BasicGeom::new(pos1, sizes1), BasicGeom::new(pos1, sizes2));
+        assert_ne!(BasicGeom::new(pos1, sizes2), BasicGeom::new(pos1, sizes1));
+        assert_ne!(BasicGeom::new(pos1, sizes1), BasicGeom::new(pos2, sizes1));
+        assert_ne!(BasicGeom::new(pos2, sizes2), BasicGeom::new(pos1, sizes2));
+    }
+
+    #[test]
+    fn win_geom_eq() {
+        let basic_geom1 =
+            BasicGeom::new(Position::new(123, 123), Sizes::new(123, 123));
+        let basic_geom2 =
+            BasicGeom::new(Position::new(123, 123), Sizes::new(123, 456));
+
+        assert_eq!(
+            WinGeom::new(basic_geom1, 99),
+            WinGeom::new(basic_geom1, 99),
+        );
+
+        assert_ne!(
+            WinGeom::new(basic_geom1, 55),
+            WinGeom::new(basic_geom1, 99),
+        );
+        assert_ne!(
+            WinGeom::new(basic_geom1, 99),
+            WinGeom::new(basic_geom1, 55),
+        );
+        assert_ne!(
+            WinGeom::new(basic_geom1, 99),
+            WinGeom::new(basic_geom2, 99),
+        );
+        assert_ne!(
+            WinGeom::new(basic_geom2, 99),
+            WinGeom::new(basic_geom1, 99),
+        );
+    }
+
+    #[test]
     fn position_default() {
-        assert_eq!(Position::default().x(), 0);
-        assert_eq!(Position::default().y(), 0);
+        assert_eq!(Position::default(), Position::new(0, 0));
     }
 
     #[test]
     fn sizes_default() {
-        assert_eq!(Sizes::default().width(), 0);
-        assert_eq!(Sizes::default().height(), 0);
+        assert_eq!(Sizes::default(), Sizes::new(0, 0));
     }
 
     #[test]
     fn win_geom_default() {
-        assert_eq!(WinGeom::default().border_width(), 0);
+        assert_eq!(WinGeom::default(), WinGeom::new(Default::default(), 0));
     }
 
     #[test]
