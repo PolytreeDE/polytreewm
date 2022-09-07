@@ -93,12 +93,6 @@ struct WinGeom win_geom_create_from_args(
  * Argument init functions *
  ***************************/
 
-void position_init_from_args(const Position position, const int x, const int y)
-{
-	position->x = x;
-	position->y = y;
-}
-
 void sizes_init_from_args(const Sizes sizes, const int width, const int height)
 {
 	sizes->w = width;
