@@ -1,7 +1,5 @@
 #include "constraints.h"
 
-#define MIN_DEFAULT_CLIENTS_IN_MASTER 1
-#define MAX_DEFAULT_CLIENTS_IN_MASTER 10000
 #define MIN_DEFAULT_MASTER_AREA_FACTOR 0.05
 #define MAX_DEFAULT_MASTER_AREA_FACTOR 0.95
 #define MIN_GAP_SIZE 0
@@ -12,13 +10,6 @@
 #define MAX_MAX_CLIENTS_IN_MASTER 10000
 #define MIN_SNAP_DISTANCE 1
 #define MAX_SNAP_DISTANCE 10000
-
-int constraints_default_clients_in_master(const int default_clients_in_master)
-{
-	if (default_clients_in_master < MIN_DEFAULT_CLIENTS_IN_MASTER) return MIN_DEFAULT_CLIENTS_IN_MASTER;
-	if (default_clients_in_master > MAX_DEFAULT_CLIENTS_IN_MASTER) return MAX_DEFAULT_CLIENTS_IN_MASTER;
-	return default_clients_in_master;
-}
 
 float constraints_default_master_area_factor(const float default_master_area_factor)
 {
