@@ -54,13 +54,15 @@ void win_geom_init(const WinGeom win_geom)
 
 struct Position position_create_from_args(const int x, const int y)
 {
-	const struct Position position = { .x = x, .y = y };
+	struct Position position;
+	position_init_from_args(&position, x, y);
 	return position;
 }
 
 struct Sizes sizes_create_from_args(const int width, const int height)
 {
-	const struct Sizes sizes = { .w = width, .h = height };
+	struct Sizes sizes;
+	sizes_init_from_args(&sizes, width, height);
 	return sizes;
 }
 
@@ -70,10 +72,8 @@ struct BasicGeom basic_geom_create_from_args(
 	const int width,
 	const int height
 ) {
-	const struct BasicGeom basic_geom = {
-		.position = position_create_from_args(x, y),
-		.sizes = sizes_create_from_args(width, height),
-	};
+	struct BasicGeom basic_geom;
+	basic_geom_init_from_args(&basic_geom, x, y, width, height);
 	return basic_geom;
 }
 
