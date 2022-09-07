@@ -73,22 +73,6 @@ struct WinGeom win_geom_create_from_args(
 	return win_geom;
 }
 
-/***************************
- * Argument init functions *
- ***************************/
-
-void win_geom_init_from_args(
-	const WinGeom win_geom,
-	const int x,
-	const int y,
-	const int width,
-	const int height,
-	const int border_width
-) {
-	basic_geom_init_from_args(&win_geom->basic, x, y, width, height);
-	win_geom->border_width = border_width;
-}
-
 /************************
  * Conversion functions *
  ************************/

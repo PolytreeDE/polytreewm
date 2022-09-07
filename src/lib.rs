@@ -105,3 +105,21 @@ unsafe extern "C" fn basic_geom_init_from_args(
         geom::Sizes::new(width, height),
     );
 }
+
+#[no_mangle]
+unsafe extern "C" fn win_geom_init_from_args(
+    win_geom: *mut geom::WinGeom,
+    x: c_int,
+    y: c_int,
+    width: c_int,
+    height: c_int,
+    border_width: c_int,
+) {
+    *win_geom = geom::WinGeom::new(
+        geom::BasicGeom::new(
+            geom::Position::new(x, y),
+            geom::Sizes::new(width, height),
+        ),
+        border_width,
+    );
+}
