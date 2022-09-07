@@ -1,27 +1,17 @@
 use std::os::raw::*;
 
 #[repr(C)]
+#[derive(Default)]
 pub struct Position {
     x: c_int,
     y: c_int,
 }
 
 #[repr(C)]
+#[derive(Default)]
 pub struct Sizes {
     width: c_int,
     height: c_int,
-}
-
-impl Default for Position {
-    fn default() -> Self {
-        Self::new(0, 0)
-    }
-}
-
-impl Default for Sizes {
-    fn default() -> Self {
-        Self::new(0, 0)
-    }
 }
 
 impl Position {
@@ -49,5 +39,22 @@ impl Sizes {
 
     pub fn height(&self) -> c_int {
         self.height
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn position_default() {
+        assert_eq!(Position::default().x(), 0);
+        assert_eq!(Position::default().y(), 0);
+    }
+
+    #[test]
+    fn sizes_default() {
+        assert_eq!(Sizes::default().width(), 0);
+        assert_eq!(Sizes::default().height(), 0);
     }
 }
