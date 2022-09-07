@@ -36,12 +36,6 @@ struct WinGeom win_geom_create()
  * Default init functions *
  **************************/
 
-void basic_geom_init(const BasicGeom basic_geom)
-{
-	position_init(&basic_geom->position);
-	sizes_init(&basic_geom->sizes);
-}
-
 void win_geom_init(const WinGeom win_geom)
 {
 	basic_geom_init(&win_geom->basic);

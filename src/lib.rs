@@ -65,6 +65,11 @@ unsafe extern "C" fn sizes_init(sizes: &mut geom::Sizes) {
 }
 
 #[no_mangle]
+unsafe extern "C" fn basic_geom_init(basic_geom: &mut geom::BasicGeom) {
+    *basic_geom = Default::default();
+}
+
+#[no_mangle]
 unsafe extern "C" fn position_init_from_args(
     position: *mut geom::Position,
     x: c_int,
