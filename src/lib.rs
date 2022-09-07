@@ -91,3 +91,17 @@ unsafe extern "C" fn sizes_init_from_args(
 ) {
     *sizes = geom::Sizes::new(width, height);
 }
+
+#[no_mangle]
+unsafe extern "C" fn basic_geom_init_from_args(
+    basic_geom: *mut geom::BasicGeom,
+    x: c_int,
+    y: c_int,
+    width: c_int,
+    height: c_int,
+) {
+    *basic_geom = geom::BasicGeom::new(
+        geom::Position::new(x, y),
+        geom::Sizes::new(width, height),
+    );
+}

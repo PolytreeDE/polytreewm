@@ -77,17 +77,6 @@ struct WinGeom win_geom_create_from_args(
  * Argument init functions *
  ***************************/
 
-void basic_geom_init_from_args(
-	const BasicGeom basic_geom,
-	const int x,
-	const int y,
-	const int width,
-	const int height
-) {
-	position_init_from_args(&basic_geom->position, x, y);
-	sizes_init_from_args(&basic_geom->sizes, width, height);
-}
-
 void win_geom_init_from_args(
 	const WinGeom win_geom,
 	const int x,
