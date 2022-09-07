@@ -28,6 +28,24 @@ pub struct WinGeom {
     border_width: c_int,
 }
 
+impl From<Sizes> for Position {
+    fn from(sizes: Sizes) -> Self {
+        Self::new(sizes.width, sizes.height)
+    }
+}
+
+impl From<Position> for Sizes {
+    fn from(position: Position) -> Self {
+        Self::new(position.x, position.y)
+    }
+}
+
+impl From<BasicGeom> for WinGeom {
+    fn from(basic_geom: BasicGeom) -> Self {
+        Self::new(basic_geom, 0)
+    }
+}
+
 impl Position {
     pub fn new(x: c_int, y: c_int) -> Self {
         Self { x, y }
@@ -199,6 +217,18 @@ mod tests {
     #[test]
     fn win_geom_default() {
         assert_eq!(WinGeom::default(), WinGeom::new(Default::default(), 0));
+    }
+
+    #[test]
+    fn position_into_sizes() {
+        let sizes: Sizes = Position::new(123, 456).into();
+        assert_eq!(sizes, Sizes::new(123, 456));
+    }
+
+    #[test]
+    fn sizes_into_position() {
+        let position: Position = Sizes::new(123, 456).into();
+        assert_eq!(position, Position::new(123, 456));
     }
 
     #[test]
