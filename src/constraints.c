@@ -1,7 +1,5 @@
 #include "constraints.h"
 
-#define MIN_BORDER_WIDTH 0
-#define MAX_BORDER_WIDTH 10000
 #define MIN_DEFAULT_CLIENTS_IN_MASTER 1
 #define MAX_DEFAULT_CLIENTS_IN_MASTER 10000
 #define MIN_DEFAULT_MASTER_AREA_FACTOR 0.05
@@ -14,13 +12,6 @@
 #define MAX_MAX_CLIENTS_IN_MASTER 10000
 #define MIN_SNAP_DISTANCE 1
 #define MAX_SNAP_DISTANCE 10000
-
-int constraints_border_width(const int border_width)
-{
-	if (border_width < MIN_BORDER_WIDTH) return MIN_BORDER_WIDTH;
-	if (border_width > MAX_BORDER_WIDTH) return MAX_BORDER_WIDTH;
-	return border_width;
-}
 
 int constraints_default_clients_in_master(const int default_clients_in_master)
 {
