@@ -1,17 +1,31 @@
 use std::os::raw::*;
 
 #[repr(C)]
-#[derive(Default)]
+#[derive(Clone, Copy, Default)]
 pub struct Position {
     x: c_int,
     y: c_int,
 }
 
 #[repr(C)]
-#[derive(Default)]
+#[derive(Clone, Copy, Default)]
 pub struct Sizes {
     width: c_int,
     height: c_int,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Default)]
+pub struct BasicGeom {
+    position: Position,
+    sizes: Sizes,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Default)]
+pub struct WinGeom {
+    basic: BasicGeom,
+    border_width: c_int,
 }
 
 impl Position {
@@ -42,6 +56,37 @@ impl Sizes {
     }
 }
 
+impl BasicGeom {
+    pub fn new(position: Position, sizes: Sizes) -> Self {
+        Self { position, sizes }
+    }
+
+    pub fn position(&self) -> Position {
+        self.position
+    }
+
+    pub fn sizes(&self) -> Sizes {
+        self.sizes
+    }
+}
+
+impl WinGeom {
+    pub fn new(basic: BasicGeom, border_width: c_int) -> Self {
+        Self {
+            basic,
+            border_width,
+        }
+    }
+
+    pub fn basic(&self) -> BasicGeom {
+        self.basic
+    }
+
+    pub fn border_width(&self) -> c_int {
+        self.border_width
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -56,5 +101,10 @@ mod tests {
     fn sizes_default() {
         assert_eq!(Sizes::default().width(), 0);
         assert_eq!(Sizes::default().height(), 0);
+    }
+
+    #[test]
+    fn win_geom_default() {
+        assert_eq!(WinGeom::default().border_width(), 0);
     }
 }
