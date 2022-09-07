@@ -16,7 +16,6 @@ CONFIGMKS = \
 
 MODULES_SRC = \
 	src/atoms.c \
-	src/constraints.c \
 	src/drw.c \
 	src/dwm.c \
 	src/geom.c \
@@ -43,7 +42,7 @@ TEST_SRC = \
 
 MAIN_SRC = $(MODULES_SRC) src/main.c
 
-MODULES_HDR = $(MODULES_SRC:.c=.h)
+MODULES_HDR = $(MODULES_SRC:.c=.h) src/constraints.h
 DWM_HDR     = $(DWM_SRC:.c=.h)
 MAIN_HDR    = $(MODULES_HDR) src/main.h
 

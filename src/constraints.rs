@@ -6,6 +6,8 @@ const MIN_DEFAULT_CLIENTS_IN_MASTER: c_int = 1;
 const MAX_DEFAULT_CLIENTS_IN_MASTER: c_int = 10000;
 const MIN_GAP_SIZE: c_int = 0;
 const MAX_GAP_SIZE: c_int = 10000;
+const MIN_MASTER_AREA_FACTOR: c_float = 0.05;
+const MAX_MASTER_AREA_FACTOR: c_float = 0.95;
 const MIN_MAX_CLIENTS_IN_MASTER: c_int = 1;
 const MAX_MAX_CLIENTS_IN_MASTER: c_int = 10000;
 const MIN_SNAP_DISTANCE: c_uint = 1;
@@ -27,10 +29,20 @@ pub fn default_clients_in_master(default_clients_in_master: c_int) -> c_int {
 	default_clients_in_master
 }
 
+pub fn default_master_area_factor(default_master_area_factor: c_float) -> c_float {
+	master_area_factor(default_master_area_factor)
+}
+
 pub fn gap_size(gap_size: c_int) -> c_int {
 	if gap_size < MIN_GAP_SIZE { return MIN_GAP_SIZE }
 	if gap_size > MAX_GAP_SIZE { return MAX_GAP_SIZE }
 	gap_size
+}
+
+pub fn master_area_factor(master_area_factor: c_float) -> c_float {
+	if master_area_factor < MIN_MASTER_AREA_FACTOR { return MIN_MASTER_AREA_FACTOR }
+	if master_area_factor > MAX_MASTER_AREA_FACTOR { return MAX_MASTER_AREA_FACTOR }
+	master_area_factor
 }
 
 pub fn max_clients_in_master(max_clients_in_master: c_int) -> c_int {

@@ -13,8 +13,18 @@ extern "C" fn constraints_default_clients_in_master(default_clients_in_master: c
 }
 
 #[no_mangle]
+extern "C" fn constraints_default_master_area_factor(default_master_area_factor: c_float) -> c_float {
+	constraints::default_master_area_factor(default_master_area_factor)
+}
+
+#[no_mangle]
 extern "C" fn constraints_gap_size(gap_size: c_int) -> c_int {
 	constraints::gap_size(gap_size)
+}
+
+#[no_mangle]
+extern "C" fn constraints_master_area_factor(master_area_factor: c_float) -> c_float {
+	constraints::master_area_factor(master_area_factor)
 }
 
 #[no_mangle]
