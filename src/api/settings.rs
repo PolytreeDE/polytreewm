@@ -105,10 +105,7 @@ unsafe extern "C" fn settings_set_master_area_factor_per_unit(value: c_uchar) {
 
 #[no_mangle]
 unsafe extern "C" fn settings_get_max_clients_in_master() -> c_int {
-    match SETTINGS.unwrap().max_clients_in_master() {
-        None => 0,
-        Some(value) => value,
-    }
+    SETTINGS.unwrap().max_clients_in_master().unwrap_or(0)
 }
 
 #[no_mangle]

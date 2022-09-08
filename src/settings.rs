@@ -86,13 +86,13 @@ impl Default for ForSingleWindow {
     }
 }
 
-impl Into<c_uchar> for ForSingleWindow {
-    fn into(self) -> c_uchar {
-        match self {
-            Self::Never => 0,
-            Self::Always => 1,
-            Self::NotInFullscreen => 2,
-            Self::NobodyIsFullscreen => 3,
+impl From<ForSingleWindow> for c_uchar {
+    fn from(value: ForSingleWindow) -> Self {
+        match value {
+            ForSingleWindow::Never => 0,
+            ForSingleWindow::Always => 1,
+            ForSingleWindow::NotInFullscreen => 2,
+            ForSingleWindow::NobodyIsFullscreen => 3,
         }
     }
 }
@@ -176,7 +176,7 @@ impl Settings {
     // TODO: notify WM to rearrange clients
     pub fn max_clients_in_master_set(&mut self, value: Option<c_int>) {
         self.max_clients_in_master =
-            value.map(|value| constraints::max_clients_in_master(value));
+            value.map(constraints::max_clients_in_master);
     }
 
     pub fn respect_resize_hints_in_floating_layout(&self) -> bool {

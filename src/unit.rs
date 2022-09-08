@@ -7,12 +7,12 @@ pub enum Kind {
     Tag,
 }
 
-impl Into<c_uchar> for Kind {
-    fn into(self) -> c_uchar {
-        match self {
-            Self::Global => 0,
-            Self::Monitor => 1,
-            Self::Tag => 2,
+impl From<Kind> for c_uchar {
+    fn from(value: Kind) -> Self {
+        match value {
+            Kind::Global => 0,
+            Kind::Monitor => 1,
+            Kind::Tag => 2,
         }
     }
 }
