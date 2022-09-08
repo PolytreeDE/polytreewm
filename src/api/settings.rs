@@ -132,3 +132,13 @@ unsafe extern "C" fn settings_get_snap_distance() -> c_uint {
 unsafe extern "C" fn settings_set_snap_distance(value: c_uint) {
     SETTINGS.unwrap().snap_distance_set(value);
 }
+
+#[no_mangle]
+unsafe extern "C" fn settings_get_swallow_floatting() -> bool {
+    SETTINGS.unwrap().swallow_floating()
+}
+
+#[no_mangle]
+unsafe extern "C" fn settings_set_swallow_floating(value: bool) {
+    SETTINGS.unwrap().swallow_floating_set(value);
+}

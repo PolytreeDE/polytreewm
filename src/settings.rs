@@ -15,6 +15,7 @@ pub struct Settings {
     respect_resize_hints_in_floating_layout: bool,
     show_bar_by_default: bool,
     snap_distance: c_uint,
+    swallow_floating: bool,
 }
 
 impl Default for Settings {
@@ -31,6 +32,7 @@ impl Default for Settings {
             respect_resize_hints_in_floating_layout: false,
             show_bar_by_default: true,
             snap_distance: 32,
+            swallow_floating: false,
         }
     }
 }
@@ -129,5 +131,13 @@ impl Settings {
 
     pub fn snap_distance_set(&mut self, value: c_uint) {
         self.snap_distance = constraints::snap_distance(value);
+    }
+
+    pub fn swallow_floating(&self) -> bool {
+        self.swallow_floating
+    }
+
+    pub fn swallow_floating_set(&mut self, value: bool) {
+        self.swallow_floating = value;
     }
 }

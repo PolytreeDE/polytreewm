@@ -6,7 +6,6 @@ static SettingsForSingleWindow border_for_single_window = SETTINGS_FOR_SINGLE_WI
 static SettingsForSingleWindow gap_for_single_window = SETTINGS_FOR_SINGLE_WINDOW_NOBODY_IS_FULLSCREEN;
 static UnitKind master_area_factor_per_unit = UNIT_MONITOR;
 static UnitKind show_bar_per_unit = UNIT_MONITOR;
-static bool swallow_floating = false;
 
 SettingsForSingleWindow settings_get_border_for_single_window()
 {
@@ -50,14 +49,4 @@ void settings_set_show_bar_per_unit(const UnitKind new_show_bar_per_unit)
 {
 	show_bar_per_unit = new_show_bar_per_unit;
 	// TODO: notify WM to rearrange clients
-}
-
-bool settings_get_swallow_floating()
-{
-	return swallow_floating;
-}
-
-void settings_set_swallow_floating(const bool new_swallow_floating)
-{
-	swallow_floating = new_swallow_floating;
 }
