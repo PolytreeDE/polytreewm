@@ -8,6 +8,7 @@ pub struct Settings {
     border_width: c_int,
     default_clients_in_master: c_int,
     default_master_area_factor: c_float,
+    enable_swallowing: bool,
 }
 
 impl Default for Settings {
@@ -17,6 +18,7 @@ impl Default for Settings {
             border_width: 2,
             default_clients_in_master: 1,
             default_master_area_factor: 0.6,
+            enable_swallowing: true,
         }
     }
 }
@@ -55,5 +57,13 @@ impl Settings {
     pub fn default_master_area_factor_set(&mut self, value: c_float) {
         self.default_master_area_factor =
             constraints::default_master_area_factor(value);
+    }
+
+    pub fn enable_swallowing(&self) -> bool {
+        self.enable_swallowing
+    }
+
+    pub fn enable_swallowing_set(&mut self, value: bool) {
+        self.enable_swallowing = value;
     }
 }

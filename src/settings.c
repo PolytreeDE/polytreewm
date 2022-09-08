@@ -4,7 +4,6 @@
 
 static SettingsForSingleWindow border_for_single_window = SETTINGS_FOR_SINGLE_WINDOW_NOBODY_IS_FULLSCREEN;
 static SettingsForSingleWindow gap_for_single_window = SETTINGS_FOR_SINGLE_WINDOW_NOBODY_IS_FULLSCREEN;
-static bool enable_swallowing = true;
 static bool focus_on_wheel = true;
 static int gap_size = 10;
 static UnitKind master_area_factor_per_unit = UNIT_MONITOR;
@@ -36,17 +35,6 @@ void settings_set_gap_for_single_window(const SettingsForSingleWindow new_gap_fo
 	gap_for_single_window = new_gap_for_single_window;
 	// TODO: notify WM to rearrange clients
 }
-
-bool settings_get_enable_swallowing()
-{
-	return enable_swallowing;
-}
-
-void settings_set_enable_swallowing(const bool new_enable_swallowing)
-{
-	enable_swallowing = new_enable_swallowing;
-}
-
 
 bool settings_get_focus_on_wheel()
 {
