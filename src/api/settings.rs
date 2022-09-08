@@ -82,6 +82,16 @@ unsafe extern "C" fn settings_set_focus_on_wheel(value: bool) {
 }
 
 #[no_mangle]
+unsafe extern "C" fn settings_get_gap_for_single_window() -> c_uchar {
+    SETTINGS.unwrap().gap_for_single_window().into()
+}
+
+#[no_mangle]
+unsafe extern "C" fn settings_set_gap_for_single_window(value: c_uchar) {
+    SETTINGS.unwrap().gap_for_single_window_set(value.into());
+}
+
+#[no_mangle]
 unsafe extern "C" fn settings_get_gap_size() -> c_int {
     SETTINGS.unwrap().gap_size()
 }

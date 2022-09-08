@@ -11,6 +11,7 @@ pub struct Settings {
     default_master_area_factor: c_float,
     enable_swallowing: bool,
     focus_on_wheel: bool,
+    gap_for_single_window: ForSingleWindow,
     gap_size: c_int,
     max_clients_in_master: Option<c_int>,
     respect_resize_hints_in_floating_layout: bool,
@@ -37,6 +38,7 @@ impl Default for Settings {
             default_master_area_factor: 0.6,
             enable_swallowing: true,
             focus_on_wheel: true,
+            gap_for_single_window: Default::default(),
             gap_size: 10,
             max_clients_in_master: None,
             respect_resize_hints_in_floating_layout: false,
@@ -135,6 +137,15 @@ impl Settings {
 
     pub fn focus_on_wheel_set(&mut self, value: bool) {
         self.focus_on_wheel = value;
+    }
+
+    pub fn gap_for_single_window(&self) -> ForSingleWindow {
+        self.gap_for_single_window
+    }
+
+    // TODO: notify WM to rearrange clients
+    pub fn gap_for_single_window_set(&mut self, value: ForSingleWindow) {
+        self.gap_for_single_window = value;
     }
 
     pub fn gap_size(&self) -> c_int {
