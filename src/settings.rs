@@ -162,6 +162,36 @@ impl Settings {
         self.gap_size = constraints::gap_size(value);
     }
 
+    pub fn gap_size_helper(
+        &self,
+        displayed_clients: c_uint,
+        selected_is_fullscreen: bool,
+        any_is_fullscreen: bool,
+    ) -> c_int {
+        if displayed_clients > 1 {
+            return self.gap_size;
+        }
+
+        match self.gap_for_single_window {
+            ForSingleWindow::Never => 0,
+            ForSingleWindow::Always => self.gap_size,
+            ForSingleWindow::NotInFullscreen => {
+                if selected_is_fullscreen {
+                    0
+                } else {
+                    self.gap_size
+                }
+            }
+            ForSingleWindow::NobodyIsFullscreen => {
+                if selected_is_fullscreen || any_is_fullscreen {
+                    0
+                } else {
+                    self.gap_size
+                }
+            }
+        }
+    }
+
     pub fn master_area_factor_per_unit(&self) -> unit::Kind {
         self.master_area_factor_per_unit
     }

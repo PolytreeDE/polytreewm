@@ -184,3 +184,16 @@ unsafe extern "C" fn settings_get_swallow_floatting() -> bool {
 unsafe extern "C" fn settings_set_swallow_floating(value: bool) {
     SETTINGS.unwrap().swallow_floating_set(value);
 }
+
+#[no_mangle]
+unsafe extern "C" fn helpers_gap_size(
+    displayed_clients: c_uint,
+    selected_is_fullscreen: bool,
+    any_is_fullscreen: bool,
+) -> c_int {
+    SETTINGS.unwrap().gap_size_helper(
+        displayed_clients,
+        selected_is_fullscreen,
+        any_is_fullscreen,
+    )
+}

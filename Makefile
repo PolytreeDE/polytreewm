@@ -15,7 +15,7 @@ CONFIGMKS = \
 	config/3-defvars.mk
 
 RUST_SRC = src/*.rs src/**/*.rs
-RUST_APIS = src/constraints.h src/geom.h src/settings.h
+RUST_APIS = src/constraints.h src/geom.h src/helpers.h src/settings.h
 
 MODULES_SRC = \
 	src/atoms.c \
