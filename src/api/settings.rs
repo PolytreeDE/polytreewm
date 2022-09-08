@@ -97,3 +97,18 @@ unsafe extern "C" fn settings_set_max_clients_in_master(value: c_int) {
         Some(value)
     });
 }
+
+#[no_mangle]
+unsafe extern "C" fn settings_get_respect_resize_hints_in_floating_layout(
+) -> bool {
+    SETTINGS.unwrap().respect_resize_hints_in_floating_layout()
+}
+
+#[no_mangle]
+unsafe extern "C" fn settings_set_respect_resize_hints_in_floating_layout(
+    value: bool,
+) {
+    SETTINGS
+        .unwrap()
+        .respect_resize_hints_in_floating_layout_set(value);
+}
