@@ -4,7 +4,6 @@
 
 static SettingsForSingleWindow border_for_single_window = SETTINGS_FOR_SINGLE_WINDOW_NOBODY_IS_FULLSCREEN;
 static SettingsForSingleWindow gap_for_single_window = SETTINGS_FOR_SINGLE_WINDOW_NOBODY_IS_FULLSCREEN;
-static int gap_size = 10;
 static UnitKind master_area_factor_per_unit = UNIT_MONITOR;
 static int max_clients_in_master = 0; // 0 for no maximum
 static bool respect_resize_hints_in_floating_layout = false;
@@ -32,17 +31,6 @@ SettingsForSingleWindow settings_get_gap_for_single_window()
 void settings_set_gap_for_single_window(const SettingsForSingleWindow new_gap_for_single_window)
 {
 	gap_for_single_window = new_gap_for_single_window;
-	// TODO: notify WM to rearrange clients
-}
-
-int settings_get_gap_size()
-{
-	return gap_size;
-}
-
-void settings_set_gap_size(const int new_gap_size)
-{
-	gap_size = constraints_gap_size(new_gap_size);
 	// TODO: notify WM to rearrange clients
 }
 

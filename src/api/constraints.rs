@@ -3,11 +3,6 @@ use crate::*;
 use std::os::raw::*;
 
 #[no_mangle]
-extern "C" fn constraints_gap_size(gap_size: c_int) -> c_int {
-    constraints::gap_size(gap_size)
-}
-
-#[no_mangle]
 extern "C" fn constraints_master_area_factor(
     master_area_factor: c_float,
 ) -> c_float {

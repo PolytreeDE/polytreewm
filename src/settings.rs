@@ -10,6 +10,7 @@ pub struct Settings {
     default_master_area_factor: c_float,
     enable_swallowing: bool,
     focus_on_wheel: bool,
+    gap_size: c_int,
 }
 
 impl Default for Settings {
@@ -21,6 +22,7 @@ impl Default for Settings {
             default_master_area_factor: 0.6,
             enable_swallowing: true,
             focus_on_wheel: true,
+            gap_size: 10,
         }
     }
 }
@@ -75,5 +77,13 @@ impl Settings {
 
     pub fn focus_on_wheel_set(&mut self, value: bool) {
         self.focus_on_wheel = value;
+    }
+
+    pub fn gap_size(&self) -> c_int {
+        self.gap_size
+    }
+
+    pub fn gap_size_set(&mut self, value: c_int) {
+        self.gap_size = constraints::gap_size(value);
     }
 }
