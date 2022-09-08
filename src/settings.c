@@ -2,7 +2,6 @@
 
 #include "constraints.h"
 
-static bool bar_on_top_by_default = true;
 static SettingsForSingleWindow border_for_single_window = SETTINGS_FOR_SINGLE_WINDOW_NOBODY_IS_FULLSCREEN;
 static int border_width = 2;
 static int default_clients_in_master = 1;
@@ -18,16 +17,6 @@ static bool show_bar_by_default = true;
 static UnitKind show_bar_per_unit = UNIT_MONITOR;
 static unsigned int snap_distance = 32;
 static bool swallow_floating = false;
-
-bool settings_get_bar_on_top_by_default()
-{
-	return bar_on_top_by_default;
-}
-
-void settings_set_bar_on_top_by_default(bool new_bar_on_top_by_default)
-{
-	bar_on_top_by_default = new_bar_on_top_by_default;
-}
 
 SettingsForSingleWindow settings_get_border_for_single_window()
 {

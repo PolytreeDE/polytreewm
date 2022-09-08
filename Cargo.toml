@@ -15,3 +15,6 @@ publish = false
 [lib]
 name = "polytreewm"
 crate-type = ["staticlib"]
+
+[dependencies]
+ctor = "0.1.23"
