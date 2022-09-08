@@ -3,7 +3,6 @@
 #include "constraints.h"
 
 static SettingsForSingleWindow border_for_single_window = SETTINGS_FOR_SINGLE_WINDOW_NOBODY_IS_FULLSCREEN;
-static int border_width = 2;
 static int default_clients_in_master = 1;
 static float default_master_area_factor = 0.6;
 static SettingsForSingleWindow gap_for_single_window = SETTINGS_FOR_SINGLE_WINDOW_NOBODY_IS_FULLSCREEN;
@@ -26,17 +25,6 @@ SettingsForSingleWindow settings_get_border_for_single_window()
 void settings_set_border_for_single_window(const SettingsForSingleWindow new_border_for_single_window)
 {
 	border_for_single_window = new_border_for_single_window;
-	// TODO: notify WM to rearrange clients
-}
-
-int settings_get_border_width()
-{
-	return border_width;
-}
-
-void settings_set_border_width(const int new_border_width)
-{
-	border_width = constraints_border_width(new_border_width);
 	// TODO: notify WM to rearrange clients
 }
 

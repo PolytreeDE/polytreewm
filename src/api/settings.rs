@@ -1,5 +1,7 @@
 use crate::*;
 
+use std::os::raw::*;
+
 use ctor::ctor;
 
 static mut SETTINGS: Option<Settings> = None;
@@ -17,4 +19,14 @@ unsafe extern "C" fn settings_get_bar_on_top_by_default() -> bool {
 #[no_mangle]
 unsafe extern "C" fn settings_set_bar_on_top_by_default(value: bool) {
     SETTINGS.unwrap().bar_on_top_by_default_set(value);
+}
+
+#[no_mangle]
+unsafe extern "C" fn settings_get_border_width() -> c_int {
+    SETTINGS.unwrap().border_width()
+}
+
+#[no_mangle]
+unsafe extern "C" fn settings_set_border_width(value: c_int) {
+    SETTINGS.unwrap().border_width_set(value);
 }
