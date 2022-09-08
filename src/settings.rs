@@ -110,6 +110,36 @@ impl Settings {
         self.border_width = constraints::border_width(value);
     }
 
+    pub fn border_width_helper(
+        &self,
+        displayed_clients: c_uint,
+        selected_is_fullscreen: bool,
+        any_is_fullscreen: bool,
+    ) -> c_int {
+        if displayed_clients > 1 {
+            return self.border_width;
+        }
+
+        match self.border_for_single_window {
+            ForSingleWindow::Never => 0,
+            ForSingleWindow::Always => self.border_width,
+            ForSingleWindow::NotInFullscreen => {
+                if selected_is_fullscreen {
+                    0
+                } else {
+                    self.border_width
+                }
+            }
+            ForSingleWindow::NobodyIsFullscreen => {
+                if selected_is_fullscreen || any_is_fullscreen {
+                    0
+                } else {
+                    self.border_width
+                }
+            }
+        }
+    }
+
     pub fn default_clients_in_master(&self) -> c_int {
         self.default_clients_in_master
     }
