@@ -5,7 +5,6 @@
 static SettingsForSingleWindow border_for_single_window = SETTINGS_FOR_SINGLE_WINDOW_NOBODY_IS_FULLSCREEN;
 static SettingsForSingleWindow gap_for_single_window = SETTINGS_FOR_SINGLE_WINDOW_NOBODY_IS_FULLSCREEN;
 static UnitKind master_area_factor_per_unit = UNIT_MONITOR;
-static int max_clients_in_master = 0; // 0 for no maximum
 static bool respect_resize_hints_in_floating_layout = false;
 static bool show_bar_by_default = true;
 static UnitKind show_bar_per_unit = UNIT_MONITOR;
@@ -42,17 +41,6 @@ UnitKind settings_get_master_area_factor_per_unit()
 void settings_set_master_area_factor_per_unit(const UnitKind new_master_area_factor_per_unit)
 {
 	master_area_factor_per_unit = new_master_area_factor_per_unit;
-	// TODO: notify WM to rearrange clients
-}
-
-int settings_get_max_clients_in_master()
-{
-	return max_clients_in_master;
-}
-
-void settings_set_max_clients_in_master(const int new_max_clients_in_master)
-{
-	max_clients_in_master = constraints_max_clients_in_master(new_max_clients_in_master);
 	// TODO: notify WM to rearrange clients
 }
 

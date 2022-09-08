@@ -11,6 +11,7 @@ pub struct Settings {
     enable_swallowing: bool,
     focus_on_wheel: bool,
     gap_size: c_int,
+    max_clients_in_master: Option<c_int>,
 }
 
 impl Default for Settings {
@@ -23,6 +24,7 @@ impl Default for Settings {
             enable_swallowing: true,
             focus_on_wheel: true,
             gap_size: 10,
+            max_clients_in_master: None,
         }
     }
 }
@@ -86,5 +88,15 @@ impl Settings {
     // TODO: notify WM to rearrange clients
     pub fn gap_size_set(&mut self, value: c_int) {
         self.gap_size = constraints::gap_size(value);
+    }
+
+    pub fn max_clients_in_master(&self) -> Option<c_int> {
+        self.max_clients_in_master
+    }
+
+    // TODO: notify WM to rearrange clients
+    pub fn max_clients_in_master_set(&mut self, value: Option<c_int>) {
+        self.max_clients_in_master =
+            value.map(|value| constraints::max_clients_in_master(value));
     }
 }

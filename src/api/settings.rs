@@ -80,3 +80,20 @@ unsafe extern "C" fn settings_get_gap_size() -> c_int {
 unsafe extern "C" fn settings_set_gap_size(value: c_int) {
     SETTINGS.unwrap().gap_size_set(value);
 }
+
+#[no_mangle]
+unsafe extern "C" fn settings_get_max_clients_in_master() -> c_int {
+    match SETTINGS.unwrap().max_clients_in_master() {
+        None => 0,
+        Some(value) => value,
+    }
+}
+
+#[no_mangle]
+unsafe extern "C" fn settings_set_max_clients_in_master(value: c_int) {
+    SETTINGS.unwrap().max_clients_in_master_set(if value == 0 {
+        None
+    } else {
+        Some(value)
+    });
+}
