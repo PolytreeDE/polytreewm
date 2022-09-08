@@ -9,11 +9,11 @@
 	unit = NULL;            \
 }
 
-typedef enum {
-	UNIT_GLOBAL  = 0,
-	UNIT_MONITOR = 1,
-	UNIT_TAG     = 2,
-} UnitKind;
+typedef unsigned char UnitKind;
+
+#define UNIT_GLOBAL  0
+#define UNIT_MONITOR 1
+#define UNIT_TAG     2
 
 typedef struct Unit *Unit;
 
