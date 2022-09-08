@@ -156,6 +156,16 @@ unsafe extern "C" fn settings_set_show_bar_by_default(value: bool) {
 }
 
 #[no_mangle]
+unsafe extern "C" fn settings_get_show_bar_per_unit() -> c_uchar {
+    SETTINGS.unwrap().show_bar_per_unit().into()
+}
+
+#[no_mangle]
+unsafe extern "C" fn settings_set_show_bar_per_unit(value: c_uchar) {
+    SETTINGS.unwrap().show_bar_per_unit_set(value.into());
+}
+
+#[no_mangle]
 unsafe extern "C" fn settings_get_snap_distance() -> c_uint {
     SETTINGS.unwrap().snap_distance()
 }

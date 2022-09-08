@@ -24,7 +24,6 @@ MODULES_SRC = \
 	src/helpers.c \
 	src/layouts.c \
 	src/logger.c \
-	src/settings.c \
 	src/spawn.c \
 	src/state.c \
 	src/unit.c \
@@ -45,7 +44,7 @@ TEST_SRC = \
 
 MAIN_SRC = $(MODULES_SRC) src/main.c
 
-MODULES_HDR = $(MODULES_SRC:.c=.h) src/constraints.h
+MODULES_HDR = $(MODULES_SRC:.c=.h) src/constraints.h src/settings.h
 DWM_HDR     = $(DWM_SRC:.c=.h)
 MAIN_HDR    = $(MODULES_HDR) src/main.h
 

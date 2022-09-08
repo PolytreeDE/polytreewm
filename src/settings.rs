@@ -18,6 +18,7 @@ pub struct Settings {
     max_clients_in_master: Option<c_int>,
     respect_resize_hints_in_floating_layout: bool,
     show_bar_by_default: bool,
+    show_bar_per_unit: unit::Kind,
     snap_distance: c_uint,
     swallow_floating: bool,
 }
@@ -46,6 +47,7 @@ impl Default for Settings {
             max_clients_in_master: None,
             respect_resize_hints_in_floating_layout: false,
             show_bar_by_default: true,
+            show_bar_per_unit: unit::Kind::Monitor,
             snap_distance: 32,
             swallow_floating: false,
         }
@@ -164,6 +166,7 @@ impl Settings {
         self.master_area_factor_per_unit
     }
 
+    // TODO: notify WM to rearrange clients
     pub fn master_area_factor_per_unit_set(&mut self, value: unit::Kind) {
         self.master_area_factor_per_unit = value;
     }
@@ -193,6 +196,15 @@ impl Settings {
 
     pub fn show_bar_by_default_set(&mut self, value: bool) {
         self.show_bar_by_default = value;
+    }
+
+    pub fn show_bar_per_unit(&self) -> unit::Kind {
+        self.show_bar_per_unit
+    }
+
+    // TODO: notify WM to rearrange clients
+    pub fn show_bar_per_unit_set(&mut self, value: unit::Kind) {
+        self.show_bar_per_unit = value;
     }
 
     pub fn snap_distance(&self) -> c_uint {
