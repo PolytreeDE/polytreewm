@@ -1,4 +1,5 @@
 use crate::constraints;
+use crate::unit;
 
 use std::os::raw::*;
 
@@ -13,6 +14,7 @@ pub struct Settings {
     focus_on_wheel: bool,
     gap_for_single_window: ForSingleWindow,
     gap_size: c_int,
+    master_area_factor_per_unit: unit::Kind,
     max_clients_in_master: Option<c_int>,
     respect_resize_hints_in_floating_layout: bool,
     show_bar_by_default: bool,
@@ -40,6 +42,7 @@ impl Default for Settings {
             focus_on_wheel: true,
             gap_for_single_window: Default::default(),
             gap_size: 10,
+            master_area_factor_per_unit: unit::Kind::Monitor,
             max_clients_in_master: None,
             respect_resize_hints_in_floating_layout: false,
             show_bar_by_default: true,
@@ -155,6 +158,14 @@ impl Settings {
     // TODO: notify WM to rearrange clients
     pub fn gap_size_set(&mut self, value: c_int) {
         self.gap_size = constraints::gap_size(value);
+    }
+
+    pub fn master_area_factor_per_unit(&self) -> unit::Kind {
+        self.master_area_factor_per_unit
+    }
+
+    pub fn master_area_factor_per_unit_set(&mut self, value: unit::Kind) {
+        self.master_area_factor_per_unit = value;
     }
 
     pub fn max_clients_in_master(&self) -> Option<c_int> {

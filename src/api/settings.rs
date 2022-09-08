@@ -102,6 +102,18 @@ unsafe extern "C" fn settings_set_gap_size(value: c_int) {
 }
 
 #[no_mangle]
+unsafe extern "C" fn settings_get_master_area_factor_per_unit() -> c_uchar {
+    SETTINGS.unwrap().master_area_factor_per_unit().into()
+}
+
+#[no_mangle]
+unsafe extern "C" fn settings_set_master_area_factor_per_unit(value: c_uchar) {
+    SETTINGS
+        .unwrap()
+        .master_area_factor_per_unit_set(value.into());
+}
+
+#[no_mangle]
 unsafe extern "C" fn settings_get_max_clients_in_master() -> c_int {
     match SETTINGS.unwrap().max_clients_in_master() {
         None => 0,
