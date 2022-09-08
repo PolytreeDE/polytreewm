@@ -23,17 +23,17 @@ unsafe extern "C" fn settings_set_bar_on_top_by_default(value: bool) {
 
 #[no_mangle]
 unsafe extern "C" fn settings_set_border_for_single_window(value: c_uchar) {
-    SETTINGS.unwrap().border_for_single_window_set(value.into());
+    SETTINGS.unwrap().border().mode_set(value.into());
 }
 
 #[no_mangle]
 unsafe extern "C" fn settings_get_border_width() -> c_int {
-    SETTINGS.unwrap().border_width()
+    SETTINGS.unwrap().border().width()
 }
 
 #[no_mangle]
 unsafe extern "C" fn settings_set_border_width(value: c_int) {
-    SETTINGS.unwrap().border_width_set(value);
+    SETTINGS.unwrap().border().width_set(value);
 }
 
 #[no_mangle]
@@ -78,17 +78,17 @@ unsafe extern "C" fn settings_set_focus_on_wheel(value: bool) {
 
 #[no_mangle]
 unsafe extern "C" fn settings_set_gap_for_single_window(value: c_uchar) {
-    SETTINGS.unwrap().gap_for_single_window_set(value.into());
+    SETTINGS.unwrap().gap().mode_set(value.into());
 }
 
 #[no_mangle]
 unsafe extern "C" fn settings_get_gap_size() -> c_int {
-    SETTINGS.unwrap().gap_size()
+    SETTINGS.unwrap().gap().size()
 }
 
 #[no_mangle]
 unsafe extern "C" fn settings_set_gap_size(value: c_int) {
-    SETTINGS.unwrap().gap_size_set(value);
+    SETTINGS.unwrap().gap().size_set(value);
 }
 
 #[no_mangle]
@@ -181,7 +181,7 @@ unsafe extern "C" fn helpers_border_width(
     selected_is_fullscreen: bool,
     any_is_fullscreen: bool,
 ) -> c_int {
-    SETTINGS.unwrap().border_width_helper(
+    SETTINGS.unwrap().border().width_helper(
         displayed_clients,
         selected_is_fullscreen,
         any_is_fullscreen,
@@ -194,7 +194,7 @@ unsafe extern "C" fn helpers_gap_size(
     selected_is_fullscreen: bool,
     any_is_fullscreen: bool,
 ) -> c_int {
-    SETTINGS.unwrap().gap_size_helper(
+    SETTINGS.unwrap().gap().size_helper(
         displayed_clients,
         selected_is_fullscreen,
         any_is_fullscreen,

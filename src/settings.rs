@@ -6,14 +6,12 @@ use std::os::raw::*;
 #[derive(Clone, Copy, Debug)]
 pub struct Settings {
     bar_on_top_by_default: bool,
-    border_for_single_window: ForSingleWindow,
-    border_width: c_int,
+    border: Border,
     default_clients_in_master: c_int,
     default_master_area_factor: c_float,
     enable_swallowing: bool,
     focus_on_wheel: bool,
-    gap_for_single_window: ForSingleWindow,
-    gap_size: c_int,
+    gap: Gap,
     master_area_factor_per_unit: unit::Kind,
     max_clients_in_master: Option<c_int>,
     respect_resize_hints_in_floating_layout: bool,
@@ -31,18 +29,28 @@ pub enum ForSingleWindow {
     NobodyIsFullscreen,
 }
 
+#[derive(Clone, Copy, Debug)]
+pub struct Border {
+    mode: ForSingleWindow,
+    width: c_int,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub struct Gap {
+    mode: ForSingleWindow,
+    size: c_int,
+}
+
 impl Default for Settings {
     fn default() -> Self {
         Self {
             bar_on_top_by_default: true,
-            border_for_single_window: Default::default(),
-            border_width: 2,
+            border: Default::default(),
             default_clients_in_master: 1,
             default_master_area_factor: 0.6,
             enable_swallowing: true,
             focus_on_wheel: true,
-            gap_for_single_window: Default::default(),
-            gap_size: 10,
+            gap: Default::default(),
             master_area_factor_per_unit: unit::Kind::Monitor,
             max_clients_in_master: None,
             respect_resize_hints_in_floating_layout: false,
@@ -50,6 +58,24 @@ impl Default for Settings {
             show_bar_per_unit: unit::Kind::Monitor,
             snap_distance: 32,
             swallow_floating: false,
+        }
+    }
+}
+
+impl Default for Border {
+    fn default() -> Self {
+        Self {
+            mode: Default::default(),
+            width: 2,
+        }
+    }
+}
+
+impl Default for Gap {
+    fn default() -> Self {
+        Self {
+            mode: Default::default(),
+            size: 10,
         }
     }
 }
@@ -92,52 +118,8 @@ impl Settings {
         self.bar_on_top_by_default = value;
     }
 
-    pub fn border_for_single_window(&self) -> ForSingleWindow {
-        self.border_for_single_window
-    }
-
-    // TODO: notify WM to rearrange clients
-    pub fn border_for_single_window_set(&mut self, value: ForSingleWindow) {
-        self.border_for_single_window = value;
-    }
-
-    pub fn border_width(&self) -> c_int {
-        self.border_width
-    }
-
-    // TODO: notify WM to rearrange clients
-    pub fn border_width_set(&mut self, value: c_int) {
-        self.border_width = constraints::border_width(value);
-    }
-
-    pub fn border_width_helper(
-        &self,
-        displayed_clients: c_uint,
-        selected_is_fullscreen: bool,
-        any_is_fullscreen: bool,
-    ) -> c_int {
-        if displayed_clients > 1 {
-            return self.border_width;
-        }
-
-        match self.border_for_single_window {
-            ForSingleWindow::Never => 0,
-            ForSingleWindow::Always => self.border_width,
-            ForSingleWindow::NotInFullscreen => {
-                if selected_is_fullscreen {
-                    0
-                } else {
-                    self.border_width
-                }
-            }
-            ForSingleWindow::NobodyIsFullscreen => {
-                if selected_is_fullscreen || any_is_fullscreen {
-                    0
-                } else {
-                    self.border_width
-                }
-            }
-        }
+    pub fn border(&mut self) -> &mut Border {
+        &mut self.border
     }
 
     pub fn default_clients_in_master(&self) -> c_int {
@@ -174,52 +156,8 @@ impl Settings {
         self.focus_on_wheel = value;
     }
 
-    pub fn gap_for_single_window(&self) -> ForSingleWindow {
-        self.gap_for_single_window
-    }
-
-    // TODO: notify WM to rearrange clients
-    pub fn gap_for_single_window_set(&mut self, value: ForSingleWindow) {
-        self.gap_for_single_window = value;
-    }
-
-    pub fn gap_size(&self) -> c_int {
-        self.gap_size
-    }
-
-    // TODO: notify WM to rearrange clients
-    pub fn gap_size_set(&mut self, value: c_int) {
-        self.gap_size = constraints::gap_size(value);
-    }
-
-    pub fn gap_size_helper(
-        &self,
-        displayed_clients: c_uint,
-        selected_is_fullscreen: bool,
-        any_is_fullscreen: bool,
-    ) -> c_int {
-        if displayed_clients > 1 {
-            return self.gap_size;
-        }
-
-        match self.gap_for_single_window {
-            ForSingleWindow::Never => 0,
-            ForSingleWindow::Always => self.gap_size,
-            ForSingleWindow::NotInFullscreen => {
-                if selected_is_fullscreen {
-                    0
-                } else {
-                    self.gap_size
-                }
-            }
-            ForSingleWindow::NobodyIsFullscreen => {
-                if selected_is_fullscreen || any_is_fullscreen {
-                    0
-                } else {
-                    self.gap_size
-                }
-            }
-        }
+    pub fn gap(&mut self) -> &mut Gap {
+        &mut self.gap
     }
 
     pub fn master_area_factor_per_unit(&self) -> unit::Kind {
@@ -281,5 +219,101 @@ impl Settings {
 
     pub fn swallow_floating_set(&mut self, value: bool) {
         self.swallow_floating = value;
+    }
+}
+
+impl Border {
+    pub fn mode(&self) -> ForSingleWindow {
+        self.mode
+    }
+
+    pub fn mode_set(&mut self, value: ForSingleWindow) {
+        self.mode = value;
+    }
+
+    pub fn width(&self) -> c_int {
+        self.width
+    }
+
+    pub fn width_set(&mut self, value: c_int) {
+        self.width = constraints::border_width(value);
+    }
+
+    pub fn width_helper(
+        &self,
+        displayed_clients: c_uint,
+        selected_is_fullscreen: bool,
+        any_is_fullscreen: bool,
+    ) -> c_int {
+        if displayed_clients > 1 {
+            return self.width;
+        }
+
+        match self.mode {
+            ForSingleWindow::Never => 0,
+            ForSingleWindow::Always => self.width,
+            ForSingleWindow::NotInFullscreen => {
+                if selected_is_fullscreen {
+                    0
+                } else {
+                    self.width
+                }
+            }
+            ForSingleWindow::NobodyIsFullscreen => {
+                if selected_is_fullscreen || any_is_fullscreen {
+                    0
+                } else {
+                    self.width
+                }
+            }
+        }
+    }
+}
+
+impl Gap {
+    pub fn mode(&self) -> ForSingleWindow {
+        self.mode
+    }
+
+    pub fn mode_set(&mut self, value: ForSingleWindow) {
+        self.mode = value;
+    }
+
+    pub fn size(&self) -> c_int {
+        self.size
+    }
+
+    pub fn size_set(&mut self, value: c_int) {
+        self.size = constraints::gap_size(value);
+    }
+
+    pub fn size_helper(
+        &self,
+        displayed_clients: c_uint,
+        selected_is_fullscreen: bool,
+        any_is_fullscreen: bool,
+    ) -> c_int {
+        if displayed_clients > 1 {
+            return self.size;
+        }
+
+        match self.mode {
+            ForSingleWindow::Never => 0,
+            ForSingleWindow::Always => self.size,
+            ForSingleWindow::NotInFullscreen => {
+                if selected_is_fullscreen {
+                    0
+                } else {
+                    self.size
+                }
+            }
+            ForSingleWindow::NobodyIsFullscreen => {
+                if selected_is_fullscreen || any_is_fullscreen {
+                    0
+                } else {
+                    self.size
+                }
+            }
+        }
     }
 }
