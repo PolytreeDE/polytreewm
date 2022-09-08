@@ -9,6 +9,7 @@ pub struct Settings {
     default_clients_in_master: c_int,
     default_master_area_factor: c_float,
     enable_swallowing: bool,
+    focus_on_wheel: bool,
 }
 
 impl Default for Settings {
@@ -19,6 +20,7 @@ impl Default for Settings {
             default_clients_in_master: 1,
             default_master_area_factor: 0.6,
             enable_swallowing: true,
+            focus_on_wheel: true,
         }
     }
 }
@@ -65,5 +67,13 @@ impl Settings {
 
     pub fn enable_swallowing_set(&mut self, value: bool) {
         self.enable_swallowing = value;
+    }
+
+    pub fn focus_on_wheel(&self) -> bool {
+        self.focus_on_wheel
+    }
+
+    pub fn focus_on_wheel_set(&mut self, value: bool) {
+        self.focus_on_wheel = value;
     }
 }

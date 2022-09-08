@@ -60,3 +60,13 @@ unsafe extern "C" fn settings_get_enable_swallowing() -> bool {
 unsafe extern "C" fn settings_set_enable_swallowing(value: bool) {
     SETTINGS.unwrap().enable_swallowing_set(value);
 }
+
+#[no_mangle]
+unsafe extern "C" fn settings_get_focus_on_wheel() -> bool {
+    SETTINGS.unwrap().focus_on_wheel()
+}
+
+#[no_mangle]
+unsafe extern "C" fn settings_set_focus_on_wheel(value: bool) {
+    SETTINGS.unwrap().focus_on_wheel_set(value);
+}

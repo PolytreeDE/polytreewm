@@ -4,7 +4,6 @@
 
 static SettingsForSingleWindow border_for_single_window = SETTINGS_FOR_SINGLE_WINDOW_NOBODY_IS_FULLSCREEN;
 static SettingsForSingleWindow gap_for_single_window = SETTINGS_FOR_SINGLE_WINDOW_NOBODY_IS_FULLSCREEN;
-static bool focus_on_wheel = true;
 static int gap_size = 10;
 static UnitKind master_area_factor_per_unit = UNIT_MONITOR;
 static int max_clients_in_master = 0; // 0 for no maximum
@@ -34,16 +33,6 @@ void settings_set_gap_for_single_window(const SettingsForSingleWindow new_gap_fo
 {
 	gap_for_single_window = new_gap_for_single_window;
 	// TODO: notify WM to rearrange clients
-}
-
-bool settings_get_focus_on_wheel()
-{
-	return focus_on_wheel;
-}
-
-void settings_set_focus_on_wheel(const bool new_focus_on_wheel)
-{
-	focus_on_wheel = new_focus_on_wheel;
 }
 
 int settings_get_gap_size()
