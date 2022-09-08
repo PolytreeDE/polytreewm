@@ -7,6 +7,7 @@ pub struct Settings {
     bar_on_top_by_default: bool,
     border_width: c_int,
     default_clients_in_master: c_int,
+    default_master_area_factor: c_float,
 }
 
 impl Default for Settings {
@@ -15,6 +16,7 @@ impl Default for Settings {
             bar_on_top_by_default: true,
             border_width: 2,
             default_clients_in_master: 1,
+            default_master_area_factor: 0.6,
         }
     }
 }
@@ -44,5 +46,14 @@ impl Settings {
     pub fn default_clients_in_master_set(&mut self, value: c_int) {
         self.default_clients_in_master =
             constraints::default_clients_in_master(value);
+    }
+
+    pub fn default_master_area_factor(&self) -> c_float {
+        self.default_master_area_factor
+    }
+
+    pub fn default_master_area_factor_set(&mut self, value: c_float) {
+        self.default_master_area_factor =
+            constraints::default_master_area_factor(value);
     }
 }

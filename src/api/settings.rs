@@ -40,3 +40,13 @@ unsafe extern "C" fn settings_get_default_clients_in_master() -> c_int {
 unsafe extern "C" fn settings_set_default_clients_in_master(value: c_int) {
     SETTINGS.unwrap().default_clients_in_master_set(value);
 }
+
+#[no_mangle]
+unsafe extern "C" fn settings_get_default_master_area_factor() -> c_float {
+    SETTINGS.unwrap().default_master_area_factor()
+}
+
+#[no_mangle]
+unsafe extern "C" fn settings_set_default_master_area_factor(value: c_float) {
+    SETTINGS.unwrap().default_master_area_factor_set(value);
+}

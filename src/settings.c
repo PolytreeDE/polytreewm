@@ -3,7 +3,6 @@
 #include "constraints.h"
 
 static SettingsForSingleWindow border_for_single_window = SETTINGS_FOR_SINGLE_WINDOW_NOBODY_IS_FULLSCREEN;
-static float default_master_area_factor = 0.6;
 static SettingsForSingleWindow gap_for_single_window = SETTINGS_FOR_SINGLE_WINDOW_NOBODY_IS_FULLSCREEN;
 static bool enable_swallowing = true;
 static bool focus_on_wheel = true;
@@ -25,16 +24,6 @@ void settings_set_border_for_single_window(const SettingsForSingleWindow new_bor
 {
 	border_for_single_window = new_border_for_single_window;
 	// TODO: notify WM to rearrange clients
-}
-
-float settings_get_default_master_area_factor()
-{
-	return default_master_area_factor;
-}
-
-void settings_set_default_master_area_factor(const float new_default_master_area_factor)
-{
-	default_master_area_factor = constraints_default_master_area_factor(new_default_master_area_factor);
 }
 
 SettingsForSingleWindow settings_get_gap_for_single_window()
