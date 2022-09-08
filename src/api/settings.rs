@@ -22,11 +22,6 @@ unsafe extern "C" fn settings_set_bar_on_top_by_default(value: bool) {
 }
 
 #[no_mangle]
-unsafe extern "C" fn settings_get_border_for_single_window() -> c_uchar {
-    SETTINGS.unwrap().border_for_single_window().into()
-}
-
-#[no_mangle]
 unsafe extern "C" fn settings_set_border_for_single_window(value: c_uchar) {
     SETTINGS.unwrap().border_for_single_window_set(value.into());
 }
@@ -79,11 +74,6 @@ unsafe extern "C" fn settings_get_focus_on_wheel() -> bool {
 #[no_mangle]
 unsafe extern "C" fn settings_set_focus_on_wheel(value: bool) {
     SETTINGS.unwrap().focus_on_wheel_set(value);
-}
-
-#[no_mangle]
-unsafe extern "C" fn settings_get_gap_for_single_window() -> c_uchar {
-    SETTINGS.unwrap().gap_for_single_window().into()
 }
 
 #[no_mangle]

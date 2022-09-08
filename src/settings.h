@@ -15,8 +15,7 @@ typedef unsigned char SettingsForSingleWindow;
 bool settings_get_bar_on_top_by_default();
 void settings_set_bar_on_top_by_default(bool new_bar_on_top_by_default);
 
-SettingsForSingleWindow settings_get_border_for_single_window();
-void                    settings_set_border_for_single_window(SettingsForSingleWindow new_border_for_single_window);
+void settings_set_border_for_single_window(SettingsForSingleWindow new_border_for_single_window);
 
 int  settings_get_border_width();
 void settings_set_border_width(int new_border_width);
@@ -27,8 +26,7 @@ void settings_set_default_clients_in_master(int new_default_clients_in_master);
 float settings_get_default_master_area_factor();
 void  settings_set_default_master_area_factor(float new_default_master_area_factor);
 
-SettingsForSingleWindow settings_get_gap_for_single_window();
-void                    settings_set_gap_for_single_window(SettingsForSingleWindow new_gap_for_single_window);
+void settings_set_gap_for_single_window(SettingsForSingleWindow new_gap_for_single_window);
 
 bool settings_get_enable_swallowing();
 void settings_set_enable_swallowing(bool new_enable_swallowing);
