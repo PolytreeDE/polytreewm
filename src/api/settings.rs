@@ -112,3 +112,13 @@ unsafe extern "C" fn settings_set_respect_resize_hints_in_floating_layout(
         .unwrap()
         .respect_resize_hints_in_floating_layout_set(value);
 }
+
+#[no_mangle]
+unsafe extern "C" fn settings_get_show_bar_by_default() -> bool {
+    SETTINGS.unwrap().show_bar_by_default()
+}
+
+#[no_mangle]
+unsafe extern "C" fn settings_set_show_bar_by_default(value: bool) {
+    SETTINGS.unwrap().show_bar_by_default_set(value);
+}

@@ -13,6 +13,7 @@ pub struct Settings {
     gap_size: c_int,
     max_clients_in_master: Option<c_int>,
     respect_resize_hints_in_floating_layout: bool,
+    show_bar_by_default: bool,
 }
 
 impl Default for Settings {
@@ -27,6 +28,7 @@ impl Default for Settings {
             gap_size: 10,
             max_clients_in_master: None,
             respect_resize_hints_in_floating_layout: false,
+            show_bar_by_default: true,
         }
     }
 }
@@ -109,5 +111,13 @@ impl Settings {
     // TODO: notify WM to rearrange clients
     pub fn respect_resize_hints_in_floating_layout_set(&mut self, value: bool) {
         self.respect_resize_hints_in_floating_layout = value;
+    }
+
+    pub fn show_bar_by_default(&self) -> bool {
+        self.show_bar_by_default
+    }
+
+    pub fn show_bar_by_default_set(&mut self, value: bool) {
+        self.show_bar_by_default = value;
     }
 }

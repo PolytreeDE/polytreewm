@@ -5,7 +5,6 @@
 static SettingsForSingleWindow border_for_single_window = SETTINGS_FOR_SINGLE_WINDOW_NOBODY_IS_FULLSCREEN;
 static SettingsForSingleWindow gap_for_single_window = SETTINGS_FOR_SINGLE_WINDOW_NOBODY_IS_FULLSCREEN;
 static UnitKind master_area_factor_per_unit = UNIT_MONITOR;
-static bool show_bar_by_default = true;
 static UnitKind show_bar_per_unit = UNIT_MONITOR;
 static unsigned int snap_distance = 32;
 static bool swallow_floating = false;
@@ -41,16 +40,6 @@ void settings_set_master_area_factor_per_unit(const UnitKind new_master_area_fac
 {
 	master_area_factor_per_unit = new_master_area_factor_per_unit;
 	// TODO: notify WM to rearrange clients
-}
-
-bool settings_get_show_bar_by_default()
-{
-	return show_bar_by_default;
-}
-
-void settings_set_show_bar_by_default(const bool new_show_bar_by_default)
-{
-	show_bar_by_default = new_show_bar_by_default;
 }
 
 UnitKind settings_get_show_bar_per_unit()
