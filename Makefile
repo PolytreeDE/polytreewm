@@ -14,6 +14,8 @@ CONFIGMKS = \
 	$(CONFIGMKS_TO_REMOVE) \
 	config/3-defvars.mk
 
+RUST_SRC = src/*.rs src/**/*.rs
+
 MODULES_SRC = \
 	src/atoms.c \
 	src/drw.c \
@@ -73,7 +75,7 @@ polytreewm: src/main.o $(MODULES_OBJ) target/debug/libpolytreewm.a
 
 dwm.o: $(DWM_SRC) $(DWM_HDR)
 
-target/debug/libpolytreewm.a:
+target/debug/libpolytreewm.a: $(RUST_SRC)
 	$(CARGO) build
 
 #########
@@ -106,4 +108,4 @@ uninstall:
 		$(DESTDIR)$(BINDIR)/polytreewm \
 		$(DESTDIR)$(MANDIR)/man1/polytreewm.1
 
-.PHONY: all clean distclean install uninstall test target/debug/libpolytreewm.a
+.PHONY: all clean distclean install uninstall test
