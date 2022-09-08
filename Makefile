@@ -15,6 +15,7 @@ CONFIGMKS = \
 	config/3-defvars.mk
 
 RUST_SRC = src/*.rs src/**/*.rs
+RUST_APIS = src/constraints.h src/geom.h src/settings.h
 
 MODULES_SRC = \
 	src/atoms.c \
@@ -44,7 +45,7 @@ TEST_SRC = \
 
 MAIN_SRC = $(MODULES_SRC) src/main.c
 
-MODULES_HDR = $(MODULES_SRC:.c=.h) src/constraints.h src/settings.h
+MODULES_HDR = $(MODULES_SRC:.c=.h) $(RUST_APIS)
 DWM_HDR     = $(DWM_SRC:.c=.h)
 MAIN_HDR    = $(MODULES_HDR) src/main.h
 
