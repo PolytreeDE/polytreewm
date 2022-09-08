@@ -2,21 +2,9 @@
 
 #include "constraints.h"
 
-static SettingsForSingleWindow border_for_single_window = SETTINGS_FOR_SINGLE_WINDOW_NOBODY_IS_FULLSCREEN;
 static SettingsForSingleWindow gap_for_single_window = SETTINGS_FOR_SINGLE_WINDOW_NOBODY_IS_FULLSCREEN;
 static UnitKind master_area_factor_per_unit = UNIT_MONITOR;
 static UnitKind show_bar_per_unit = UNIT_MONITOR;
-
-SettingsForSingleWindow settings_get_border_for_single_window()
-{
-	return border_for_single_window;
-}
-
-void settings_set_border_for_single_window(const SettingsForSingleWindow new_border_for_single_window)
-{
-	border_for_single_window = new_border_for_single_window;
-	// TODO: notify WM to rearrange clients
-}
 
 SettingsForSingleWindow settings_get_gap_for_single_window()
 {

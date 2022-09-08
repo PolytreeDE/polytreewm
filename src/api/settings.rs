@@ -22,6 +22,16 @@ unsafe extern "C" fn settings_set_bar_on_top_by_default(value: bool) {
 }
 
 #[no_mangle]
+unsafe extern "C" fn settings_get_border_for_single_window() -> c_uchar {
+    SETTINGS.unwrap().border_for_single_window().into()
+}
+
+#[no_mangle]
+unsafe extern "C" fn settings_set_border_for_single_window(value: c_uchar) {
+    SETTINGS.unwrap().border_for_single_window_set(value.into());
+}
+
+#[no_mangle]
 unsafe extern "C" fn settings_get_border_width() -> c_int {
     SETTINGS.unwrap().border_width()
 }

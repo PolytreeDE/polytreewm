@@ -5,6 +5,7 @@ use std::os::raw::*;
 #[derive(Clone, Copy, Debug)]
 pub struct Settings {
     bar_on_top_by_default: bool,
+    border_for_single_window: ForSingleWindow,
     border_width: c_int,
     default_clients_in_master: c_int,
     default_master_area_factor: c_float,
@@ -30,6 +31,7 @@ impl Default for Settings {
     fn default() -> Self {
         Self {
             bar_on_top_by_default: true,
+            border_for_single_window: Default::default(),
             border_width: 2,
             default_clients_in_master: 1,
             default_master_area_factor: 0.6,
@@ -81,6 +83,15 @@ impl Settings {
 
     pub fn bar_on_top_by_default_set(&mut self, value: bool) {
         self.bar_on_top_by_default = value;
+    }
+
+    pub fn border_for_single_window(&self) -> ForSingleWindow {
+        self.border_for_single_window
+    }
+
+    // TODO: notify WM to rearrange clients
+    pub fn border_for_single_window_set(&mut self, value: ForSingleWindow) {
+        self.border_for_single_window = value;
     }
 
     pub fn border_width(&self) -> c_int {
