@@ -83,6 +83,7 @@ impl Settings {
         self.gap_size
     }
 
+    // TODO: notify WM to rearrange clients
     pub fn gap_size_set(&mut self, value: c_int) {
         self.gap_size = constraints::gap_size(value);
     }
