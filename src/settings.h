@@ -5,12 +5,12 @@
 
 #include <stdbool.h>
 
-typedef enum {
-	SETTINGS_FOR_SINGLE_WINDOW_NEVER,
-	SETTINGS_FOR_SINGLE_WINDOW_ALWAYS,
-	SETTINGS_FOR_SINGLE_WINDOW_NOT_IN_FULLSCREEN,
-	SETTINGS_FOR_SINGLE_WINDOW_NOBODY_IS_FULLSCREEN,
-} SettingsForSingleWindow;
+typedef unsigned char SettingsForSingleWindow;
+
+#define SETTINGS_FOR_SINGLE_WINDOW_NEVER                0
+#define SETTINGS_FOR_SINGLE_WINDOW_ALWAYS               1
+#define SETTINGS_FOR_SINGLE_WINDOW_NOT_IN_FULLSCREEN    2
+#define SETTINGS_FOR_SINGLE_WINDOW_NOBODY_IS_FULLSCREEN 3
 
 bool settings_get_bar_on_top_by_default();
 void settings_set_bar_on_top_by_default(bool new_bar_on_top_by_default);

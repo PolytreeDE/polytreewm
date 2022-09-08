@@ -1,7 +1,7 @@
 mod api;
 mod constraints;
-mod settings;
 
 pub mod geom;
+pub mod settings;
 
 pub use settings::Settings;

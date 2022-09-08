@@ -18,6 +18,14 @@ pub struct Settings {
     swallow_floating: bool,
 }
 
+#[derive(Clone, Copy, Debug)]
+pub enum ForSingleWindow {
+    Never,
+    Always,
+    NotInFullscreen,
+    NobodyIsFullscreen,
+}
+
 impl Default for Settings {
     fn default() -> Self {
         Self {
@@ -33,6 +41,35 @@ impl Default for Settings {
             show_bar_by_default: true,
             snap_distance: 32,
             swallow_floating: false,
+        }
+    }
+}
+
+impl Default for ForSingleWindow {
+    fn default() -> Self {
+        Self::NobodyIsFullscreen
+    }
+}
+
+impl Into<c_uchar> for ForSingleWindow {
+    fn into(self) -> c_uchar {
+        match self {
+            Self::Never => 0,
+            Self::Always => 1,
+            Self::NotInFullscreen => 2,
+            Self::NobodyIsFullscreen => 3,
+        }
+    }
+}
+
+impl From<c_uchar> for ForSingleWindow {
+    fn from(value: c_uchar) -> Self {
+        match value {
+            0 => Self::Never,
+            1 => Self::Always,
+            2 => Self::NotInFullscreen,
+            3 => Self::NobodyIsFullscreen,
+            _ => panic!("invalid value for type ForSingleWindow"),
         }
     }
 }
