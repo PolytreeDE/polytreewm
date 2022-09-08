@@ -14,6 +14,7 @@ pub struct Settings {
     max_clients_in_master: Option<c_int>,
     respect_resize_hints_in_floating_layout: bool,
     show_bar_by_default: bool,
+    snap_distance: c_uint,
 }
 
 impl Default for Settings {
@@ -29,6 +30,7 @@ impl Default for Settings {
             max_clients_in_master: None,
             respect_resize_hints_in_floating_layout: false,
             show_bar_by_default: true,
+            snap_distance: 32,
         }
     }
 }
@@ -119,5 +121,13 @@ impl Settings {
 
     pub fn show_bar_by_default_set(&mut self, value: bool) {
         self.show_bar_by_default = value;
+    }
+
+    pub fn snap_distance(&self) -> c_uint {
+        self.snap_distance
+    }
+
+    pub fn snap_distance_set(&mut self, value: c_uint) {
+        self.snap_distance = constraints::snap_distance(value);
     }
 }

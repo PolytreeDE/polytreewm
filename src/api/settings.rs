@@ -122,3 +122,13 @@ unsafe extern "C" fn settings_get_show_bar_by_default() -> bool {
 unsafe extern "C" fn settings_set_show_bar_by_default(value: bool) {
     SETTINGS.unwrap().show_bar_by_default_set(value);
 }
+
+#[no_mangle]
+unsafe extern "C" fn settings_get_snap_distance() -> c_uint {
+    SETTINGS.unwrap().snap_distance()
+}
+
+#[no_mangle]
+unsafe extern "C" fn settings_set_snap_distance(value: c_uint) {
+    SETTINGS.unwrap().snap_distance_set(value);
+}
