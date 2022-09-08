@@ -3,13 +3,6 @@ use crate::*;
 use std::os::raw::*;
 
 #[no_mangle]
-extern "C" fn constraints_default_clients_in_master(
-    default_clients_in_master: c_int,
-) -> c_int {
-    constraints::default_clients_in_master(default_clients_in_master)
-}
-
-#[no_mangle]
 extern "C" fn constraints_default_master_area_factor(
     default_master_area_factor: c_float,
 ) -> c_float {
