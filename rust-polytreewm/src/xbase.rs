@@ -78,5 +78,7 @@ unsafe extern "C" fn x_error_wm_check(
     _display: *mut Display,
     _x_error_event: *mut xlib::XErrorEvent,
 ) -> c_int {
-    panic!("another window manager is already running");
+    // FIXME:
+    // panic!("another window manager is already running");
+    0
 }
