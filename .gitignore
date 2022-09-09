@@ -3,7 +3,7 @@
 /polytreewm
 
 # C
-/src/*.o
+/src/**/*.o
 /tests/*.o
 /tests/*.test
 

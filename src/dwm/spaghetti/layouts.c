@@ -1,8 +1,10 @@
 #ifndef _DWM_LAYOUTS_C
 #define _DWM_LAYOUTS_C
 
-void centeredmaster(Monitor *m)
+void centeredmaster(void *const arg)
 {
+	Monitor *const m = arg;
+
 	unsigned int n = 0;
 	for (Client *c = nexttiled(m->clients); c; c = nexttiled(c->next), ++n);
 	if (n == 0) return;
@@ -124,8 +126,10 @@ void centeredmaster(Monitor *m)
 	}
 }
 
-void floating(Monitor *m)
+void floating(void *const arg)
 {
+	Monitor *const m = arg;
+
 	const int border_width = settings_get_border_width();
 
 	for (Client *c = m->clients; c; c = c->next) {
@@ -145,8 +149,10 @@ void floating(Monitor *m)
 	}
 }
 
-void horizontile(Monitor *m)
+void horizontile(void *const arg)
 {
+	Monitor *const m = arg;
+
 	unsigned int n = 0;
 	for (Client *c = nexttiled(m->clients); c; c = nexttiled(c->next), ++n);
 	if (n == 0) return;
@@ -232,8 +238,10 @@ void horizontile(Monitor *m)
 	}
 }
 
-void monocle(Monitor *m)
+void monocle(void *const arg)
 {
+	Monitor *const m = arg;
+
 	bool any_is_fullscreen = false;
 	for (Client *c = nexttiled(m->clients); c; c = nexttiled(c->next)) {
 		any_is_fullscreen = any_is_fullscreen || c->state.is_fullscreen;
@@ -259,8 +267,10 @@ void monocle(Monitor *m)
 	}
 }
 
-void tile(Monitor *m)
+void tile(void *const arg)
 {
+	Monitor *const m = arg;
+
 	unsigned int n = 0;
 	for (Client *c = nexttiled(m->clients); c; c = nexttiled(c->next), ++n);
 	if (n == 0) return;

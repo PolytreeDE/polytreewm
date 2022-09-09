@@ -27,6 +27,9 @@ RUST_APIS = \
 	src/settings.h
 
 MODULES_SRC = \
+	src/config/keys.c \
+	src/config/buttons.c \
+	src/config/layouts.c \
 	src/drw.c \
 	src/dwm.c \
 	src/geom.c \
@@ -52,7 +55,7 @@ TEST_SRC = \
 
 MAIN_SRC = $(MODULES_SRC) src/main.c
 
-MODULES_HDR = $(MODULES_SRC:.c=.h) $(RUST_APIS)
+MODULES_HDR = $(MODULES_SRC:.c=.h) $(RUST_APIS) src/config/common.h
 DWM_HDR     = $(DWM_SRC:.c=.h) src/dwm/types.h
 MAIN_HDR    = $(MODULES_HDR) src/main.h
 

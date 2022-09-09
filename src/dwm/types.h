@@ -3,7 +3,6 @@
 
 enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
 enum { SchemeNorm, SchemeSel }; /* color schemes */
-enum { ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
 
 typedef struct Monitor Monitor;
 typedef struct Client Client;
@@ -17,10 +16,6 @@ struct Client {
 	Monitor *mon;
 	Window x_window;
 };
-
-typedef struct {
-	void (*arrange)(Monitor *);
-} Layout;
 
 struct Monitor {
 	struct BasicGeom screen_geom;

@@ -3,7 +3,7 @@
 
 void on_button_press(XEvent *e)
 {
-	unsigned int i, click;
+	unsigned int click;
 	Client *c;
 	Monitor *m;
 	XButtonPressedEvent *ev = &e->xbutton;
@@ -27,7 +27,7 @@ void on_button_press(XEvent *e)
 		XAllowEvents(xbase->x_display, ReplayPointer, CurrentTime);
 		click = ClkClientWin;
 	}
-	for (i = 0; i < LENGTH(buttons); i++)
+	for (size_t i = 0; i < buttons_count(); ++i)
 		if (
 			click == buttons[i].click
 			&&
@@ -208,13 +208,12 @@ void on_focus_in(XEvent *e)
 
 void on_key_press(XEvent *e)
 {
-	unsigned int i;
 	KeySym keysym;
 	XKeyEvent *ev;
 
 	ev = &e->xkey;
 	keysym = XKeycodeToKeysym(xbase->x_display, (KeyCode)ev->keycode, 0);
-	for (i = 0; i < LENGTH(keys); i++) {
+	for (size_t i = 0; i < keys_count(); ++i) {
 		if (
 			keysym == keys[i].keysym
 			&&

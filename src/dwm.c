@@ -137,12 +137,9 @@ static void updatewmhints(Client *c);
 static Client *wintoclient(Window w);
 static Monitor *wintomon(Window w);
 
-extern const Layout layouts[];
-
 #include "dwm/spaghetti/bar.h"
 #include "dwm/spaghetti/handlers.h"
 #include "dwm/spaghetti/interaction.h"
-#include "dwm/spaghetti/layouts.h"
 #include "dwm/spaghetti/wmcheckwin.h"
 #include "dwm/spaghetti/xerror.h"
 
@@ -189,15 +186,6 @@ static const char *colors[][3]      = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
 	[SchemeSel]  = { col_gray4, col_cyan,  "#d9b01c" },
-};
-
-const Layout layouts[] = {
-	/* arrange function */
-	{ monocle }, /* first entry is default */
-	{ NULL },    /* no layout function means floating behavior */
-	{ tile },
-	{ horizontile },
-	{ centeredmaster },
 };
 
 /************************************
@@ -748,7 +736,7 @@ void grabbuttons(Client *c, int focused)
 {
 	updatenumlockmask();
 	{
-		unsigned int i, j;
+		unsigned int j;
 		unsigned int modifiers[] = { 0, LockMask, numlockmask, numlockmask|LockMask };
 		XUngrabButton(xbase->x_display, AnyButton, AnyModifier, c->x_window);
 
@@ -767,7 +755,7 @@ void grabbuttons(Client *c, int focused)
 			);
 		}
 
-		for (i = 0; i < LENGTH(buttons); i++) {
+		for (size_t i = 0; i < buttons_count(); ++i) {
 			if (buttons[i].click == ClkClientWin) {
 				for (j = 0; j < LENGTH(modifiers); j++) {
 					XGrabButton(
@@ -792,13 +780,13 @@ void grabkeys()
 {
 	updatenumlockmask();
 	{
-		unsigned int i, j;
+		unsigned int j;
 		unsigned int modifiers[] = { 0, LockMask, numlockmask, numlockmask|LockMask };
 		KeyCode code;
 
 		XUngrabKey(xbase->x_display, AnyKey, AnyModifier, xbase->x_root);
 
-		for (i = 0; i < LENGTH(keys); i++) {
+		for (size_t i = 0; i < keys_count(); ++i) {
 			if ((code = XKeysymToKeycode(xbase->x_display, keys[i].keysym))) {
 				for (j = 0; j < LENGTH(modifiers); j++) {
 					XGrabKey(
@@ -998,7 +986,7 @@ Monitor *monitor_create()
 
 	m->nmaster = settings_get_default_clients_in_master();
 	m->lt[0] = &layouts[0];
-	m->lt[1] = &layouts[1 % LENGTH(layouts)];
+	m->lt[1] = &layouts[1 % layouts_count()];
 
 	return m;
 
