@@ -154,6 +154,7 @@ static Unit global_unit = NULL;
 static const char broken[] = "broken";
 static unsigned int numlockmask = 0;
 static int running = 1;
+static Cur *cursor[CurLast];
 static Clr **scheme;
 static Drw *drw;
 static Monitor *mons, *selmon;
@@ -224,7 +225,9 @@ int dwm_main(const char *const new_program_title)
 
 	updategeom();
 	/* init cursors */
-	cursors_create(drw->dpy);
+	cursor[CurNormal] = drw_cur_create(drw, XC_left_ptr);
+	cursor[CurResize] = drw_cur_create(drw, XC_sizing);
+	cursor[CurMove] = drw_cur_create(drw, XC_fleur);
 	/* init appearance */
 	scheme_create();
 
@@ -249,7 +252,7 @@ int dwm_main(const char *const new_program_title)
 	);
 
 	/* select events */
-	wa.cursor = cursors[CURSOR_NORMAL];
+	wa.cursor = cursor[CurNormal]->cursor;
 	wa.event_mask =
 		SubstructureRedirectMask | SubstructureNotifyMask | ButtonPressMask |
 		PointerMotionMask | EnterWindowMask | LeaveWindowMask |
@@ -286,7 +289,10 @@ int dwm_main(const char *const new_program_title)
 		monitor_destroy(mons);
 	}
 
-	cursors_destroy(drw->dpy);
+	for (size_t i = 0; i < CurLast; i++) {
+		drw_cur_free(drw, cursor[i]);
+	}
+
 	scheme_destroy();
 
 	wmcheckwin_destroy();

@@ -2,7 +2,6 @@
 #define _DWM_H
 
 #include "config/buttons.h"
-#include "config/cursors.h"
 #include "config/keys.h"
 #include "config/layouts.h"
 

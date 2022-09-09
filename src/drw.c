@@ -65,3 +65,26 @@ drw_scm_create(Drw *drw, const char *clrnames[], size_t clrcount)
 		drw_clr_create(drw, &ret[i], clrnames[i]);
 	return ret;
 }
+
+Cur *
+drw_cur_create(Drw *drw, int shape)
+{
+	Cur *cur;
+
+	if (!drw || !(cur = ecalloc(1, sizeof(Cur))))
+		return NULL;
+
+	cur->cursor = XCreateFontCursor(drw->dpy, shape);
+
+	return cur;
+}
+
+void
+drw_cur_free(Drw *drw, Cur *cursor)
+{
+	if (!cursor)
+		return;
+
+	XFreeCursor(drw->dpy, cursor->cursor);
+	free(cursor);
+}

@@ -27,7 +27,6 @@ RUST_APIS = \
 	src/settings.h
 
 MODULES_SRC = \
-	src/config/cursors.c \
 	src/config/keys.c \
 	src/config/buttons.c \
 	src/config/layouts.c \

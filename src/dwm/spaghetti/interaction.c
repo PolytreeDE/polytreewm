@@ -126,7 +126,7 @@ void movemouse(__attribute__((unused)) const Arg *arg)
 			GrabModeAsync,
 			GrabModeAsync,
 			None,
-			cursors[CURSOR_MOVE],
+			cursor[CurMove]->cursor,
 			CurrentTime
 		) != GrabSuccess
 	) {
@@ -357,7 +357,7 @@ void resizemouse(__attribute__((unused)) const Arg *arg)
 			GrabModeAsync,
 			GrabModeAsync,
 			None,
-			cursors[CURSOR_RESIZE],
+			cursor[CurResize]->cursor,
 			CurrentTime
 		) != GrabSuccess
 	) {
