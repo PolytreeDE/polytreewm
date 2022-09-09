@@ -1,10 +1,6 @@
 #ifndef _DRW_H
 #define _DRW_H
 
-typedef struct {
-	Cursor cursor;
-} Cur;
-
 enum { ColFg, ColBg, ColBorder }; /* Clr scheme index */
 typedef XftColor Clr;
 
@@ -24,9 +20,5 @@ void drw_free(Drw *drw);
 
 /* Colorscheme abstraction */
 Clr *drw_scm_create(Drw *drw, const char *clrnames[], size_t clrcount);
-
-/* Cursor abstraction */
-Cur *drw_cur_create(Drw *drw, int shape);
-void drw_cur_free(Drw *drw, Cur *cursor);
 
 #endif // _DRW_H
