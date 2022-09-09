@@ -1,6 +1,28 @@
 #ifndef _DWM_INTERACTION_H
 #define _DWM_INTERACTION_H
 
+typedef union {
+	int i;
+	unsigned int ui;
+	float f;
+	const void *v;
+} Arg;
+
+typedef struct {
+	unsigned int click;
+	unsigned int mask;
+	unsigned int button;
+	void (*func)(const Arg *arg);
+	const Arg arg;
+} Button;
+
+typedef struct {
+	unsigned int mod;
+	KeySym keysym;
+	void (*func)(const Arg *);
+	const Arg arg;
+} Key;
+
 static void configborder(const Arg *arg);
 static void configgap(const Arg *arg);
 static void dorestart(const Arg *arg);
