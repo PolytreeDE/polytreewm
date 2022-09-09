@@ -1,4 +1,5 @@
 use crate::geom;
+use crate::Atoms;
 
 use std::os::raw::*;
 use std::ptr::null;
@@ -15,6 +16,7 @@ pub struct Xbase {
     x_root: c_ulong,
     screen_sizes: geom::Sizes,
     x_error: Option<ErrorHandler>,
+    atoms: Atoms,
 }
 
 impl Xbase {
@@ -51,6 +53,8 @@ impl Xbase {
             xlib::XSetErrorHandler(Some(x_error_handler));
             xlib::XSync(x_display, xlib::False);
 
+            let atoms = Atoms::create(x_display);
+
             Ok(Self {
                 program_title,
                 x_display,
@@ -58,6 +62,7 @@ impl Xbase {
                 x_root,
                 screen_sizes,
                 x_error,
+                atoms,
             })
         }
     }
