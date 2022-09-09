@@ -23,7 +23,7 @@ unsafe extern "C" fn settings_set_bar_on_top_by_default(value: bool) {
 
 #[no_mangle]
 unsafe extern "C" fn settings_set_border_for_single_window(value: c_uchar) {
-    SETTINGS.unwrap().border().mode_set(value.into());
+    SETTINGS.unwrap().border_mut().mode_set(value.into());
 }
 
 #[no_mangle]
@@ -33,7 +33,7 @@ unsafe extern "C" fn settings_get_border_width() -> c_int {
 
 #[no_mangle]
 unsafe extern "C" fn settings_set_border_width(value: c_int) {
-    SETTINGS.unwrap().border().width_set(value);
+    SETTINGS.unwrap().border_mut().width_set(value);
 }
 
 #[no_mangle]
@@ -78,7 +78,7 @@ unsafe extern "C" fn settings_set_focus_on_wheel(value: bool) {
 
 #[no_mangle]
 unsafe extern "C" fn settings_set_gap_for_single_window(value: c_uchar) {
-    SETTINGS.unwrap().gap().mode_set(value.into());
+    SETTINGS.unwrap().gap_mut().mode_set(value.into());
 }
 
 #[no_mangle]
@@ -88,7 +88,7 @@ unsafe extern "C" fn settings_get_gap_size() -> c_int {
 
 #[no_mangle]
 unsafe extern "C" fn settings_set_gap_size(value: c_int) {
-    SETTINGS.unwrap().gap().size_set(value);
+    SETTINGS.unwrap().gap_mut().size_set(value);
 }
 
 #[no_mangle]

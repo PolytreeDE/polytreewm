@@ -118,7 +118,11 @@ impl Settings {
         self.bar_on_top_by_default = value;
     }
 
-    pub fn border(&mut self) -> &mut Border {
+    pub fn border(&self) -> &Border {
+        &self.border
+    }
+
+    pub fn border_mut(&mut self) -> &mut Border {
         &mut self.border
     }
 
@@ -156,7 +160,11 @@ impl Settings {
         self.focus_on_wheel = value;
     }
 
-    pub fn gap(&mut self) -> &mut Gap {
+    pub fn gap(&self) -> &Gap {
+        &self.gap
+    }
+
+    pub fn gap_mut(&mut self) -> &mut Gap {
         &mut self.gap
     }
 
