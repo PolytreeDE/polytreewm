@@ -212,13 +212,12 @@ static void updatewindowtype(Client *c);
 static void updatewmhints(Client *c);
 static Client *wintoclient(Window w);
 static Monitor *wintomon(Window w);
-static void wmcheckwin_create();
-static void wmcheckwin_destroy();
 static void zoom(const Arg *arg);
 
 #include "dwm/bar.h"
 #include "dwm/handlers.h"
 #include "dwm/layouts.h"
+#include "dwm/wmcheckwin.h"
 #include "dwm/xerror.h"
 
 /*************
@@ -236,7 +235,6 @@ static Cur *cursor[CurLast];
 static Clr **scheme;
 static Drw *drw;
 static Monitor *mons, *selmon;
-static Window wmcheckwin;
 
 static void (*handler[LASTEvent])(XEvent*) = {
 	[ButtonPress] = on_button_press,
@@ -336,6 +334,7 @@ static Button buttons[] = {
 #include "dwm/bar.c"
 #include "dwm/handlers.c"
 #include "dwm/layouts.c"
+#include "dwm/wmcheckwin.c"
 #include "dwm/xerror.c"
 
 /***********************************
@@ -2331,58 +2330,6 @@ Monitor *wintomon(Window w)
 	}
 
 	return selmon;
-}
-
-void wmcheckwin_create()
-{
-	wmcheckwin = XCreateSimpleWindow(
-		xbase->x_display,
-		xbase->x_root,
-		0,
-		0,
-		1,
-		1,
-		0,
-		0,
-		0
-	);
-
-	XChangeProperty(
-		xbase->x_display,
-		wmcheckwin,
-		xbase->atoms->netatom[NetWMCheck],
-		XA_WINDOW,
-		32,
-		PropModeReplace,
-		(unsigned char*)&wmcheckwin,
-		1
-	);
-	XChangeProperty(
-		xbase->x_display,
-		wmcheckwin,
-		xbase->atoms->netatom[NetWMName],
-		xbase->atoms->utf8string,
-		8,
-		PropModeReplace,
-		(unsigned char*)
-		xbase->program_title,
-		strlen(xbase->program_title)
-	);
-	XChangeProperty(
-		xbase->x_display,
-		xbase->x_root,
-		xbase->atoms->netatom[NetWMCheck],
-		XA_WINDOW,
-		32,
-		PropModeReplace,
-		(unsigned char*)&wmcheckwin,
-		1
-	);
-}
-
-void wmcheckwin_destroy()
-{
-	XDestroyWindow(xbase->x_display, wmcheckwin);
 }
 
 void zoom(__attribute__((unused)) const Arg *arg)

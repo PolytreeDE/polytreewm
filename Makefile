@@ -42,6 +42,7 @@ DWM_SRC = \
 	src/dwm/bar.c \
 	src/dwm/handlers.c \
 	src/dwm/layouts.c \
+	src/dwm/wmcheckwin.c \
 	src/dwm/xerror.c
 
 TEST_SRC = \
