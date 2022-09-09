@@ -256,7 +256,6 @@ static void (*handler[LASTEvent])(XEvent*) = {
  * configuration, allows nested code to access above variables *
  ***************************************************************/
 
-static const char *fonts[]          = { "monospace:size=10" };
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
@@ -363,8 +362,6 @@ int dwm_main(const char *const new_program_title)
 		xbase->screen_sizes.h
 	);
 
-	if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
-		fatal("no fonts could be loaded.");
 	updategeom();
 	/* init cursors */
 	cursor[CurNormal] = drw_cur_create(drw, XC_left_ptr);
