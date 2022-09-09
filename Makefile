@@ -14,7 +14,7 @@ CONFIGMKS = \
 	$(CONFIGMKS_TO_REMOVE) \
 	config/3-defvars.mk
 
-RUST_SRC = src/*.rs src/**/*.rs
+RUST_SRC = Cargo.toml Cargo.lock src/*.rs src/**/*.rs
 RUST_APIS = src/constraints.h src/geom.h src/helpers.h src/settings.h
 
 MODULES_SRC = \
