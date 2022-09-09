@@ -1,7 +1,6 @@
 #include "dwm.h"
 
 #include "helpers.h"
-#include "layouts.h"
 #include "logger.h"
 #include "main.h"
 #include "settings.h"
@@ -122,7 +121,6 @@ typedef struct {
 } Key;
 
 typedef struct {
-	LayoutsSymbolFunc symbol_func;
 	void (*arrange)(Monitor *);
 } Layout;
 
@@ -250,12 +248,12 @@ static const char *colors[][3]      = {
 };
 
 const Layout layouts[] = {
-	/* symbol function,              arrange function */
-	{ layouts_symbol_monocle,        monocle }, /* first entry is default */
-	{ layouts_symbol_floating,       NULL },    /* no layout function means floating behavior */
-	{ layouts_symbol_tile,           tile },
-	{ layouts_symbol_horizontile,    horizontile },
-	{ layouts_symbol_centeredmaster, centeredmaster },
+	/* arrange function */
+	{ monocle }, /* first entry is default */
+	{ NULL },    /* no layout function means floating behavior */
+	{ tile },
+	{ horizontile },
+	{ centeredmaster },
 };
 
 /************************************
@@ -344,7 +342,7 @@ int dwm_main(const char *const new_program_title)
 
 	// Cleanup start
 
-	Layout foo = { NULL, NULL };
+	Layout foo = { NULL };
 	selmon->lt[selmon->sellt] = &foo;
 
 	for (Monitor *m = mons; m; m = m->next) {

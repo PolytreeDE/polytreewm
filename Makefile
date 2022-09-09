@@ -30,7 +30,6 @@ MODULES_SRC = \
 	src/drw.c \
 	src/dwm.c \
 	src/geom.c \
-	src/layouts.c \
 	src/logger.c \
 	src/spawn.c \
 	src/state.c \
