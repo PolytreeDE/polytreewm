@@ -9,4 +9,4 @@ name = "winproto"
 crate-type = ["staticlib"]
 
 [dependencies]
-x11rb = "0.10.1"
+x11 = "2.20.0"

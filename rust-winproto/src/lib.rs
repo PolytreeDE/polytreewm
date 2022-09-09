@@ -1,22 +1,31 @@
-use x11rb::atom_manager;
+use std::os::raw::*;
+use std::ptr::null;
 
-atom_manager! {
-    pub AtomCollection: AtomCollectionCookie {
-        WM_PROTOCOLS,
-        WM_DELETE_WINDOW,
-        WM_STATE,
-        WM_TAKE_FOCUS,
+use x11::xlib::{self, Display};
 
-        _NET_ACTIVE_WINDOW,
-        _NET_SUPPORTED,
-        _NET_WM_NAME,
-        _NET_WM_STATE,
-        _NET_SUPPORTING_WM_CHECK,
-        _NET_WM_STATE_FULLSCREEN,
-        _NET_WM_WINDOW_TYPE,
-        _NET_WM_WINDOW_TYPE_DIALOG,
-        _NET_CLIENT_LIST,
+struct Xbase {
+    program_title: String,
+    x_display: *mut Display,
+    x_screen: c_int,
+    x_root: c_ulong,
+}
 
-        UTF8_STRING,
+impl Xbase {
+    fn new(program_title: String) -> Result<Self, Box<dyn std::error::Error>> {
+        unsafe {
+            if xlib::XSupportsLocale() == 0 {
+                return Err("no locale support in X".into());
+            }
+
+            let x_display = xlib::XOpenDisplay(null());
+            if x_display.is_null() {
+                return Err("cannot open X display".into());
+            }
+
+            let x_screen = xlib::XDefaultScreen(x_display);
+            let x_root = xlib::XRootWindow(x_display, x_screen);
+
+            Ok(Self { program_title, x_display, x_screen, x_root })
+        }
     }
 }
