@@ -7,12 +7,12 @@ use std::os::raw::*;
 #[no_mangle]
 unsafe extern "C" fn xbase_new(
     program_title: *const c_char,
-    x_error_handler: xbase::ErrorHandler,
+    _x_error_handler: xbase::ErrorHandler,
 ) -> *mut Xbase {
     let program_title = CStr::from_ptr(program_title).to_str().unwrap();
     let layout = Layout::new::<Xbase>();
     let ptr = alloc(layout) as *mut Xbase;
-    *ptr = Xbase::new(program_title.to_string(), x_error_handler).unwrap();
+    *ptr = Xbase::new(program_title.to_string() /*, x_error_handler*/).unwrap();
     ptr
 }
 

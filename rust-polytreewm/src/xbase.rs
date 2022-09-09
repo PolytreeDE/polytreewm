@@ -15,14 +15,14 @@ pub struct Xbase {
     x_screen: c_int,
     x_root: c_ulong,
     screen_sizes: geom::Sizes,
-    x_error: Option<ErrorHandler>,
+    // x_error: Option<ErrorHandler>,
     atoms: Atoms,
 }
 
 impl Xbase {
     pub fn new(
         program_title: String,
-        x_error_handler: ErrorHandler,
+        // x_error_handler: ErrorHandler,
     ) -> Result<Self, Box<dyn std::error::Error>> {
         unsafe {
             if xlib::XSupportsLocale() == 0 {
@@ -42,7 +42,7 @@ impl Xbase {
                 xlib::XDisplayHeight(x_display, x_screen),
             );
 
-            let x_error = xlib::XSetErrorHandler(Some(x_error_wm_check));
+            // let x_error = xlib::XSetErrorHandler(Some(x_error_wm_check));
 
             xlib::XSelectInput(
                 x_display,
@@ -50,7 +50,7 @@ impl Xbase {
                 xlib::SubstructureRedirectMask,
             );
             xlib::XSync(x_display, xlib::False);
-            xlib::XSetErrorHandler(Some(x_error_handler));
+            // xlib::XSetErrorHandler(Some(x_error_handler));
             xlib::XSync(x_display, xlib::False);
 
             let atoms = Atoms::create(x_display);
@@ -61,7 +61,7 @@ impl Xbase {
                 x_screen,
                 x_root,
                 screen_sizes,
-                x_error,
+                // x_error,
                 atoms,
             })
         }
@@ -73,7 +73,7 @@ impl Drop for Xbase {
         unsafe { xlib::XCloseDisplay(self.x_display) };
     }
 }
-
+/*
 unsafe extern "C" fn x_error_wm_check(
     _display: *mut Display,
     _x_error_event: *mut xlib::XErrorEvent,
@@ -82,3 +82,4 @@ unsafe extern "C" fn x_error_wm_check(
     // panic!("another window manager is already running");
     0
 }
+*/
