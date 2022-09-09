@@ -53,7 +53,7 @@ TEST_SRC = \
 MAIN_SRC = $(MODULES_SRC) src/main.c
 
 MODULES_HDR = $(MODULES_SRC:.c=.h) $(RUST_APIS)
-DWM_HDR     = $(DWM_SRC:.c=.h)
+DWM_HDR     = $(DWM_SRC:.c=.h) src/dwm/types.h
 MAIN_HDR    = $(MODULES_HDR) src/main.h
 
 MODULES_OBJ = $(MODULES_SRC:.c=.o)
