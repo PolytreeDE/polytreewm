@@ -1,8 +1,13 @@
-/Cargo.lock
 /config/1-generated.mk
 /config/2-conditionals.mk
 /polytreewm
+
+# C
 /src/*.o
-/target/
 /tests/*.o
 /tests/*.test
+
+# Rust
+/Cargo.lock
+/rust-winproto/Cargo.lock
+/target/
