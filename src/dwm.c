@@ -150,39 +150,27 @@ static void arrange(Monitor *m);
 static void arrangemon(Monitor *m);
 static void attach(Client *c);
 static void attachstack(Client *c);
-static void configborder(const Arg *arg);
-static void configgap(const Arg *arg);
 static void configure(Client *c);
 static void detach(Client *c);
 static void detachstack(Client *c);
 static Monitor *dirtomon(int dir);
-static void dorestart(const Arg *arg);
 static void focus(Client *c);
-static void focusmon(const Arg *arg);
-static void focusstack(const Arg *arg);
 static Atom getatomprop(Client *c, Atom prop);
 static int getrootptr(int *x, int *y);
 static long getstate(Window w);
 static int gettextprop(Window w, Atom atom, char *text, unsigned int size);
 static void grabbuttons(Client *c, int focused);
 static void grabkeys();
-static void incnmaster(const Arg *arg);
 static int isuniquegeom(XineramaScreenInfo *unique, size_t n, XineramaScreenInfo *info);
-static void killclient(const Arg *arg);
 static void manage(Window w, XWindowAttributes *wa);
 static void managepolybar(Window w, XWindowAttributes *wa);
 static Monitor *monitor_create();
 static void monitor_destroy(Monitor *mon);
-static void movemouse(const Arg *arg);
-static void movestack(const Arg *arg);
 static Client *nexttiled(Client *c);
 static void pop(Client *);
-static void quit(const Arg *arg);
 static Monitor *recttomon(int x, int y, int w, int h);
-static void resetnmaster(const Arg *arg);
 static void resize(Client *c, struct WinGeom win_geom, int interact);
 static void resizeclient(Client *c, struct WinGeom win_geom);
-static void resizemouse(const Arg *arg);
 static void restack(Monitor *m);
 static void run();
 static void scan();
@@ -193,14 +181,8 @@ static void sendmon(Client *c, Monitor *m);
 static void setclientstate(Client *c, long state);
 static void setfocus(Client *c);
 static void setfullscreen(Client *c, int fullscreen);
-static void setlayout(const Arg *arg);
-static void setmfact(const Arg *arg);
 static void seturgent(Client *c, bool is_urgent);
 static void showhide(Client *c);
-static void spawn(const Arg *arg);
-static void spawn_callback();
-static void tagmon(const Arg *arg);
-static void togglefloating(const Arg *arg);
 static void unfocus(Client *c, int setfocus);
 static void unmanage(Client *c, int destroyed);
 static void updateclientlist();
@@ -212,10 +194,12 @@ static void updatewindowtype(Client *c);
 static void updatewmhints(Client *c);
 static Client *wintoclient(Window w);
 static Monitor *wintomon(Window w);
-static void zoom(const Arg *arg);
+
+extern const Layout layouts[];
 
 #include "dwm/bar.h"
 #include "dwm/handlers.h"
+#include "dwm/interaction.h"
 #include "dwm/layouts.h"
 #include "dwm/wmcheckwin.h"
 #include "dwm/xerror.h"
@@ -265,7 +249,7 @@ static const char *colors[][3]      = {
 	[SchemeSel]  = { col_gray4, col_cyan,  "#d9b01c" },
 };
 
-static const Layout layouts[] = {
+const Layout layouts[] = {
 	/* symbol function,              arrange function */
 	{ layouts_symbol_monocle,        monocle }, /* first entry is default */
 	{ layouts_symbol_floating,       NULL },    /* no layout function means floating behavior */
@@ -274,65 +258,13 @@ static const Layout layouts[] = {
 	{ layouts_symbol_centeredmaster, centeredmaster },
 };
 
-#define MODKEY Mod4Mask
-
-static Key keys[] = {
-	// WM
-	{ MODKEY|ControlMask|ShiftMask, XK_q,            quit,           {0} },
-	{ MODKEY|ControlMask|ShiftMask, XK_r,            dorestart,      {0} },
-	// Monitor
-	{ MODKEY,                       XK_bracketleft,  focusmon,       {.i = -1 } },
-	{ MODKEY,                       XK_bracketright, focusmon,       {.i = +1 } },
-	{ MODKEY|ShiftMask,             XK_bracketleft,  tagmon,         {.i = -1 } },
-	{ MODKEY|ShiftMask,             XK_bracketright, tagmon,         {.i = +1 } },
-	// Layout
-	{ MODKEY,                       XK_m,            setlayout,      {.v = &layouts[0]} }, // Monocle
-	{ MODKEY,                       XK_f,            setlayout,      {.v = &layouts[1]} }, // Floating
-	{ MODKEY,                       XK_t,            setlayout,      {.v = &layouts[2]} }, // Tile
-	{ MODKEY|ShiftMask,             XK_t,            setlayout,      {.v = &layouts[3]} }, // Horizontile
-	{ MODKEY,                       XK_u,            setlayout,      {.v = &layouts[4]} }, // Centeredmaster
-	{ MODKEY,                       XK_space,        setlayout,      {0} },
-	{ MODKEY,                       XK_i,            incnmaster,     {.i = +1 } },
-	{ MODKEY|ShiftMask,             XK_i,            resetnmaster,   {.i = 1 } },
-	{ MODKEY,                       XK_d,            incnmaster,     {.i = -1 } },
-	{ MODKEY|ShiftMask,             XK_d,            resetnmaster,   {.i = 0 } },
-	// Stack
-	{ MODKEY,                       XK_j,            focusstack,     {.i = +1 } },
-	{ MODKEY,                       XK_k,            focusstack,     {.i = -1 } },
-	{ MODKEY|ShiftMask,             XK_j,            movestack,      {.i = +1 } },
-	{ MODKEY|ShiftMask,             XK_k,            movestack,      {.i = -1 } },
-	{ MODKEY,                       XK_Return,       zoom,           {0} },
-	// Window
-	{ MODKEY|ShiftMask,             XK_x,            killclient,     {0} },
-	{ MODKEY|ShiftMask,             XK_space,        togglefloating, {0} },
-	// Appearance
-	{ MODKEY,                       XK_h,            setmfact,       {.f = -0.05} },
-	{ MODKEY,                       XK_l,            setmfact,       {.f = +0.05} },
-	{ MODKEY|Mod1Mask,              XK_b,            configborder,   {.i = -1 } },
-	{ MODKEY|Mod1Mask|ShiftMask,    XK_b,            configborder,   {.i = +1 } },
-	{ MODKEY|Mod1Mask,              XK_g,            configgap,      {.i = -1 } },
-	{ MODKEY|Mod1Mask|ShiftMask,    XK_g,            configgap,      {.i = +1 } },
-	// Starting applications
-	{ MODKEY,                       XK_z,            spawn,          {.v = "lock" } },
-	{ MODKEY,                       XK_slash,        spawn,          {.v = "menu" } },
-	{ MODKEY|ShiftMask,             XK_slash,        spawn,          {.v = "term" } },
-	{ MODKEY|ShiftMask,             XK_f,            spawn,          {.v = "firefox" } },
-};
-
-// click can be ClkClientWin, or ClkRootWin
-static Button buttons[] = {
-	/* click                event mask      button          function        argument */
-	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
-	{ ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
-	{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
-};
-
 /************************************
  * Private function implementations *
  ************************************/
 
 #include "dwm/bar.c"
 #include "dwm/handlers.c"
+#include "dwm/interaction.c"
 #include "dwm/layouts.c"
 #include "dwm/wmcheckwin.c"
 #include "dwm/xerror.c"
@@ -647,24 +579,6 @@ void attachstack(Client *c)
 	c->mon->stack = c;
 }
 
-void configborder(const Arg *const arg)
-{
-	if (arg == NULL) return;
-	const int old_border_width = settings_get_border_width();
-	const int new_border_width = old_border_width + (arg->i >= 0 ? +1 : -1);
-	settings_set_border_width(new_border_width);
-	arrange(selmon);
-}
-
-void configgap(const Arg *const arg)
-{
-	if (arg == NULL) return;
-	const int old_gap_size = settings_get_gap_size();
-	const int new_gap_size = old_gap_size + (arg->i >= 0 ? +2 : -2);
-	settings_set_gap_size(new_gap_size);
-	arrange(selmon);
-}
-
 void configure(Client *c)
 {
 	XConfigureEvent ce = {
@@ -727,11 +641,6 @@ Monitor *dirtomon(int dir)
 	return m;
 }
 
-void dorestart(__attribute__((unused)) const Arg *const arg)
-{
-	restart();
-}
-
 void focus(Client *c)
 {
 	if (!c || !ISVISIBLE(c))
@@ -766,67 +675,6 @@ void focus(Client *c)
 		);
 	}
 	selmon->sel = c;
-}
-
-void focusmon(const Arg *arg)
-{
-	if (!mons->next) return;
-
-	Monitor *m;
-	if ((m = dirtomon(arg->i)) == selmon) return;
-
-	unfocus(selmon->sel, 0);
-	selmon = m;
-	focus(NULL);
-}
-
-void focusstack(const Arg *arg)
-{
-	if (!selmon->sel) return;
-
-	Client *c = NULL;
-
-	if (arg->i > 0) {
-		for (c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next);
-
-		if (!c) {
-			for (c = selmon->clients; c && !ISVISIBLE(c); c = c->next);
-		}
-	} else {
-		Client *i = selmon->clients;
-
-		for (; i != selmon->sel; i = i->next) {
-			if (ISVISIBLE(i)) {
-				c = i;
-			}
-		}
-
-		if (!c) {
-			for (; i; i = i->next) {
-				if (ISVISIBLE(i)) {
-					c = i;
-				}
-			}
-		}
-	}
-
-	if (c) {
-		focus(c);
-		restack(selmon);
-
-		{
-			unsigned int n = 0;
-			for (Client *cc = nexttiled(selmon->clients); cc; cc = nexttiled(cc->next), ++n);
-
-			// TODO: Maybe it's an unnecessary optimization
-			// and we don't need the condition.
-			if (n > 1) {
-				// We have to rearrange because borders and gaps may have
-				// changed in monocle layout.
-				arrange(selmon);
-			}
-		}
-	}
 }
 
 Atom getatomprop(Client *c, Atom prop)
@@ -1026,19 +874,6 @@ void grabkeys()
 	}
 }
 
-void incnmaster(const Arg *arg)
-{
-	const int max_clients_in_master = settings_get_max_clients_in_master();
-	const int new_clients_in_master = MAX(0, selmon->nmaster + arg->i);
-
-	selmon->nmaster =
-		max_clients_in_master == 0
-		? new_clients_in_master
-		: MIN(new_clients_in_master, max_clients_in_master);
-
-	arrange(selmon);
-}
-
 #ifdef ENABLE_XINERAMA
 int isuniquegeom(XineramaScreenInfo *unique, size_t n, XineramaScreenInfo *info)
 {
@@ -1049,21 +884,6 @@ int isuniquegeom(XineramaScreenInfo *unique, size_t n, XineramaScreenInfo *info)
 	return 1;
 }
 #endif /* ENABLE_XINERAMA */
-
-void killclient(__attribute__((unused)) const Arg *arg)
-{
-	if (!selmon->sel)
-		return;
-	if (!sendevent(selmon->sel, xbase->atoms->wmatom[WMDelete])) {
-		XGrabServer(xbase->x_display);
-		XSetErrorHandler(xerrordummy);
-		XSetCloseDownMode(xbase->x_display, DestroyAll);
-		XKillClient(xbase->x_display, selmon->sel->x_window);
-		XSync(xbase->x_display, False);
-		XSetErrorHandler(xerror);
-		XUngrabServer(xbase->x_display);
-	}
-}
 
 void manage(Window w, XWindowAttributes *wa)
 {
@@ -1260,219 +1080,6 @@ void monitor_destroy(Monitor *mon)
 	free(mon);
 }
 
-void movemouse(__attribute__((unused)) const Arg *arg)
-{
-	Client *const c = selmon->sel;
-	if (c == NULL) return;
-
-	restack(selmon);
-
-	if (
-		XGrabPointer(
-			xbase->x_display,
-			xbase->x_root,
-			False,
-			MOUSEMASK,
-			GrabModeAsync,
-			GrabModeAsync,
-			None,
-			cursor[CurMove]->cursor,
-			CurrentTime
-		) != GrabSuccess
-	) {
-		return;
-	}
-
-	int x, y;
-	if (!getrootptr(&x, &y)) return;
-
-	const unsigned int snap_distance = settings_get_snap_distance();
-	const int ocx = c->state.geom.basic.position.x;
-	const int ocy = c->state.geom.basic.position.y;
-
-	Time lasttime = 0;
-
-	XEvent ev;
-
-	do {
-		XMaskEvent(
-			xbase->x_display,
-			MOUSEMASK | ExposureMask | SubstructureRedirectMask,
-			&ev
-		);
-
-		switch (ev.type) {
-		case ConfigureRequest:
-		case Expose:
-		case MapRequest:
-			handler[ev.type](&ev);
-			break;
-		case MotionNotify:
-			if ((ev.xmotion.time - lasttime) <= (1000 / 60)) continue;
-
-			lasttime = ev.xmotion.time;
-
-			int nx = ocx + (ev.xmotion.x - x);
-			int ny = ocy + (ev.xmotion.y - y);
-
-			if (
-				abs(selmon->window_area_geom.position.x - nx)
-				<
-				snap_distance
-			) {
-				nx = selmon->window_area_geom.position.x;
-			} else if (
-				abs(
-					(
-						selmon->window_area_geom.position.x
-						+
-						selmon->window_area_geom.sizes.w
-					)
-					-
-					(nx + win_geom_total_width(&c->state.geom))
-				)
-				<
-				snap_distance
-			) {
-				nx =
-					selmon->window_area_geom.position.x
-					+
-					selmon->window_area_geom.sizes.w
-					-
-					win_geom_total_width(&c->state.geom);
-			}
-
-			if (
-				abs(selmon->window_area_geom.position.y - ny)
-				<
-				snap_distance
-			) {
-				ny = selmon->window_area_geom.position.y;
-			} else if (
-				abs(
-					(
-						selmon->window_area_geom.position.y
-						+
-						selmon->window_area_geom.sizes.h
-					) - (ny + win_geom_total_height(&c->state.geom))
-				)
-				<
-				snap_distance
-			) {
-				ny =
-					selmon->window_area_geom.position.y
-					+
-					selmon->window_area_geom.sizes.h
-					-
-					win_geom_total_height(&c->state.geom);
-			}
-
-			if (
-				!c->state.is_floating
-				&&
-				(
-					abs(nx - c->state.geom.basic.position.x) > snap_distance
-					||
-					abs(ny - c->state.geom.basic.position.y) > snap_distance)
-			) {
-				togglefloating(NULL);
-			}
-
-			if (!selmon->lt[selmon->sellt]->arrange || c->state.is_floating) {
-				struct WinGeom win_geom = c->state.geom;
-				position_init_from_args(&win_geom.basic.position, nx, ny);
-				resize(c, win_geom, 1);
-			}
-
-			break;
-		}
-	} while (ev.type != ButtonRelease);
-
-	XUngrabPointer(xbase->x_display, CurrentTime);
-
-	Monitor *const m = recttomon(
-		c->state.geom.basic.position.x,
-		c->state.geom.basic.position.y,
-		c->state.geom.basic.sizes.w,
-		c->state.geom.basic.sizes.h
-	);
-
-	if (m != selmon) {
-		sendmon(c, m);
-		selmon = m;
-		focus(NULL);
-	}
-}
-
-void movestack(const Arg *arg)
-{
-	Client *c = NULL, *p = NULL, *pc = NULL, *i = NULL;
-
-	if (arg->i > 0) {
-		/* find the client after selmon->sel */
-		for (
-			c = selmon->sel->next;
-			c && (!ISVISIBLE(c) || c->state.is_floating);
-			c = c->next
-		);
-
-		if(!c) {
-			for(
-				c = selmon->clients;
-				c && (!ISVISIBLE(c) || c->state.is_floating);
-				c = c->next
-			);
-		}
-	} else {
-		/* find the client before selmon->sel */
-		for (i = selmon->clients; i != selmon->sel; i = i->next) {
-			if (ISVISIBLE(i) && !i->state.is_floating) {
-				c = i;
-			}
-		}
-
-		if (!c) {
-			for (; i; i = i->next) {
-				if (ISVISIBLE(i) && !i->state.is_floating) {
-					c = i;
-				}
-			}
-		}
-	}
-
-	/* find the client before selmon->sel and c */
-	for (i = selmon->clients; i && (!p || !pc); i = i->next) {
-		if (i->next == selmon->sel) {
-			p = i;
-		}
-		if (i->next == c) {
-			pc = i;
-		}
-	}
-
-	/* swap c and selmon->sel selmon->clients in the selmon->clients list */
-	if (c && c != selmon->sel) {
-		Client *temp = selmon->sel->next == c ? selmon->sel : selmon->sel->next;
-		selmon->sel->next = c->next==selmon->sel?c:c->next;
-		c->next = temp;
-
-		if (p && p != c) {
-			p->next = c;
-		}
-		if (pc && pc != selmon->sel) {
-			pc->next = selmon->sel;
-		}
-
-		if (selmon->sel == selmon->clients) {
-			selmon->clients = c;
-		} else if (c == selmon->clients) {
-			selmon->clients = selmon->sel;
-		}
-
-		arrange(selmon);
-	}
-}
-
 Client *nexttiled(Client *c)
 {
 	for (; c && (c->state.is_floating || !ISVISIBLE(c)); c = c->next);
@@ -1487,11 +1094,6 @@ void pop(Client *c)
 	arrange(c->mon);
 }
 
-void quit(__attribute__((unused)) const Arg *arg)
-{
-	running = 0;
-}
-
 Monitor *recttomon(int x, int y, int w, int h)
 {
 	Monitor *m, *r = selmon;
@@ -1503,19 +1105,6 @@ Monitor *recttomon(int x, int y, int w, int h)
 			r = m;
 		}
 	return r;
-}
-
-void resetnmaster(const Arg *arg)
-{
-	const int max_clients_in_master = settings_get_max_clients_in_master();
-	const int new_clients_in_master = arg->i == 0 ? 0 : settings_get_default_clients_in_master();
-
-	selmon->nmaster =
-		max_clients_in_master == 0
-		? new_clients_in_master
-		: MIN(new_clients_in_master, max_clients_in_master);
-
-	arrange(selmon);
 }
 
 void resize(Client *c, struct WinGeom win_geom, int interact)
@@ -1541,164 +1130,6 @@ void resizeclient(Client *c, const struct WinGeom win_geom)
 
 	configure(c);
 	XSync(xbase->x_display, False);
-}
-
-void resizemouse(__attribute__((unused)) const Arg *arg)
-{
-	Client *const c = selmon->sel;
-	if (c == NULL) return;
-
-	restack(selmon);
-
-	if (
-		XGrabPointer(
-			xbase->x_display,
-			xbase->x_root,
-			False,
-			MOUSEMASK,
-			GrabModeAsync,
-			GrabModeAsync,
-			None,
-			cursor[CurResize]->cursor,
-			CurrentTime
-		) != GrabSuccess
-	) {
-		return;
-	}
-
-	XWarpPointer(
-		xbase->x_display,
-		None,
-		c->x_window,
-		0,
-		0,
-		0,
-		0,
-		c->state.geom.basic.sizes.w + c->state.geom.border_width - 1,
-		c->state.geom.basic.sizes.h + c->state.geom.border_width - 1
-	);
-
-	const unsigned int snap_distance = settings_get_snap_distance();
-	const int ocx = c->state.geom.basic.position.x;
-	const int ocy = c->state.geom.basic.position.y;
-
-	Time lasttime = 0;
-
-	XEvent ev;
-
-	do {
-		XMaskEvent(
-			xbase->x_display,
-			MOUSEMASK | ExposureMask | SubstructureRedirectMask,
-			&ev
-		);
-
-		switch (ev.type) {
-		case ConfigureRequest:
-		case Expose:
-		case MapRequest:
-			handler[ev.type](&ev);
-			break;
-		case MotionNotify:
-			if ((ev.xmotion.time - lasttime) <= (1000 / 60)) continue;
-
-			lasttime = ev.xmotion.time;
-
-			const int nw = MAX(
-				ev.xmotion.x - ocx - 2 * c->state.geom.border_width + 1,
-				1
-			);
-			const int nh = MAX(
-				ev.xmotion.y - ocy - 2 * c->state.geom.border_width + 1,
-				1
-			);
-
-			if (
-				(
-					c->mon->window_area_geom.position.x + nw
-					>=
-					selmon->window_area_geom.position.x
-				)
-				&&
-				(
-					c->mon->window_area_geom.position.x + nw
-					<=
-					(
-						selmon->window_area_geom.position.x
-						+
-						selmon->window_area_geom.sizes.w
-					)
-				)
-				&&
-				(
-					c->mon->window_area_geom.position.y + nh
-					>=
-					selmon->window_area_geom.position.y
-				)
-				&&
-				(
-					c->mon->window_area_geom.position.y + nh
-					<=
-					(
-						selmon->window_area_geom.position.y
-						+
-						selmon->window_area_geom.sizes.h
-					)
-				)
-			) {
-				if (
-					!c->state.is_floating
-					&&
-					(
-						selmon->lt[selmon->sellt]->arrange == NULL
-						||
-						abs(nw - c->state.geom.basic.sizes.w) > snap_distance
-						||
-						abs(nh - c->state.geom.basic.sizes.h) > snap_distance
-					)
-				) {
-					togglefloating(NULL);
-				}
-			}
-
-			if (!selmon->lt[selmon->sellt]->arrange || c->state.is_floating) {
-				struct WinGeom win_geom = c->state.geom;
-				sizes_init_from_args(&win_geom.basic.sizes, nw, nh);
-				resize(c, win_geom, 1);
-			}
-
-			break;
-		}
-	} while (ev.type != ButtonRelease);
-
-	XWarpPointer(
-		xbase->x_display,
-		None,
-		c->x_window,
-		0,
-		0,
-		0,
-		0,
-		c->state.geom.basic.sizes.w + c->state.geom.border_width - 1,
-		c->state.geom.basic.sizes.h + c->state.geom.border_width - 1
-	);
-
-	XUngrabPointer(xbase->x_display, CurrentTime);
-
-	while (XCheckMaskEvent(xbase->x_display, EnterWindowMask, &ev));
-
-	Monitor *const m = recttomon(
-		c->state.geom.basic.position.x,
-		c->state.geom.basic.position.y,
-		c->state.geom.basic.sizes.w,
-		c->state.geom.basic.sizes.h
-	);
-
-	if (m != selmon) {
-		sendmon(c, m);
-		selmon = m;
-		focus(NULL);
-	}
 }
 
 void restack(Monitor *m)
@@ -1923,38 +1354,6 @@ void setfullscreen(Client *c, int fullscreen)
 	}
 }
 
-void setlayout(const Arg *arg)
-{
-	if (!arg || !arg->v || arg->v != selmon->lt[selmon->sellt]) {
-		selmon->sellt ^= 1;
-	}
-
-	if (arg && arg->v) {
-		const Layout *const new_layout = arg->v;
-		selmon->lt[selmon->sellt] = new_layout;
-	}
-
-	unsigned int visible_clients = 0;
-	for (const Client *client = selmon->clients; client; client = client->next) {
-		if (ISVISIBLE(client)) ++visible_clients;
-	}
-
-	if (selmon->sel) {
-		arrange(selmon);
-	}
-}
-
-void setmfact(const Arg *arg)
-{
-	if (!arg) return;
-
-	unit_inc_master_area_factor(selmon->unit, arg->f);
-
-	for (Monitor *m = mons; m; m = m->next) {
-		arrange(m);
-	}
-}
-
 void seturgent(Client *c, bool is_urgent)
 {
 	XWMHints *wmh;
@@ -1995,54 +1394,6 @@ void showhide(Client *c)
 			c->state.geom.basic.position.y
 		);
 	}
-}
-
-void spawn(const Arg *arg)
-{
-	const char *const command_name = arg->v;
-
-	spawn_command(command_name, spawn_callback, selmon->num);
-}
-
-void spawn_callback()
-{
-	if (xbase->x_display) {
-		close(ConnectionNumber(xbase->x_display));
-	}
-}
-
-void tagmon(const Arg *arg)
-{
-	if (!selmon->sel || !mons->next)
-		return;
-	sendmon(selmon->sel, dirtomon(arg->i));
-}
-
-void togglefloating(__attribute__((unused)) const Arg *arg)
-{
-	if (!selmon->sel) return;
-
-	selmon->sel->state.is_floating =
-		!selmon->sel->state.is_floating || selmon->sel->state.is_fixed;
-
-	const int border_width = settings_get_border_width();
-
-	if (selmon->sel->state.is_floating) {
-		struct WinGeom win_geom = selmon->sel->state.geom;
-
-		win_geom.basic.sizes = sizes_create_from_args(
-			selmon->sel->state.geom.basic.sizes.w -
-				2 * (border_width - selmon->sel->state.geom.border_width),
-			selmon->sel->state.geom.basic.sizes.h -
-				2 * (border_width - selmon->sel->state.geom.border_width)
-		);
-
-		win_geom.border_width = border_width;
-
-		resize(selmon->sel, win_geom, 0);
-	}
-
-	arrange(selmon);
 }
 
 void unfocus(Client *c, int setfocus)
@@ -2330,17 +1681,4 @@ Monitor *wintomon(Window w)
 	}
 
 	return selmon;
-}
-
-void zoom(__attribute__((unused)) const Arg *arg)
-{
-	Client *c = selmon->sel;
-
-	if (!selmon->lt[selmon->sellt]->arrange
-	|| (selmon->sel && selmon->sel->state.is_floating))
-		return;
-	if (c == nexttiled(selmon->clients))
-		if (!c || !(c = nexttiled(c->next)))
-			return;
-	pop(c);
 }
