@@ -24,7 +24,8 @@ RUST_APIS = \
 	src/constraints.h \
 	src/geom.h \
 	src/helpers.h \
-	src/settings.h
+	src/settings.h \
+	src/xbase.h
 
 MODULES_SRC = \
 	src/drw.c \
@@ -35,8 +36,7 @@ MODULES_SRC = \
 	src/spawn.c \
 	src/state.c \
 	src/unit.c \
-	src/util.c \
-	src/xbase.c
+	src/util.c
 
 DWM_SRC = \
 	src/dwm/bar.c \
