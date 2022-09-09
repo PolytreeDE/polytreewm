@@ -24,8 +24,7 @@ RUST_APIS = \
 	src/constraints.h \
 	src/geom.h \
 	src/helpers.h \
-	src/settings.h \
-	src/spawn.h
+	src/settings.h
 
 MODULES_SRC = \
 	src/drw.c \
@@ -33,6 +32,7 @@ MODULES_SRC = \
 	src/geom.c \
 	src/layouts.c \
 	src/logger.c \
+	src/spawn.c \
 	src/state.c \
 	src/unit.c \
 	src/util.c \
@@ -83,7 +83,7 @@ polytreewm: src/main.o $(MODULES_OBJ) target/debug/libpolytreewm.a
 dwm.o: $(DWM_SRC) $(DWM_HDR)
 
 target/debug/libpolytreewm.a: $(RUST_SRC)
-	$(CARGO) build $(CARGO_FEATURES)
+	$(CARGO) build
 
 #########
 # Tasks #
@@ -91,7 +91,7 @@ target/debug/libpolytreewm.a: $(RUST_SRC)
 
 test: $(TEST_EXE)
 	@echo "$(TEST_EXE)" | awk '{ OFS="\n"; $$1=$$1 } 1' | /bin/sh
-	$(CARGO) test $(CARGO_FEATURES)
+	$(CARGO) test
 	$(CARGO) fmt --check
 	$(CARGO) clippy
 
