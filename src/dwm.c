@@ -195,12 +195,12 @@ static Monitor *wintomon(Window w);
 
 extern const Layout layouts[];
 
-#include "dwm/bar.h"
-#include "dwm/handlers.h"
-#include "dwm/interaction.h"
-#include "dwm/layouts.h"
-#include "dwm/wmcheckwin.h"
-#include "dwm/xerror.h"
+#include "dwm/spaghetti/bar.h"
+#include "dwm/spaghetti/handlers.h"
+#include "dwm/spaghetti/interaction.h"
+#include "dwm/spaghetti/layouts.h"
+#include "dwm/spaghetti/wmcheckwin.h"
+#include "dwm/spaghetti/xerror.h"
 
 /*************
  * variables *
@@ -260,12 +260,12 @@ const Layout layouts[] = {
  * Private function implementations *
  ************************************/
 
-#include "dwm/bar.c"
-#include "dwm/handlers.c"
-#include "dwm/interaction.c"
-#include "dwm/layouts.c"
-#include "dwm/wmcheckwin.c"
-#include "dwm/xerror.c"
+#include "dwm/spaghetti/bar.c"
+#include "dwm/spaghetti/handlers.c"
+#include "dwm/spaghetti/interaction.c"
+#include "dwm/spaghetti/layouts.c"
+#include "dwm/spaghetti/wmcheckwin.c"
+#include "dwm/spaghetti/xerror.c"
 
 /***********************************
  * Public function implementations *

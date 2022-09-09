@@ -38,11 +38,11 @@ MODULES_SRC = \
 	src/xbase.c
 
 DWM_SRC = \
-	src/dwm/bar.c \
-	src/dwm/handlers.c \
-	src/dwm/layouts.c \
-	src/dwm/wmcheckwin.c \
-	src/dwm/xerror.c
+	src/dwm/spaghetti/bar.c \
+	src/dwm/spaghetti/handlers.c \
+	src/dwm/spaghetti/layouts.c \
+	src/dwm/spaghetti/wmcheckwin.c \
+	src/dwm/spaghetti/xerror.c
 
 TEST_SRC = \
 	tests/geom_basic_geom.c \
