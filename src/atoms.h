@@ -10,14 +10,23 @@
 }
 
 /* EWMH atoms */
-enum {
-	NetSupported, NetWMName, NetWMState, NetWMCheck,
-	NetWMFullscreen, NetActiveWindow, NetWMWindowType, NetWMWindowTypeDialog,
-	NetClientList, NetLast,
-};
+#define NetSupported          0
+#define NetWMName             1
+#define NetWMState            2
+#define NetWMCheck            3
+#define NetWMFullscreen       4
+#define NetActiveWindow       5
+#define NetWMWindowType       6
+#define NetWMWindowTypeDialog 7
+#define NetClientList         8
+#define NetLast               9
 
 /* default atoms */
-enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMLast };
+#define WMProtocols 0
+#define WMDelete    1
+#define WMState     2
+#define WMTakeFocus 3
+#define WMLast      4
 
 typedef struct Atoms {
 	Atom wmatom[WMLast], netatom[NetLast], utf8string;

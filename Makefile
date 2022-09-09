@@ -19,10 +19,14 @@ RUST_SRC = \
 	rust-polytreewm/src/*.rs \
 	rust-polytreewm/src/**/*.rs
 
-RUST_APIS = src/constraints.h src/geom.h src/helpers.h src/settings.h
+RUST_APIS = \
+	src/atoms.h \
+	src/constraints.h \
+	src/geom.h \
+	src/helpers.h \
+	src/settings.h
 
 MODULES_SRC = \
-	src/atoms.c \
 	src/drw.c \
 	src/dwm.c \
 	src/geom.c \
