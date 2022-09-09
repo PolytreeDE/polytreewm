@@ -3,7 +3,7 @@ use std::ptr::null;
 
 use x11::xlib::{self, Display};
 
-struct Xbase {
+pub struct Xbase {
     program_title: String,
     x_display: *mut Display,
     x_screen: c_int,
@@ -11,7 +11,9 @@ struct Xbase {
 }
 
 impl Xbase {
-    fn new(program_title: String) -> Result<Self, Box<dyn std::error::Error>> {
+    pub fn new(
+        program_title: String,
+    ) -> Result<Self, Box<dyn std::error::Error>> {
         unsafe {
             if xlib::XSupportsLocale() == 0 {
                 return Err("no locale support in X".into());
@@ -25,7 +27,12 @@ impl Xbase {
             let x_screen = xlib::XDefaultScreen(x_display);
             let x_root = xlib::XRootWindow(x_display, x_screen);
 
-            Ok(Self { program_title, x_display, x_screen, x_root })
+            Ok(Self {
+                program_title,
+                x_display,
+                x_screen,
+                x_root,
+            })
         }
     }
 }

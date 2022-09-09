@@ -10,5 +10,4 @@
 # Rust
 /Cargo.lock
 /rust-polytreewm/Cargo.lock
-/rust-winproto/Cargo.lock
 /target/

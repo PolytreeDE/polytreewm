@@ -19,10 +19,6 @@ RUST_SRC = \
 	rust-polytreewm/src/*.rs \
 	rust-polytreewm/src/**/*.rs
 
-RUST_WINPROTO_SRC = \
-	rust-winproto/Cargo.toml \
-	rust-winproto/src/*.rs
-
 RUST_APIS = src/constraints.h src/geom.h src/helpers.h src/settings.h
 
 MODULES_SRC = \
@@ -67,10 +63,10 @@ ALL_EXE  = polytreewm $(TEST_EXE)
 # Executables #
 ###############
 
-polytreewm: src/main.o $(MODULES_OBJ) target/debug/libpolytreewm.a target/debug/libwinproto.a
+polytreewm: src/main.o $(MODULES_OBJ) target/debug/libpolytreewm.a
 	$(CC) -o $@ $^ $(LDFLAGS)
 
-%.test: %.o tests/main.o $(MODULES_OBJ) target/debug/libpolytreewm.a target/debug/libwinproto.a
+%.test: %.o tests/main.o $(MODULES_OBJ) target/debug/libpolytreewm.a
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 ################
@@ -83,9 +79,6 @@ polytreewm: src/main.o $(MODULES_OBJ) target/debug/libpolytreewm.a target/debug/
 dwm.o: $(DWM_SRC) $(DWM_HDR)
 
 target/debug/libpolytreewm.a: $(RUST_SRC)
-	$(CARGO) build
-
-target/debug/libwinproto.a: $(RUST_WINPROTO_SRC)
 	$(CARGO) build
 
 #########
