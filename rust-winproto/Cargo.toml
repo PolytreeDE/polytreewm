@@ -1,8 +1,12 @@
 [package]
 name = "winproto"
 version = "0.0.0"
+edition = "2021"
 publish = false
 
 [lib]
 name = "winproto"
 crate-type = ["staticlib"]
+
+[dependencies]
+x11rb = "0.10.1"
