@@ -100,11 +100,6 @@ static struct Command commands[] = {
 #endif // WITH_TERMINAL_XTERM
 	},
 #endif // WITH_TERMINAL
-	{
-		.name = "firefox",
-		.monitor_arg_index = 0,
-		.args = { "firefox", NULL },
-	},
 };
 
 void spawn_command(

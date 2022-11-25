@@ -47,7 +47,6 @@ const Key keys[] = {
 	{ MODKEY,                       XK_z,            spawn,          {.v = "lock" } },
 	{ MODKEY,                       XK_slash,        spawn,          {.v = "menu" } },
 	{ MODKEY|ShiftMask,             XK_slash,        spawn,          {.v = "term" } },
-	{ MODKEY|ShiftMask,             XK_f,            spawn,          {.v = "firefox" } },
 };
 
 size_t keys_count()
